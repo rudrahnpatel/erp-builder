@@ -3,60 +3,71 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
+  id        String     @id @default(cuid())
+  email     String     @unique
   password  String
   name      String
   workspace Workspace?
-  createdAt DateTime @default(now())
+  createdAt DateTime   @default(now())
 }
 
 model Workspace {
-  id        String   @id @default(cuid())
-  name      String
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id])
-  tables    Table[]
-  pages     Page[]
-  installedPacks InstalledPack[]
+  id               String            @id @default(cuid())
+  name             String
+  userId           String            @unique
+  user             User              @relation(fields: [userId], references: [id])
+  tables           Table[]
+  pages            Page[]
+  installedPacks   InstalledPack[]
   installedPlugins InstalledPlugin[]
-  createdAt DateTime @default(now())
+  createdAt        DateTime          @default(now())
 }
 
 model Table {
   id          String   @id @default(cuid())
   name        String
-  icon        String?  // Lucide icon name
+  icon        String?
   workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   fields      Field[]
   records     Record[]
-  packSource  String?  // which pack created this table (null = user-created)
+  packSource  String?
   createdAt   DateTime @default(now())
 }
 
 model Field {
-  id        String   @id @default(cuid())
-  name      String
-  type      String   // Using String since SQLite doesn't support enums well 
-  config    String   @default("{}") // SQLite json substitute (text representing JSON)
-  required  Boolean  @default(false)
-  order     Int
-  tableId   String
-  table     Table    @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  id       String    @id @default(cuid())
+  name     String
+  type     FieldType
+  config   Json      @default("{}")
+  required Boolean   @default(false)
+  order    Int
+  tableId  String
+  table    Table     @relation(fields: [tableId], references: [id], onDelete: Cascade)
 }
 
-// FieldType ENUM replacement for SQLite
-// TEXT, NUMBER, DATE, SINGLE_SELECT, MULTI_SELECT, CHECKBOX, RELATION, TIME, EMAIL, PHONE, CURRENCY
+enum FieldType {
+  TEXT
+  NUMBER
+  DATE
+  SINGLE_SELECT
+  MULTI_SELECT
+  CHECKBOX
+  RELATION
+  TIME
+  EMAIL
+  PHONE
+  CURRENCY
+}
 
 model Record {
   id        String   @id @default(cuid())
-  data      String   // SQLite json substitute (text representing JSON)
+  data      Json
   tableId   String
   table     Table    @relation(fields: [tableId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
@@ -67,7 +78,7 @@ model Page {
   id          String   @id @default(cuid())
   title       String
   icon        String?
-  blocks      String   // SQLite json substitute (text representing JSON)
+  blocks      Json
   workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   packSource  String?
@@ -77,22 +88,22 @@ model Page {
 
 model InstalledPack {
   id          String   @id @default(cuid())
-  packId      String   // references the pack registry key
+  packId      String
   workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   installedAt DateTime @default(now())
-  
+
   @@unique([packId, workspaceId])
 }
 
 model InstalledPlugin {
   id          String   @id @default(cuid())
   pluginId    String
-  config      String   @default("{}") // SQLite json substitute
+  config      Json     @default("{}")
   enabled     Boolean  @default(true)
   workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   installedAt DateTime @default(now())
-  
+
   @@unique([pluginId, workspaceId])
 }
