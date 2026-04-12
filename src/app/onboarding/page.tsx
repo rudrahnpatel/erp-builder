@@ -80,21 +80,59 @@ export default function OnboardingPage() {
   const [buildMode, setBuildMode] = useState<"preset" | "custom" | null>(null);
   const [subdomain, setSubdomain] = useState("");
   const [domainAvailable, setDomainAvailable] = useState<boolean | null>(null);
+  const [domainReason, setDomainReason] = useState<string | null>(null);
+  const [checkingDomain, setCheckingDomain] = useState(false);
   const [launching, setLaunching] = useState(false);
+  const [launchError, setLaunchError] = useState<string | null>(null);
 
-  const checkDomain = () => {
+  const checkDomain = async () => {
     if (!subdomain) return;
-    setTimeout(() => {
-      setDomainAvailable(!["admin", "test", "demo", "app"].includes(subdomain.toLowerCase()));
-    }, 600);
+    setCheckingDomain(true);
+    setDomainReason(null);
+    try {
+      const res = await fetch(
+        `/api/workspace/check-slug?slug=${encodeURIComponent(subdomain)}`
+      );
+      const data = await res.json();
+      setDomainAvailable(Boolean(data.available));
+      setDomainReason(data.reason || null);
+    } catch {
+      setDomainAvailable(false);
+      setDomainReason("Couldn't reach the server. Try again.");
+    } finally {
+      setCheckingDomain(false);
+    }
   };
 
-  const handleLaunch = () => {
+  const handleLaunch = async () => {
     setLaunching(true);
-    setTimeout(() => {
+    setLaunchError(null);
+    try {
+      const res = await fetch("/api/onboarding/launch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          appName,
+          companyName,
+          subdomain,
+          presetId: selectedPreset,
+        })
+      });
+      
+      const data = await res.json().catch(() => ({}));
+      
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to launch. Please try again.");
+      }
+
       router.push("/workspace");
-    }, 2000);
+    } catch (e: any) {
+      console.error(e);
+      setLaunchError(e.message || "Failed to launch. Please try again.");
+      setLaunching(false);
+    }
   };
+
 
   const canProceed = () => {
     if (step === 0) return appName.trim().length >= 2;
@@ -104,14 +142,14 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] flex flex-col">
+    <div className="min-h-screen flex flex-col" style={{ background: "var(--background)" }}>
       {/* Top Bar */}
-      <div className="h-14 bg-white border-b border-[#e2e8f0] px-4 sm:px-6 flex items-center justify-between shrink-0">
+      <div className="h-14 border-b px-4 sm:px-6 flex items-center justify-between shrink-0 glass" style={{ borderColor: "var(--border-subtle)" }}>
         <div className="flex items-center gap-2.5">
-          <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-            <Building2 className="h-4 w-4 text-white" />
+          <div className="h-8 w-8 rounded-lg flex items-center justify-center" style={{ background: "var(--primary-subtle)" }}>
+            <Building2 className="h-4 w-4" style={{ color: "var(--primary)" }} />
           </div>
-          <span className="font-bold text-[#2b3437] text-sm">ERP Builder</span>
+          <span className="font-bold text-sm" style={{ color: "var(--foreground)" }}>ERP Builder</span>
         </div>
 
         {/* Step indicator */}
@@ -150,17 +188,17 @@ export default function OnboardingPage() {
                 <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
                   <Building2 className="h-7 w-7 text-primary" />
                 </div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-[#2b3437]">
+                <h1 className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--foreground)" }}>
                   Let&apos;s build your ERP
                 </h1>
-                <p className="text-[#64748b] mt-2 text-sm sm:text-base">
+                <p className="mt-2 text-sm sm:text-base" style={{ color: "var(--foreground-muted)" }}>
                   Start by naming your application and company
                 </p>
               </div>
 
-              <div className="bg-white rounded-2xl border border-[#e2e8f0] p-5 sm:p-8 space-y-5">
+              <div className="rounded-2xl border p-5 sm:p-8 space-y-5" style={{ background: "var(--card)", borderColor: "var(--border-subtle)" }}>
                 <div>
-                  <label className="text-sm font-medium text-[#2b3437] block mb-1.5">
+                  <label className="text-sm font-medium block mb-1.5" style={{ color: "var(--foreground)" }}>
                     Application Name
                   </label>
                   <Input
@@ -170,12 +208,12 @@ export default function OnboardingPage() {
                     className="h-11 text-base"
                     autoFocus
                   />
-                  <p className="text-xs text-[#94a3b8] mt-1.5">
+                  <p className="text-xs mt-1.5" style={{ color: "var(--foreground-muted)" }}>
                     This will be the display name of your ERP application
                   </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-[#2b3437] block mb-1.5">
+                  <label className="text-sm font-medium block mb-1.5" style={{ color: "var(--foreground)" }}>
                     Company Name
                   </label>
                   <Input
@@ -193,10 +231,10 @@ export default function OnboardingPage() {
           {step === 1 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="text-center">
-                <h1 className="text-2xl sm:text-3xl font-bold text-[#2b3437]">
+                <h1 className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--foreground)" }}>
                   How do you want to start?
                 </h1>
-                <p className="text-[#64748b] mt-2 text-sm sm:text-base">
+                <p className="mt-2 text-sm sm:text-base" style={{ color: "var(--foreground-muted)" }}>
                   Pick a preset to get up and running instantly, or start from scratch
                 </p>
               </div>
@@ -207,26 +245,27 @@ export default function OnboardingPage() {
                   setBuildMode("custom");
                   setSelectedPreset(null);
                 }}
-                className={`w-full text-left bg-white rounded-2xl border-2 p-5 sm:p-6 transition-all group ${
-                  buildMode === "custom"
-                    ? "border-primary shadow-lg shadow-primary/10"
-                    : "border-[#e2e8f0] hover:border-[#cbd5e1]"
-                }`}
+                className={`w-full text-left rounded-2xl border-2 p-5 sm:p-6 transition-all group`}
+                style={{
+                  background: "var(--card)",
+                  borderColor: buildMode === "custom" ? "var(--primary)" : "var(--border)",
+                  boxShadow: buildMode === "custom" ? "0 10px 25px -5px var(--primary-subtle)" : "none"
+                }}
               >
                 <div className="flex items-start gap-4">
-                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center shrink-0">
-                    <Sparkles className="h-6 w-6 text-primary" />
+                  <div className="h-12 w-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: "var(--primary-subtle)" }}>
+                    <Sparkles className="h-6 w-6" style={{ color: "var(--primary)" }} />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-base font-semibold text-[#2b3437]">
+                      <h3 className="text-base font-semibold" style={{ color: "var(--foreground)" }}>
                         Build from scratch
                       </h3>
-                      <Badge className="bg-amber-50 text-amber-700 border-0 text-[10px]">
+                      <Badge className="border-0 text-[10px]" style={{ background: "var(--warning-subtle)", color: "var(--warning)" }}>
                         Advanced
                       </Badge>
                     </div>
-                    <p className="text-sm text-[#64748b] mt-1">
+                    <p className="text-sm mt-1" style={{ color: "var(--foreground-muted)" }}>
                       Start empty. Add modules, design schemas, compose pages
                       yourself using the full builder toolkit.
                     </p>
@@ -239,7 +278,7 @@ export default function OnboardingPage() {
 
               {/* Presets */}
               <div>
-                <p className="text-xs font-semibold text-[#94a3b8] uppercase tracking-wider mb-3">
+                <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--foreground-dimmed)" }}>
                   Or start with a preset
                 </p>
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -250,26 +289,28 @@ export default function OnboardingPage() {
                         setBuildMode("preset");
                         setSelectedPreset(preset.id);
                       }}
-                      className={`text-left bg-white rounded-xl border-2 p-4 sm:p-5 transition-all ${
-                        selectedPreset === preset.id
-                          ? "border-primary shadow-lg shadow-primary/10"
-                          : "border-[#e2e8f0] hover:border-[#cbd5e1]"
-                      }`}
+                      className={`text-left rounded-xl border-2 p-4 sm:p-5 transition-all`}
+                      style={{
+                        background: "var(--card)",
+                        borderColor: selectedPreset === preset.id ? "var(--primary)" : "var(--border)",
+                        boxShadow: selectedPreset === preset.id ? "0 10px 25px -5px var(--primary-subtle)" : "none"
+                      }}
                     >
                       <div className="flex items-start justify-between mb-3">
                         <div
-                          className={`h-10 w-10 rounded-lg flex items-center justify-center border ${preset.color}`}
+                          className={`h-10 w-10 rounded-lg flex items-center justify-center border`}
+                          style={{ borderColor: "var(--border-subtle)", background: "var(--surface-2)", color: "var(--foreground)" }}
                         >
                           <preset.icon className="h-5 w-5" />
                         </div>
                         {selectedPreset === preset.id && (
-                          <Check className="h-4 w-4 text-primary" />
+                          <Check className="h-4 w-4" style={{ color: "var(--primary)" }} />
                         )}
                       </div>
-                      <h3 className="text-sm font-semibold text-[#2b3437] mb-1">
+                      <h3 className="text-sm font-semibold mb-1" style={{ color: "var(--foreground)" }}>
                         {preset.name}
                       </h3>
-                      <p className="text-xs text-[#64748b] leading-relaxed mb-3">
+                      <p className="text-xs leading-relaxed mb-3" style={{ color: "var(--foreground-muted)" }}>
                         {preset.desc}
                       </p>
                       <div className="flex flex-wrap gap-1">
@@ -304,34 +345,35 @@ export default function OnboardingPage() {
           {step === 2 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="text-center">
-                <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <Globe className="h-7 w-7 text-primary" />
+                <div className="h-14 w-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: "var(--primary-subtle)" }}>
+                  <Globe className="h-7 w-7" style={{ color: "var(--primary)" }} />
                 </div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-[#2b3437]">
+                <h1 className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--foreground)" }}>
                   Claim your domain
                 </h1>
-                <p className="text-[#64748b] mt-2 text-sm sm:text-base">
+                <p className="mt-2 text-sm sm:text-base" style={{ color: "var(--foreground-muted)" }}>
                   Your ERP app will be accessible at this address
                 </p>
               </div>
 
-              <div className="bg-white rounded-2xl border border-[#e2e8f0] p-5 sm:p-8 space-y-5">
+              <div className="rounded-2xl border p-5 sm:p-8 space-y-5" style={{ background: "var(--card)", borderColor: "var(--border-subtle)" }}>
                 {/* Subdomain */}
                 <div>
-                  <label className="text-sm font-medium text-[#2b3437] block mb-1.5">
+                  <label className="text-sm font-medium block mb-1.5" style={{ color: "var(--foreground)" }}>
                     Choose a subdomain
                   </label>
                   <div className="flex items-center gap-0">
                     <Input
                       value={subdomain}
                       onChange={(e) => {
-                        setSubdomain(e.target.value.replace(/[^a-z0-9-]/g, ""));
+                        setSubdomain(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""));
                         setDomainAvailable(null);
+                        setDomainReason(null);
                       }}
                       placeholder="acme-traders"
                       className="h-11 text-base rounded-r-none border-r-0"
                     />
-                    <div className="h-11 px-4 bg-[#f1f4f6] border border-[#e2e8f0] rounded-r-lg flex items-center text-sm text-[#64748b] font-mono whitespace-nowrap">
+                    <div className="h-11 px-4 border rounded-r-lg flex items-center text-sm font-mono whitespace-nowrap" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)", color: "var(--foreground-muted)" }}>
                       .erpbuilder.app
                     </div>
                   </div>
@@ -343,9 +385,10 @@ export default function OnboardingPage() {
                           variant="outline"
                           size="sm"
                           onClick={checkDomain}
+                          disabled={checkingDomain}
                           className="text-xs"
                         >
-                          Check Availability
+                          {checkingDomain ? "Checking…" : "Check Availability"}
                         </Button>
                       ) : domainAvailable ? (
                         <p className="text-sm text-emerald-600 flex items-center gap-1.5">
@@ -357,7 +400,7 @@ export default function OnboardingPage() {
                         </p>
                       ) : (
                         <p className="text-sm text-red-500">
-                          This subdomain is already taken. Try another.
+                          {domainReason || "This subdomain isn't available."}
                         </p>
                       )}
                     </div>
@@ -365,12 +408,12 @@ export default function OnboardingPage() {
                 </div>
 
                 {/* Custom domain */}
-                <div className="pt-4 border-t border-[#f1f4f6]">
+                <div className="pt-4 border-t" style={{ borderColor: "var(--border-subtle)" }}>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="text-sm font-medium text-[#2b3437]">
+                    <label className="text-sm font-medium" style={{ color: "var(--foreground)" }}>
                       Custom Domain (optional)
                     </label>
-                    <Badge className="bg-primary/10 text-primary border-0 text-[10px]">
+                    <Badge className="border-0 text-[10px]" style={{ background: "var(--primary-subtle)", color: "var(--primary)" }}>
                       Pro
                     </Badge>
                   </div>
@@ -379,9 +422,9 @@ export default function OnboardingPage() {
                     className="h-11 text-base"
                     disabled
                   />
-                  <p className="text-xs text-[#94a3b8] mt-1.5">
+                  <p className="text-xs mt-1.5" style={{ color: "var(--foreground-muted)" }}>
                     Point your domain&apos;s CNAME to{" "}
-                    <code className="bg-[#f1f4f6] px-1 py-0.5 rounded text-[10px]">
+                    <code className="px-1 py-0.5 rounded text-[10px]" style={{ background: "var(--surface-2)" }}>
                       cname.erpbuilder.app
                     </code>
                   </p>
@@ -394,18 +437,18 @@ export default function OnboardingPage() {
           {step === 3 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="text-center">
-                <div className="h-14 w-14 rounded-2xl bg-emerald-50 flex items-center justify-center mx-auto mb-4">
-                  <Rocket className="h-7 w-7 text-emerald-600" />
+                <div className="h-14 w-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: "var(--success-subtle)" }}>
+                  <Rocket className="h-7 w-7" style={{ color: "var(--success)" }} />
                 </div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-[#2b3437]">
+                <h1 className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--foreground)" }}>
                   Ready to launch!
                 </h1>
-                <p className="text-[#64748b] mt-2 text-sm sm:text-base">
+                <p className="mt-2 text-sm sm:text-base" style={{ color: "var(--foreground-muted)" }}>
                   Review your configuration before deploying
                 </p>
               </div>
 
-              <div className="bg-white rounded-2xl border border-[#e2e8f0] p-5 sm:p-8 space-y-4">
+              <div className="rounded-2xl border p-5 sm:p-8 space-y-4" style={{ background: "var(--card)", borderColor: "var(--border-subtle)" }}>
                 {/* Summary */}
                 {[
                   { label: "Application", value: appName || "Untitled" },
@@ -424,10 +467,10 @@ export default function OnboardingPage() {
                 ].map((row) => (
                   <div
                     key={row.label}
-                    className="flex items-center justify-between py-3 border-b last:border-0 border-[#f1f4f6]"
+                    className="flex items-center justify-between py-3 border-b last:border-0" style={{ borderColor: "var(--border-subtle)" }}
                   >
-                    <span className="text-sm text-[#64748b]">{row.label}</span>
-                    <span className="text-sm font-medium text-[#2b3437]">
+                    <span className="text-sm" style={{ color: "var(--foreground-muted)" }}>{row.label}</span>
+                    <span className="text-sm font-medium" style={{ color: "var(--foreground)" }}>
                       {row.value}
                     </span>
                   </div>
@@ -468,6 +511,12 @@ export default function OnboardingPage() {
                 )}
               </div>
 
+              {launchError && (
+                <div className="p-3 bg-red-50/50 text-red-500 text-sm rounded-xl border border-red-200/50 text-center animate-in fade-in slide-in-from-bottom-2">
+                  {launchError}
+                </div>
+              )}
+
               <Button
                 onClick={handleLaunch}
                 disabled={launching}
@@ -492,7 +541,7 @@ export default function OnboardingPage() {
 
       {/* Bottom Navigation */}
       {step < 3 && (
-        <div className="sticky bottom-0 bg-white border-t border-[#e2e8f0] px-4 sm:px-6 py-3 flex items-center justify-between">
+        <div className="sticky bottom-0 border-t px-4 sm:px-6 py-3 flex items-center justify-between glass" style={{ borderColor: "var(--border-subtle)" }}>
           <Button
             variant="ghost"
             disabled={step === 0}

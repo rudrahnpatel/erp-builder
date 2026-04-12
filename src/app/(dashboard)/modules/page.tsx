@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { PackCard } from "@/components/marketplace/PackCard";
 import {
   inventoryPack,
@@ -8,8 +9,7 @@ import {
   hrPack,
   financePack,
 } from "@/lib/packs/registry";
-import { Input } from "@/components/ui/input";
-import { Search, ArrowRight, Sparkles } from "lucide-react";
+import { Search, ArrowRight, PackageSearch } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const allPacks = [inventoryPack, crmPack, hrPack, financePack];
@@ -22,23 +22,15 @@ const categories = [
   "HR & Payroll",
 ];
 
-const recentIntegrations = [
-  {
-    name: "Razorpay Checkout",
-    category: "Payments",
-    rating: 4.8,
-  },
-  {
-    name: "Delhivery Tracking",
-    category: "Logistics",
-    rating: 4.6,
-  },
-];
+import { useWorkspace } from "@/hooks/use-workspace";
 
 export default function ModulesPage() {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All Modules");
-  const [installedPacks, setInstalledPacks] = useState<string[]>([]);
+  const { workspace, refetch } = useWorkspace();
+
+  // Show installed packs visually if workspace is loaded, else empty fallback
+  const installedPacks = workspace?.installedPacks || [];
 
   const filteredPacks = allPacks.filter((pack) => {
     const matchesSearch =
@@ -49,48 +41,117 @@ export default function ModulesPage() {
     return matchesSearch && matchesCategory;
   });
 
-  const handleInstall = (packId: string) => {
-    setInstalledPacks((prev) => [...prev, packId]);
+  const handleInstall = async (packId: string) => {
+    const pack = allPacks.find((p) => p.id === packId);
+    const label = pack?.name || "module";
+    const pending = toast.loading(`Installing ${label}…`);
+    try {
+      const res = await fetch("/api/packs/install", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ packId }),
+      });
+      if (res.ok) {
+        await refetch();
+        toast.success(`${label} installed`, {
+          id: pending,
+          description: "Schemas and pages are ready in your workspace.",
+        });
+      } else {
+        const data = await res.json().catch(() => ({}));
+        toast.error(`Couldn't install ${label}`, {
+          id: pending,
+          description: data.error || "The server rejected the request.",
+        });
+      }
+    } catch (err) {
+      toast.error(`Couldn't install ${label}`, {
+        id: pending,
+        description: "Network error. Check your connection and try again.",
+      });
+    }
   };
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto">
+    <div className="space-y-8 max-w-6xl mx-auto animate-fade-in-up">
       {/* Header */}
-      <div>
-        <p className="text-xs font-medium text-[#64748b] uppercase tracking-wider mb-1">
-          Ecosystem / Modules
+      <header>
+        <p
+          className="text-[11px] font-medium uppercase tracking-[0.14em] mb-2 mono"
+          style={{ color: "var(--foreground-dimmed)" }}
+        >
+          / ecosystem · modules
         </p>
-        <h1 className="text-3xl font-bold tracking-tight text-[#2b3437]">
-          Module Marketplace
+        <h1
+          className="text-3xl sm:text-4xl font-semibold"
+          style={{ color: "var(--foreground)" }}
+        >
+          Module marketplace
         </h1>
-        <p className="text-[#64748b] mt-1">
-          Extend your enterprise capabilities with pre-configured modules
-          designed for the unique challenges of Indian SMEs.
+        <p
+          className="mt-2 max-w-2xl text-sm sm:text-base leading-relaxed"
+          style={{ color: "var(--foreground-muted)" }}
+        >
+          Pre-configured modules for inventory, CRM, HR and finance. Each pack
+          ships with schemas, pages and plugins already wired — install one,
+          bend it to your workflow.
         </p>
-      </div>
+      </header>
 
       {/* Search + Categories */}
       <div className="space-y-4">
         <div className="relative max-w-md">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-[#64748b]" />
-          <Input
+          <Search
+            className="absolute left-3 top-2.5 h-4 w-4"
+            style={{ color: "var(--foreground-dimmed)" }}
+          />
+          <input
             type="search"
             placeholder="Search modules, templates, or integrations..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-white border-[#e2e8f0]"
+            className="w-full pl-10 pr-4 py-2 text-sm rounded-lg transition-all duration-200 outline-none"
+            style={{
+              background: "var(--surface-2)",
+              border: "1px solid var(--border-subtle)",
+              color: "var(--foreground)",
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = "var(--primary)";
+              e.currentTarget.style.boxShadow = "0 0 0 3px var(--primary-glow)";
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = "var(--border-subtle)";
+              e.currentTarget.style.boxShadow = "none";
+            }}
           />
         </div>
-        <div className="flex gap-1">
+        <div className="flex gap-1 flex-wrap">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${
-                activeCategory === cat
-                  ? "bg-primary text-white"
-                  : "text-[#64748b] hover:bg-[#f1f4f6]"
-              }`}
+              className="px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-200"
+              style={{
+                background:
+                  activeCategory === cat
+                    ? "var(--primary)"
+                    : "transparent",
+                color:
+                  activeCategory === cat
+                    ? "var(--primary-foreground)"
+                    : "var(--foreground-muted)",
+              }}
+              onMouseEnter={(e) => {
+                if (activeCategory !== cat) {
+                  e.currentTarget.style.background = "var(--surface-3)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (activeCategory !== cat) {
+                  e.currentTarget.style.background = "transparent";
+                }
+              }}
             >
               {cat}
             </button>
@@ -99,85 +160,103 @@ export default function ModulesPage() {
       </div>
 
       {/* Module Cards Grid */}
-      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-        {filteredPacks.map((pack) => (
-          <PackCard
-            key={pack.id}
-            pack={pack}
-            installed={installedPacks.includes(pack.id)}
-            onInstall={handleInstall}
-          />
-        ))}
-      </div>
-
-      {/* CTA Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#005bbf] via-[#0066d6] to-[#1a73e8] p-8 text-white">
-        <div className="relative z-10 max-w-lg">
-          <h2 className="text-xl font-bold mb-2">Need a custom workflow?</h2>
-          <p className="text-white/80 text-sm leading-relaxed mb-5">
-            Our engineering team can build bespoke modules for your specific
-            industry requirements. From specialized logistics to complex tax
-            structures.
+      {filteredPacks.length > 0 ? (
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4 stagger-children">
+          {filteredPacks.map((pack) => (
+            <PackCard
+              key={pack.id}
+              pack={pack}
+              installed={installedPacks.includes(pack.id)}
+              onInstall={handleInstall}
+            />
+          ))}
+        </div>
+      ) : (
+        <div
+          className="rounded-2xl p-12 text-center"
+          style={{
+            background: "var(--surface-1)",
+            border: "1px dashed var(--border)",
+          }}
+        >
+          <div
+            className="h-14 w-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
+            style={{
+              background: "var(--surface-2)",
+              color: "var(--foreground-muted)",
+            }}
+          >
+            <PackageSearch className="h-6 w-6" aria-hidden="true" />
+          </div>
+          <h3
+            className="text-base font-semibold mb-1"
+            style={{ color: "var(--foreground)" }}
+          >
+            No modules match that search
+          </h3>
+          <p
+            className="text-sm mb-5 max-w-sm mx-auto"
+            style={{ color: "var(--foreground-muted)" }}
+          >
+            Try a different keyword, or clear the filters and browse the full
+            catalogue.
           </p>
           <Button
-            variant="secondary"
-            className="bg-white text-primary hover:bg-white/90 font-medium gap-2"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setSearch("");
+              setActiveCategory("All Modules");
+            }}
           >
-            Schedule a Consultation <ArrowRight className="h-4 w-4" />
+            Clear filters
           </Button>
         </div>
-        {/* Decorative circles */}
-        <div className="absolute right-8 top-1/2 -translate-y-1/2 opacity-20">
-          <Sparkles className="h-32 w-32" />
-        </div>
-        <div className="absolute -right-10 -bottom-10 h-40 w-40 rounded-full bg-white/10" />
-        <div className="absolute -right-5 -top-5 h-24 w-24 rounded-full bg-white/5" />
-      </div>
+      )}
 
-      {/* Recently Added Integrations */}
-      <div>
-        <h2 className="text-sm font-semibold text-[#2b3437] uppercase tracking-wider mb-4">
-          Recently Added Integrations
-        </h2>
-        <div className="bg-white rounded-xl border border-[#e2e8f0] overflow-hidden">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-[#f1f4f6] text-[#64748b]">
-                <th className="text-left px-6 py-3 font-medium">Provider</th>
-                <th className="text-left px-6 py-3 font-medium">Category</th>
-                <th className="text-left px-6 py-3 font-medium">Rating</th>
-                <th className="text-right px-6 py-3 font-medium">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentIntegrations.map((item) => (
-                <tr
-                  key={item.name}
-                  className="border-b last:border-0 border-[#f1f4f6] hover:bg-[#f8f9fa] transition-colors"
-                >
-                  <td className="px-6 py-3.5 font-medium text-[#2b3437]">
-                    {item.name}
-                  </td>
-                  <td className="px-6 py-3.5 text-[#64748b]">
-                    {item.category}
-                  </td>
-                  <td className="px-6 py-3.5">
-                    <span className="text-amber-500">
-                      {"★".repeat(Math.floor(item.rating))}
-                    </span>{" "}
-                    <span className="text-[#64748b]">{item.rating}</span>
-                  </td>
-                  <td className="px-6 py-3.5 text-right">
-                    <button className="text-primary hover:text-primary/80 font-medium text-sm">
-                      View Integration
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* CTA — panel style, single primary glow, no rainbow */}
+      <aside
+        className="relative overflow-hidden rounded-2xl p-8 sm:p-10"
+        style={{
+          background:
+            "linear-gradient(180deg, var(--surface-2), var(--surface-1))",
+          border: "1px solid var(--border-subtle)",
+        }}
+      >
+        <div className="relative z-10 grid sm:grid-cols-[1fr_auto] gap-6 items-center">
+          <div className="max-w-xl">
+            <p
+              className="text-[11px] uppercase tracking-[0.14em] mb-2 mono"
+              style={{ color: "var(--primary)" }}
+            >
+              / bespoke
+            </p>
+            <h2
+              className="text-xl sm:text-2xl font-semibold mb-2"
+              style={{ color: "var(--foreground)" }}
+            >
+              Need something this catalogue doesn't cover?
+            </h2>
+            <p
+              className="text-sm leading-relaxed"
+              style={{ color: "var(--foreground-muted)" }}
+            >
+              We build custom modules for specialised logistics, industry-specific
+              tax flows, and integrations with legacy systems. Book a 30-minute
+              call — no sales deck.
+            </p>
+          </div>
+          <Button className="gap-2 font-medium shrink-0">
+            Book a call <ArrowRight className="h-4 w-4" />
+          </Button>
         </div>
-      </div>
+        {/* single-color ambient glow */}
+        <div
+          className="absolute -right-24 -top-24 h-64 w-64 rounded-full blur-3xl pointer-events-none"
+          style={{ background: "var(--primary-glow)" }}
+          aria-hidden="true"
+        />
+      </aside>
     </div>
   );
 }

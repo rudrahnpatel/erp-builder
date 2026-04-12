@@ -72,16 +72,16 @@ export default function ConfigurePage({ params }: { params: Promise<{ packId: st
   return (
     <div className="h-[calc(100vh-3.5rem)] flex flex-col -m-4 sm:-m-6">
       {/* Top bar */}
-      <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-[#e2e8f0] bg-white">
+      <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b glass" style={{ borderColor: "var(--border-subtle)" }}>
         <div className="flex items-center gap-2 text-sm">
-          <span className="hidden sm:inline text-[#64748b]">Modules</span>
-          <ChevronRight className="hidden sm:block h-3.5 w-3.5 text-[#cbd5e1]" />
-          <span className="text-[#64748b]">Attendance</span>
-          <ChevronRight className="h-3.5 w-3.5 text-[#cbd5e1]" />
-          <span className="text-[#2b3437] font-medium">Configure</span>
+          <span className="hidden sm:inline" style={{ color: "var(--foreground-muted)" }}>Modules</span>
+          <ChevronRight className="hidden sm:block h-3.5 w-3.5" style={{ color: "var(--foreground-dimmed)" }} />
+          <span style={{ color: "var(--foreground-muted)" }}>Attendance</span>
+          <ChevronRight className="h-3.5 w-3.5" style={{ color: "var(--foreground-dimmed)" }} />
+          <span className="font-medium" style={{ color: "var(--foreground)" }}>Configure</span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-[#64748b]">
+          <span className="text-xs" style={{ color: "var(--foreground-muted)" }}>
             Step {currentStep + 1} of {steps.length}
           </span>
           <Button size="sm" className="gap-1.5 text-xs">
@@ -92,7 +92,7 @@ export default function ConfigurePage({ params }: { params: Promise<{ packId: st
 
       <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
         {/* Left sidebar: Steps */}
-        <div className="w-full lg:w-[220px] border-b lg:border-b-0 lg:border-r border-[#e2e8f0] bg-white overflow-y-auto">
+        <div className="w-full lg:w-[220px] border-b lg:border-b-0 lg:border-r overflow-y-auto" style={{ borderColor: "var(--border-subtle)", background: "var(--surface-1)" }}>
           <div className="p-3 lg:p-4 flex lg:flex-col gap-1 overflow-x-auto lg:overflow-x-visible">
             {steps.map((step, i) => (
               <button
@@ -100,20 +100,17 @@ export default function ConfigurePage({ params }: { params: Promise<{ packId: st
                 onClick={() => setCurrentStep(i)}
                 className={`flex items-center gap-2 lg:gap-3 px-3 py-2 lg:py-2.5 text-sm rounded-lg transition-all whitespace-nowrap shrink-0 lg:w-full ${
                   currentStep === i
-                    ? "bg-primary text-white font-medium"
-                    : i < currentStep
-                    ? "text-emerald-600 hover:bg-emerald-50"
-                    : "text-[#64748b] hover:bg-[#f8f9fa]"
+                    ? "font-medium"
+                    : ""
                 }`}
+                style={{
+                  background: currentStep === i ? "var(--primary)" : "transparent",
+                  color: currentStep === i ? "var(--primary-foreground)" : i < currentStep ? "var(--success)" : "var(--foreground-muted)",
+                }}
               >
                 <div
-                  className={`h-6 w-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
-                    currentStep === i
-                      ? "bg-white/20"
-                      : i < currentStep
-                      ? "bg-emerald-100"
-                      : "bg-[#f1f4f6]"
-                  }`}
+                  className={`h-6 w-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0`}
+                  style={{ background: currentStep === i ? "rgba(255,255,255,0.2)" : i < currentStep ? "var(--success-subtle)" : "var(--surface-3)" }}
                 >
                   {i < currentStep ? (
                     <Check className="h-3.5 w-3.5" />
@@ -130,13 +127,13 @@ export default function ConfigurePage({ params }: { params: Promise<{ packId: st
         </div>
 
         {/* Center: Configuration Content */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6" style={{ background: "var(--background)" }}>
           {currentStep === 0 && (
             <div className="max-w-xl">
-              <h2 className="text-xl font-bold text-[#2b3437] mb-1">
+              <h2 className="text-xl font-bold mb-1" style={{ color: "var(--foreground)" }}>
                 Attendance Module Setup
               </h2>
-              <p className="text-sm text-[#64748b] mb-6">
+              <p className="text-sm mb-6" style={{ color: "var(--foreground-muted)" }}>
                 Define data points for collection
               </p>
 
@@ -158,7 +155,7 @@ export default function ConfigurePage({ params }: { params: Promise<{ packId: st
               </div>
 
               {/* Select Required Fields */}
-              <h4 className="text-xs font-semibold text-[#64748b] uppercase tracking-wider mb-3">
+              <h4 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--foreground-dimmed)" }}>
                 Select Required Fields
               </h4>
               <div className="space-y-2">
@@ -168,33 +165,37 @@ export default function ConfigurePage({ params }: { params: Promise<{ packId: st
                     onClick={() => toggleField(field.name)}
                     className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
                       selectedFields[field.name]
-                        ? "border-primary/20 bg-primary/5"
-                        : "border-[#e2e8f0] hover:border-[#cbd5e1]"
+                        ? "bg-primary/5" // Use tailwind utility for translucent bg
+                        : "hover:bg-surface-3"
                     }`}
+                    style={{
+                      borderColor: selectedFields[field.name] ? "var(--primary)" : "var(--border-subtle)",
+                      background: selectedFields[field.name] ? "var(--primary-subtle)" : "var(--card)"
+                    }}
                   >
                     <div
-                      className={`h-5 w-5 rounded border-2 flex items-center justify-center transition-all ${
-                        selectedFields[field.name]
-                          ? "bg-primary border-primary"
-                          : "border-[#cbd5e1]"
-                      }`}
+                      className={`h-5 w-5 rounded border-2 flex items-center justify-center transition-all`}
+                      style={{
+                        borderColor: selectedFields[field.name] ? "var(--primary)" : "var(--border-subtle)",
+                        background: selectedFields[field.name] ? "var(--primary)" : "transparent"
+                      }}
                     >
                       {selectedFields[field.name] && (
-                        <Check className="h-3 w-3 text-white" />
+                        <Check className="h-3 w-3" style={{ color: "var(--primary-foreground)" }} />
                       )}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-[#2b3437]">
+                        <span className="text-sm font-medium" style={{ color: "var(--foreground)" }}>
                           {field.name}
                         </span>
                         {field.required && (
-                          <Badge className="text-[9px] bg-red-50 text-red-600 border-0">
+                          <Badge className="text-[9px] border-0" style={{ background: "var(--danger-subtle)", color: "var(--danger)" }}>
                             Required
                           </Badge>
                         )}
                       </div>
-                      <span className="text-xs text-[#94a3b8]">
+                      <span className="text-xs" style={{ color: "var(--foreground-muted)" }}>
                         {field.description}
                       </span>
                     </div>
@@ -206,13 +207,13 @@ export default function ConfigurePage({ params }: { params: Promise<{ packId: st
         </div>
 
         {/* Right: Live Preview */}
-        <div className="hidden xl:block w-[420px] border-l border-[#e2e8f0] bg-[#f8f9fa] overflow-y-auto">
-          <div className="p-4 border-b border-[#e2e8f0] bg-white flex items-center justify-between">
+        <div className="hidden xl:block w-[420px] border-l overflow-y-auto" style={{ borderColor: "var(--border-subtle)", background: "var(--surface-1)" }}>
+          <div className="p-4 border-b flex items-center justify-between" style={{ borderColor: "var(--border-subtle)", background: "var(--surface-2)" }}>
             <div>
-              <h3 className="text-sm font-semibold text-[#2b3437]">
+              <h3 className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>
                 Live Preview: Attendance Table
               </h3>
-              <p className="text-[10px] text-[#94a3b8]">
+              <p className="text-[10px]" style={{ color: "var(--foreground-muted)" }}>
                 Real-time visualization of your current field selection.
               </p>
             </div>
@@ -227,28 +228,28 @@ export default function ConfigurePage({ params }: { params: Promise<{ packId: st
           </div>
 
           <div className="p-4">
-            <div className="bg-white rounded-xl border border-[#e2e8f0] overflow-hidden shadow-sm">
+            <div className="rounded-xl border overflow-hidden shadow-sm" style={{ background: "var(--card)", borderColor: "var(--border-subtle)" }}>
               <table className="w-full text-xs">
                 <thead>
-                  <tr className="border-b border-[#f1f4f6]">
-                    <th className="text-left px-3 py-2.5 font-semibold text-[#64748b] uppercase tracking-wider">
+                  <tr className="border-b" style={{ borderColor: "var(--border-subtle)", background: "var(--surface-1)" }}>
+                    <th className="text-left px-3 py-2.5 font-semibold uppercase tracking-wider" style={{ color: "var(--foreground-dimmed)" }}>
                       Employee
                     </th>
-                    <th className="text-left px-3 py-2.5 font-semibold text-[#64748b] uppercase tracking-wider">
+                    <th className="text-left px-3 py-2.5 font-semibold uppercase tracking-wider" style={{ color: "var(--foreground-dimmed)" }}>
                       ID
                     </th>
                     {selectedFields["Check-in Time"] && (
-                      <th className="text-left px-3 py-2.5 font-semibold text-[#64748b] uppercase tracking-wider">
+                      <th className="text-left px-3 py-2.5 font-semibold uppercase tracking-wider" style={{ color: "var(--foreground-dimmed)" }}>
                         Check In
                       </th>
                     )}
                     {selectedFields["Check-out Time"] && (
-                      <th className="text-left px-3 py-2.5 font-semibold text-[#64748b] uppercase tracking-wider">
+                      <th className="text-left px-3 py-2.5 font-semibold uppercase tracking-wider" style={{ color: "var(--foreground-dimmed)" }}>
                         Check Out
                       </th>
                     )}
                     {selectedFields["Status"] && (
-                      <th className="text-left px-3 py-2.5 font-semibold text-[#64748b] uppercase tracking-wider">
+                      <th className="text-left px-3 py-2.5 font-semibold uppercase tracking-wider" style={{ color: "var(--foreground-dimmed)" }}>
                         Status
                       </th>
                     )}
@@ -258,43 +259,43 @@ export default function ConfigurePage({ params }: { params: Promise<{ packId: st
                   {sampleEmployees.map((emp, i) => (
                     <tr
                       key={emp.id}
-                      className="border-b last:border-0 border-[#f1f4f6]"
+                      className="border-b last:border-0"
+                      style={{ borderColor: "var(--border-subtle)", background: "var(--card)" }}
                     >
                       <td className="px-3 py-2.5">
                         <div className="flex items-center gap-2">
                           <div
-                            className={`h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-bold ${avatarColors[i]}`}
+                            className={`h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-bold`}
+                            style={{ background: "var(--surface-3)", color: "var(--foreground)" }}
                           >
                             {emp.name
                               .split(" ")
                               .map((n) => n[0])
                               .join("")}
                           </div>
-                          <span className="font-medium text-[#2b3437]">
+                          <span className="font-medium" style={{ color: "var(--foreground)" }}>
                             {emp.name}
                           </span>
                         </div>
                       </td>
-                      <td className="px-3 py-2.5 text-[#64748b] font-mono">
+                      <td className="px-3 py-2.5 font-mono" style={{ color: "var(--foreground-muted)" }}>
                         {emp.id}
                       </td>
                       {selectedFields["Check-in Time"] && (
-                        <td className="px-3 py-2.5 text-[#2b3437]">
+                        <td className="px-3 py-2.5" style={{ color: "var(--foreground)" }}>
                           {emp.checkin}
                         </td>
                       )}
                       {selectedFields["Check-out Time"] && (
-                        <td className="px-3 py-2.5 text-[#2b3437]">
+                        <td className="px-3 py-2.5" style={{ color: "var(--foreground)" }}>
                           {emp.checkout}
                         </td>
                       )}
                       {selectedFields["Status"] && (
                         <td className="px-3 py-2.5">
                           <Badge
-                            className={`text-[9px] font-medium border-0 ${
-                              statusColorMap[emp.status] ||
-                              "bg-gray-100 text-gray-600"
-                            }`}
+                            className={`text-[9px] font-medium border-0`}
+                            style={{ background: "var(--surface-3)", color: "var(--foreground-muted)" }}
                           >
                             {emp.status}
                           </Badge>
@@ -308,30 +309,28 @@ export default function ConfigurePage({ params }: { params: Promise<{ packId: st
 
             {/* Info Cards */}
             <div className="grid grid-cols-2 gap-3 mt-4">
-              <div className="bg-white rounded-lg border border-[#e2e8f0] p-3">
+              <div className="rounded-lg border p-3" style={{ background: "var(--card)", borderColor: "var(--border-subtle)" }}>
                 <div className="flex items-center gap-1.5 mb-1.5">
                   <Info className="h-3.5 w-3.5 text-primary" />
-                  <h4 className="text-[10px] font-semibold text-[#2b3437] uppercase">
+                  <h4 className="text-[10px] font-semibold uppercase" style={{ color: "var(--foreground)" }}>
                     Dynamic Validations
                   </h4>
                 </div>
-                <p className="text-[10px] text-[#64748b] leading-relaxed">
+                <p className="text-[10px] leading-relaxed" style={{ color: "var(--foreground-muted)" }}>
                   Required fields will automatically generate form validations
-                  in the Attendance entry screen. You can modify validation
-                  logic in Step 2.
+                  in the Attendance entry screen.
                 </p>
               </div>
-              <div className="bg-white rounded-lg border border-[#e2e8f0] p-3">
+              <div className="rounded-lg border p-3" style={{ background: "var(--card)", borderColor: "var(--border-subtle)" }}>
                 <div className="flex items-center gap-1.5 mb-1.5">
                   <Info className="h-3.5 w-3.5 text-primary" />
-                  <h4 className="text-[10px] font-semibold text-[#2b3437] uppercase">
+                  <h4 className="text-[10px] font-semibold uppercase" style={{ color: "var(--foreground)" }}>
                     Field Visibility
                   </h4>
                 </div>
-                <p className="text-[10px] text-[#64748b] leading-relaxed">
+                <p className="text-[10px] leading-relaxed" style={{ color: "var(--foreground-muted)" }}>
                   Fields like &apos;Late Arrival&apos; are calculated
-                  automatically based on &apos;Check-in Time&apos; but can be
-                  overridden manually by HR managers.
+                  automatically based on &apos;Check-in Time&apos;.
                 </p>
               </div>
             </div>
@@ -340,7 +339,7 @@ export default function ConfigurePage({ params }: { params: Promise<{ packId: st
       </div>
 
       {/* Bottom navigation */}
-      <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-t border-[#e2e8f0] bg-white">
+      <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-t glass" style={{ borderColor: "var(--border-subtle)" }}>
         <Button
           variant="outline"
           disabled={currentStep === 0}

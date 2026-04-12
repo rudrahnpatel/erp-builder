@@ -6,118 +6,236 @@ import {
   Building2,
   LayoutDashboard,
   Blocks,
-  Settings,
   Puzzle,
   LogOut,
   HelpCircle,
-  Plus,
+  ChevronLeft,
+  ChevronRight,
+  Zap,
+  FileText,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-
-const mainNavItems = [
-  { href: "/workspace", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/modules", label: "Marketplace", icon: Blocks },
-  { href: "/plugins", label: "Plugins", icon: Puzzle },
-];
+import { useState } from "react";
+import { useWorkspace } from "@/hooks/use-workspace";
 
 export function Sidebar() {
   const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(false);
+  const { workspace } = useWorkspace();
+
+  const navSections = [
+    {
+      label: "Builder",
+      items: [
+        { href: "/workspace", label: "Dashboard", icon: LayoutDashboard },
+        { href: "/modules", label: "Marketplace", icon: Blocks },
+        { href: "/plugins", label: "Plugins", icon: Puzzle },
+        { href: "/pages", label: "Manage Pages", icon: FileText },
+      ],
+    },
+  ];
 
   return (
-    <div className="w-[220px] border-r border-[#e2e8f0] bg-white h-full flex flex-col">
-      {/* Logo */}
-      <div className="h-14 flex items-center px-5 border-b border-[#e2e8f0]">
-        <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center mr-2.5">
-          <Building2 className="h-4 w-4 text-white" />
+    <div
+      className={`h-full flex flex-col border-r transition-all duration-300 ease-[var(--ease-out-expo)] ${
+        collapsed ? "w-[64px]" : "w-[240px]"
+      }`}
+      style={{
+        background: "var(--sidebar)",
+        borderColor: "var(--sidebar-border)",
+      }}
+    >
+      {/* ── Logo / Workspace Identity ── */}
+      <div
+        className="h-14 flex items-center px-3 border-b shrink-0"
+        style={{ borderColor: "var(--sidebar-border)" }}
+      >
+        <div
+          className="relative h-9 w-9 rounded-xl flex items-center justify-center shrink-0 overflow-hidden"
+          style={{
+            background: "var(--primary)",
+            boxShadow:
+              "inset 0 1px 0 oklch(1 0 0 / 0.18), 0 1px 2px oklch(0.08 0.02 260 / 0.4)",
+          }}
+        >
+          <Building2 className="h-4.5 w-4.5 text-white" />
+          {/* Status dot — calmer, no ping-pong */}
+          <span
+            className="absolute bottom-0.5 right-0.5 h-2 w-2 rounded-full border-2"
+            style={{
+              background: "var(--success)",
+              borderColor: "var(--sidebar)",
+              boxShadow: "0 0 6px var(--success)",
+            }}
+            aria-hidden="true"
+          />
         </div>
-        <div>
-          <span className="font-bold text-[#2b3437] text-sm block leading-tight">
-            The Ledger
-          </span>
-          <span className="text-[10px] text-[#94a3b8] uppercase tracking-wider">
-            Enterprise Suite
-          </span>
-        </div>
-      </div>
-
-      {/* Main nav */}
-      <div className="flex-1 overflow-y-auto py-3">
-        <nav className="space-y-0.5 px-3">
-          {mainNavItems.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all ${
-                  isActive
-                    ? "bg-primary text-white font-medium"
-                    : "text-[#64748b] hover:bg-[#f1f4f6] hover:text-[#2b3437]"
-                }`}
-              >
-                <item.icon className="h-4 w-4" />
-                {item.label}
-              </Link>
-            );
-          })}
-
-          {/* Quick links */}
-          <div className="pt-4 mt-4 border-t border-[#f1f4f6]">
-            <p className="px-3 text-[10px] font-semibold text-[#94a3b8] uppercase tracking-wider mb-2">
-              Quick Access
-            </p>
-            <Link
-              href="/schema/products"
-              className={`flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all ${
-                pathname.startsWith("/schema")
-                  ? "bg-primary/10 text-primary font-medium"
-                  : "text-[#64748b] hover:bg-[#f1f4f6] hover:text-[#2b3437]"
-              }`}
+        {!collapsed && (
+          <div className="ml-2.5 min-w-0 animate-fade-in-up">
+            <span
+              className="font-semibold text-sm block leading-tight truncate px-1 tracking-tight"
+              style={{ color: "var(--sidebar-foreground)" }}
             >
-              <Settings className="h-4 w-4" />
-              Schema Designer
-            </Link>
-            <Link
-              href="/pages/inventory/edit"
-              className={`flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all ${
-                pathname.startsWith("/pages")
-                  ? "bg-primary/10 text-primary font-medium"
-                  : "text-[#64748b] hover:bg-[#f1f4f6] hover:text-[#2b3437]"
-              }`}
+              {workspace?.name || "The Ledger"}
+            </span>
+            <span
+              className="text-[10px] uppercase tracking-[0.12em] px-1 mono"
+              style={{ color: "var(--foreground-dimmed)" }}
             >
-              <LayoutDashboard className="h-4 w-4" />
-              Page Composer
-            </Link>
-            <Link
-              href="/modules/attendance/configure"
-              className={`flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all text-[#64748b] hover:bg-[#f1f4f6] hover:text-[#2b3437]`}
-            >
-              <Blocks className="h-4 w-4" />
-              Module Builder
-            </Link>
+              {workspace ? "workspace" : "the ledger"}
+            </span>
           </div>
-        </nav>
+        )}
       </div>
 
-      {/* Create module button */}
-      <div className="px-3 py-2">
-        <Button className="w-full gap-2 text-sm" size="sm">
-          <Plus className="h-4 w-4" /> Create Module
-        </Button>
+      {/* ── Navigation ── */}
+      <div className="flex-1 overflow-y-auto py-2">
+        {navSections.map((section, si) => (
+          <div key={si} className={si > 0 ? "mt-3" : ""}>
+            {/* Section label */}
+            {section.label && !collapsed && (
+              <p
+                className="px-4 text-[10px] font-semibold uppercase tracking-wider mb-1.5"
+                style={{ color: "var(--foreground-dimmed)" }}
+              >
+                {section.label}
+              </p>
+            )}
+            {section.label && collapsed && (
+              <div className="mx-3 my-2 border-t" style={{ borderColor: "var(--sidebar-border)" }} />
+            )}
+
+            <nav className="space-y-0.5 px-2">
+              {section.items.map((item) => {
+                const isActive =
+                  pathname === item.href ||
+                  pathname.startsWith(item.href + "/");
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    title={collapsed ? item.label : undefined}
+                    className={`relative flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all duration-200 group ${
+                      collapsed ? "justify-center" : ""
+                    } ${
+                      isActive
+                        ? "font-medium"
+                        : ""
+                    }`}
+                    style={{
+                      background: isActive
+                        ? "var(--sidebar-accent)"
+                        : "transparent",
+                      color: isActive
+                        ? "var(--primary)"
+                        : "var(--foreground-muted)",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.background = "var(--sidebar-accent)";
+                        e.currentTarget.style.color = "var(--sidebar-foreground)";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.background = "transparent";
+                        e.currentTarget.style.color = "var(--foreground-muted)";
+                      }
+                    }}
+                  >
+                    {/* Active indicator bar */}
+                    {isActive && (
+                      <span
+                        className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full animate-nav-indicator"
+                        style={{ background: "var(--primary)" }}
+                      />
+                    )}
+                    <item.icon className="h-4 w-4 shrink-0" />
+                    {!collapsed && <span>{item.label}</span>}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+        ))}
       </div>
 
-      {/* Bottom */}
-      <div className="px-3 py-3 border-t border-[#e2e8f0] space-y-0.5">
-        <Link
-          href="#"
-          className="flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg text-[#64748b] hover:bg-[#f1f4f6] hover:text-[#2b3437] transition-all"
+      {/* ── Open My ERP (runtime) ── */}
+      {workspace?.slug && (
+        <div className="px-2 py-2">
+          <Link
+            href={`/apps/${workspace.slug}`}
+            target="_blank"
+            rel="noopener"
+            title={collapsed ? "Open my ERP" : undefined}
+            className={`w-full flex items-center gap-2 text-sm font-medium rounded-lg px-3 py-2 transition-all ${
+              collapsed ? "justify-center px-0" : ""
+            }`}
+            style={{
+              background: "var(--primary)",
+              color: "var(--primary-foreground)",
+              boxShadow: "0 1px 2px oklch(0 0 0 / 0.1)",
+            }}
+          >
+            <Zap className="h-4 w-4" />
+            {!collapsed && "Open my ERP"}
+          </Link>
+        </div>
+      )}
+
+      {/* ── Bottom Section ── */}
+      <div
+        className="px-2 py-2 border-t space-y-0.5"
+        style={{ borderColor: "var(--sidebar-border)" }}
+      >
+        {/* Collapse toggle */}
+        <div className={`flex items-center ${collapsed ? "justify-center" : "justify-end"} px-1`}>
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            className="h-8 w-8 rounded-lg flex items-center justify-center transition-all duration-200 hover:bg-[var(--sidebar-accent)]"
+            style={{ color: "var(--foreground-dimmed)" }}
+          >
+            {collapsed ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
+            )}
+          </button>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => {
+            // Help drawer hook-up lives in a later phase
+            window.open(
+              "https://github.com/the-ledger/docs",
+              "_blank",
+              "noopener,noreferrer"
+            );
+          }}
+          className="flex w-full items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all duration-200"
+          style={{ color: "var(--foreground-muted)" }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "var(--sidebar-accent)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "transparent";
+          }}
         >
           <HelpCircle className="h-4 w-4" />
-          Help
-        </Link>
-        <button className="flex w-full items-center gap-2.5 px-3 py-2 text-sm rounded-lg text-[#ef4444] hover:bg-red-50 transition-all">
+          {!collapsed && "Help & docs"}
+        </button>
+        <button
+          className="flex w-full items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all duration-200"
+          style={{ color: "var(--danger)" }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "var(--danger-subtle)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "transparent";
+          }}
+        >
           <LogOut className="h-4 w-4" />
-          Logout
+          {!collapsed && "Logout"}
         </button>
       </div>
     </div>

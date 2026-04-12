@@ -1,6 +1,17 @@
 import { NextResponse } from "next/server";
 import { hash } from "bcryptjs";
+import { randomBytes } from "crypto";
 import { db } from "@/lib/db";
+
+/**
+ * Generate a placeholder workspace slug at registration time. The user will
+ * replace this with a real, human-readable subdomain via the onboarding flow
+ * — but we need *some* value now because `Workspace.slug` is NOT NULL unique,
+ * and we never want to block signup on picking a subdomain.
+ */
+function makePlaceholderSlug(): string {
+  return `u-${randomBytes(5).toString("hex")}`;
+}
 
 export async function POST(req: Request) {
   try {
@@ -31,6 +42,7 @@ export async function POST(req: Request) {
         workspace: {
           create: {
             name: workspaceName || `${name}'s Workspace`,
+            slug: makePlaceholderSlug(),
           },
         },
       },
