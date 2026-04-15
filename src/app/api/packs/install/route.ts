@@ -29,31 +29,36 @@ export async function POST(req: Request) {
       // Track created table IDs by name (for RELATION field resolution)
       const tableIdMap: Record<string, string> = {};
 
-      // 1. Create all tables + fields
+      // 1. Create all tables + fields — tagged with pack provenance
       for (const tableDef of pack.tables) {
         const table = await tx.table.create({
           data: {
             name: tableDef.name,
             icon: tableDef.icon,
             packSource: packId,
+            packTableKey: tableDef.name, // canonical key — never changes even if user renames table
+            isCustom: false,             // created by pack, not by user
             workspaceId: workspace.id,
           },
         });
 
         tableIdMap[tableDef.name] = table.id;
 
-        // Create fields
+        // Create fields — each tagged with its canonical key
         const fieldIdMap: Record<string, string> = {};
         for (let i = 0; i < tableDef.fields.length; i++) {
           const fieldDef = tableDef.fields[i];
-          const config = { ...(fieldDef.config as object || {}) } as any;
+          const config = { ...(fieldDef.config as object || {}) } as Record<string, unknown>;
 
-          // Resolve RELATION fields linked table name to real table ID
+          // Resolve RELATION fields: linked table name → real DB table ID
+          // Note: forward references (table not yet created) will have a null resolvedLinkedTableId.
+          // The install order in registry.ts must ensure dependencies come first.
           if (fieldDef.type === "RELATION" && config.linkedTable) {
-            const resolvedLinkedTableId = tableIdMap[config.linkedTable];
+            const resolvedLinkedTableId = tableIdMap[config.linkedTable as string];
             if (resolvedLinkedTableId) {
               config.linkedTableId = resolvedLinkedTableId;
             }
+            // Keep linkedTable name as fallback for display even if ID not resolved yet
           }
 
           const field = await tx.field.create({
@@ -64,12 +69,15 @@ export async function POST(req: Request) {
               required: fieldDef.required || false,
               order: i,
               tableId: table.id,
+              packFieldKey: fieldDef.name, // canonical key — never changes
+              isCustom: false,             // created by pack, not by user
+              isHidden: false,
             },
           });
           fieldIdMap[fieldDef.name] = field.id;
         }
 
-        // 2. Create seed records (map field names to field IDs in data)
+        // 2. Create seed records (map field names → field IDs in data payload)
         if (tableDef.seedData) {
           for (const row of tableDef.seedData) {
             const data: Record<string, Prisma.InputJsonValue> = {};
@@ -87,12 +95,11 @@ export async function POST(req: Request) {
       }
 
       // 3. Create pages from pack page definitions
-      // Resolve tableRef names to actual table IDs in block configs
+      // Resolve tableRef names → actual table IDs in block configs
       const createdPages = [];
       for (let i = 0; i < pack.pageDefinitions.length; i++) {
         const pageDef = pack.pageDefinitions[i];
 
-        // Resolve tableRef in block configs to real table IDs
         const resolvedBlocks = pageDef.blocks.map((block) => {
           const config: Record<string, Prisma.InputJsonValue> = {};
           for (const [k, v] of Object.entries(block.config)) {
@@ -113,6 +120,7 @@ export async function POST(req: Request) {
             icon: pageDef.icon,
             blocks: resolvedBlocks as unknown as Prisma.InputJsonValue,
             packSource: packId,
+            packPageKey: pageDef.key, // canonical key — survives renames
             order: i,
             workspaceId: workspace.id,
           },
@@ -120,9 +128,13 @@ export async function POST(req: Request) {
         createdPages.push(page);
       }
 
-      // 4. Mark as installed
+      // 4. Mark as installed — record the canonical pack version at install time
       await tx.installedPack.create({
-        data: { packId, workspaceId: workspace.id },
+        data: {
+          packId,
+          packVersion: "1.0.0", // bump this in registry.ts when schemas change
+          workspaceId: workspace.id,
+        },
       });
 
       return {
@@ -132,19 +144,16 @@ export async function POST(req: Request) {
     },
     {
       maxWait: 10000, // 10 seconds to acquire a connection
-      timeout: 30000, // 30 seconds for the operation to complete
+      timeout: 30000, // 30 seconds for the full install (7 tables + seed data)
     });
 
     return NextResponse.json(
       { message: `Pack "${pack.name}" installed successfully`, ...result },
       { status: 201 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Pack installation failed:", error);
-    return NextResponse.json(
-      { error: error?.message || "Internal server error during installation" },
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : "Internal server error during installation";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
-

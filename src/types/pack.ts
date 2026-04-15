@@ -13,6 +13,7 @@ export interface PackTableDefinition {
 }
 
 export interface PackPageDefinition {
+  key: string;     // stable identifier, e.g. "products_overview" — never changes
   title: string;
   icon: string;
   blocks: { type: string; config: Record<string, unknown> }[];

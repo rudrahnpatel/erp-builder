@@ -10,7 +10,48 @@ import {
   Activity,
   Trash2,
   PenLine,
+  Plus,
+  Loader2,
+  Package,
+  Box,
+  Truck,
+  Warehouse,
+  ArrowLeftRight,
+  FilePlus,
+  List,
+  BellRing,
+  AlertTriangle,
+  Users,
+  Kanban,
+  User,
+  Handshake,
+  Briefcase,
+  Clock,
+  IndianRupee,
+  Receipt,
 } from "lucide-react";
+
+const IconMap: Record<string, any> = {
+  "file-text": FileText,
+  "layout-dashboard": LayoutDashboard,
+  "package": Package,
+  "box": Box,
+  "truck": Truck,
+  "warehouse": Warehouse,
+  "arrow-left-right": ArrowLeftRight,
+  "file-plus": FilePlus,
+  "list": List,
+  "bell-ring": BellRing,
+  "alert-triangle": AlertTriangle,
+  "users": Users,
+  "kanban": Kanban,
+  "user": User,
+  "handshake": Handshake,
+  "briefcase": Briefcase,
+  "clock": Clock,
+  "indian-rupee": IndianRupee,
+  "receipt": Receipt,
+};
 import { Button } from "@/components/ui/button";
 
 export default function PagesPage() {
@@ -18,6 +59,35 @@ export default function PagesPage() {
   const { workspace, refetch } = useWorkspace();
 
   const pages = workspace?.pages || [];
+  const [creatingPage, setCreatingPage] = useState(false);
+
+  const handleCreatePage = async () => {
+    setCreatingPage(true);
+    const pending = toast.loading("Creating page...");
+    try {
+      const res = await fetch("/api/pages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: "Untitled Page",
+          blocks: [],
+        }),
+      });
+
+      if (res.ok) {
+        const page = await res.json();
+        toast.success("Page created", { id: pending });
+        await refetch();
+        router.push(`/pages/${page.id}/edit`);
+      } else {
+        toast.error("Failed to create page", { id: pending });
+      }
+    } catch (e) {
+      toast.error("Network error", { id: pending });
+    } finally {
+      setCreatingPage(false);
+    }
+  };
 
   const handleDeletePage = async (id: string, title: string) => {
     if (!confirm(`Are you sure you want to delete "${title}"?`)) return;
@@ -66,6 +136,18 @@ export default function PagesPage() {
             blocks to build views for data entry, reporting, and management.
           </p>
         </div>
+        <Button
+          onClick={handleCreatePage}
+          disabled={creatingPage}
+          className="gap-2 font-semibold shrink-0"
+          style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+        >
+          {creatingPage ? (
+            <><Loader2 className="h-4 w-4 animate-spin" /> Creating…</>
+          ) : (
+            <><Plus className="h-4 w-4" /> New Page</>
+          )}
+        </Button>
       </header>
 
       {/* Pages Grid */}
@@ -100,11 +182,14 @@ export default function PagesPage() {
                       color: "var(--foreground)",
                     }}
                   >
-                    {page.icon ? (
-                      <span className="text-xl">{page.icon}</span>
-                    ) : (
-                      <LayoutDashboard className="h-5 w-5" />
-                    )}
+                    {(() => {
+                      const IconComponent = page.icon ? IconMap[page.icon] : LayoutDashboard;
+                      return IconComponent ? (
+                        <IconComponent className="h-5 w-5" />
+                      ) : (
+                        <LayoutDashboard className="h-5 w-5" />
+                      );
+                    })()}
                   </div>
                   
                   {/* Actions wrapper (click propagation stopped) */}
@@ -188,14 +273,30 @@ export default function PagesPage() {
             className="text-sm mb-5 max-w-sm mx-auto"
             style={{ color: "var(--foreground-muted)" }}
           >
-            Install modules from the marketplace to get pre-built operational dashboards and pages.
+            Create a custom page from scratch or install modules from the marketplace
+            to get pre-built operational dashboards.
           </p>
-          <Button
-            onClick={() => router.push('/modules')}
-            className="bg-primary text-primary-foreground text-sm"
-          >
-            Browse Marketplace
-          </Button>
+          <div className="flex items-center gap-3 justify-center">
+            <Button
+              onClick={handleCreatePage}
+              disabled={creatingPage}
+              className="gap-2 font-semibold"
+              style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+            >
+              {creatingPage ? (
+                <><Loader2 className="h-4 w-4 animate-spin" /> Creating…</>
+              ) : (
+                <><Plus className="h-4 w-4" /> Create Page</>
+              )}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => router.push('/modules')}
+              className="text-sm"
+            >
+              Browse Marketplace
+            </Button>
+          </div>
         </div>
       )}
     </div>

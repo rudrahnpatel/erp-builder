@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 import {
   Building2,
   LayoutDashboard,
@@ -14,7 +15,6 @@ import {
   Zap,
   FileText,
 } from "lucide-react";
-import { useState } from "react";
 import { useWorkspace } from "@/hooks/use-workspace";
 
 export function Sidebar() {
@@ -28,7 +28,7 @@ export function Sidebar() {
       items: [
         { href: "/workspace", label: "Dashboard", icon: LayoutDashboard },
         { href: "/modules", label: "Marketplace", icon: Blocks },
-        { href: "/plugins", label: "Plugins", icon: Puzzle },
+        // { href: "/plugins", label: "Plugins", icon: Puzzle },
         { href: "/pages", label: "Manage Pages", icon: FileText },
       ],
     },

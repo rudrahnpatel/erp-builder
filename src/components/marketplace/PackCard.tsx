@@ -13,6 +13,7 @@ import {
   Check,
   ArrowRight,
   Settings2,
+  Trash2,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -50,12 +51,15 @@ export function PackCard({
   pack,
   installed = false,
   onInstall,
+  onUninstall,
 }: {
   pack: PackDefinition;
   installed?: boolean;
   onInstall?: (packId: string) => Promise<void> | void;
+  onUninstall?: (packId: string) => Promise<void> | void;
 }) {
   const [loading, setLoading] = useState(false);
+  const [unloading, setUnloading] = useState(false);
   const colors = colorMap[pack.icon] || colorMap.package;
 
   const handleInstall = async () => {
@@ -65,6 +69,16 @@ export function PackCard({
       await onInstall?.(pack.id);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUninstall = async () => {
+    if (!installed || unloading) return;
+    setUnloading(true);
+    try {
+      await onUninstall?.(pack.id);
+    } finally {
+      setUnloading(false);
     }
   };
 
@@ -153,14 +167,28 @@ export function PackCard({
           >
             <Check className="h-4 w-4" /> Installed
           </div>
-          <Link href={`/modules/${pack.id}/configure`} className="w-full">
+          <div className="flex gap-2">
+            <Link href={`/modules/${pack.id}/configure`} className="flex-1">
+              <Button
+                variant="outline"
+                className="w-full gap-2 font-medium"
+              >
+                <Settings2 className="h-4 w-4" /> Configure
+              </Button>
+            </Link>
             <Button
               variant="outline"
-              className="w-full gap-2 font-medium"
+              className="gap-1.5 font-medium text-xs shrink-0 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-colors"
+              onClick={handleUninstall}
+              disabled={unloading}
             >
-              <Settings2 className="h-4 w-4" /> Configure
+              {unloading ? (
+                <div className="h-3.5 w-3.5 border-2 border-destructive/30 border-t-destructive rounded-full animate-spin" />
+              ) : (
+                <Trash2 className="h-3.5 w-3.5" />
+              )}
             </Button>
-          </Link>
+          </div>
         </div>
       ) : (
         <div className="flex flex-col gap-2">

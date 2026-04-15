@@ -43,12 +43,7 @@ export function AppShell({
 
   const navItems = [
     { href: base, label: "Home", icon: Home, exact: true },
-    ...workspace.tables.map((t) => ({
-      href: `${base}/${t.id}`,
-      label: t.name,
-      icon: Database,
-      exact: false,
-    })),
+    // Render only Custom Pages in the sidebar rather than raw disconnected database tables
     ...workspace.pages.map((p) => ({
       href: `${base}/pages/${p.id}`,
       label: p.title,

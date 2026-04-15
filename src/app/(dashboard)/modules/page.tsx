@@ -5,14 +5,11 @@ import { toast } from "sonner";
 import { PackCard } from "@/components/marketplace/PackCard";
 import {
   inventoryPack,
-  crmPack,
-  hrPack,
-  financePack,
 } from "@/lib/packs/registry";
 import { Search, ArrowRight, PackageSearch } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const allPacks = [inventoryPack, crmPack, hrPack, financePack];
+const allPacks = [inventoryPack];
 
 const categories = [
   "All Modules",
@@ -66,6 +63,42 @@ export default function ModulesPage() {
       }
     } catch (err) {
       toast.error(`Couldn't install ${label}`, {
+        id: pending,
+        description: "Network error. Check your connection and try again.",
+      });
+    }
+  };
+
+  const handleUninstall = async (packId: string) => {
+    const pack = allPacks.find((p) => p.id === packId);
+    const label = pack?.name || "module";
+
+    if (!confirm(`Uninstall ${label}? This will permanently delete all tables, records, and pages from this module.`)) {
+      return;
+    }
+
+    const pending = toast.loading(`Uninstalling ${label}…`);
+    try {
+      const res = await fetch("/api/packs/uninstall", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ packId }),
+      });
+      if (res.ok) {
+        await refetch();
+        toast.success(`${label} uninstalled`, {
+          id: pending,
+          description: "All tables, records, and pages have been removed.",
+        });
+      } else {
+        const data = await res.json().catch(() => ({}));
+        toast.error(`Couldn't uninstall ${label}`, {
+          id: pending,
+          description: data.error || "The server rejected the request.",
+        });
+      }
+    } catch (err) {
+      toast.error(`Couldn't uninstall ${label}`, {
         id: pending,
         description: "Network error. Check your connection and try again.",
       });
@@ -168,6 +201,7 @@ export default function ModulesPage() {
               pack={pack}
               installed={installedPacks.includes(pack.id)}
               onInstall={handleInstall}
+              onUninstall={handleUninstall}
             />
           ))}
         </div>

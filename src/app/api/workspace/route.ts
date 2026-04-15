@@ -50,6 +50,7 @@ export async function GET() {
         title: p.title,
         icon: p.icon,
         packSource: p.packSource,
+        packPageKey: p.packPageKey,
       })),
       installedPacks: installedPacks.map((p) => p.packId),
       installedPlugins: installedPlugins.map((p) => ({

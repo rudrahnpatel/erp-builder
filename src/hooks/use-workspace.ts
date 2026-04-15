@@ -25,6 +25,7 @@ export type WorkspaceData = {
     title: string;
     icon: string | null;
     packSource: string | null;
+    packPageKey: string | null;
   }>;
   installedPacks: string[];
   installedPlugins: Array<{

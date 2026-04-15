@@ -30,27 +30,35 @@ model Workspace {
   createdAt        DateTime          @default(now())
 }
 
+// Materialized copy of a pack table — tagged with packSource/packTableKey for provenance.
+// Source of truth is the canonical PackDefinition in registry.ts, not these rows.
 model Table {
-  id          String   @id @default(cuid())
-  name        String
-  icon        String?
-  workspaceId String
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  fields      Field[]
-  records     Record[]
-  packSource  String?
-  createdAt   DateTime @default(now())
+  id           String    @id @default(cuid())
+  name         String
+  icon         String?
+  workspaceId  String
+  workspace    Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  fields       Field[]
+  records      Record[]
+  packSource   String?   // e.g. "inventory" — which pack created this table
+  packTableKey String?   // e.g. "Products" — canonical key in the pack definition
+  isCustom     Boolean   @default(false) // true = user-created table, not from any pack
+  createdAt    DateTime  @default(now())
 }
 
+// Materialized copy of a pack field — tagged for provenance.
 model Field {
-  id       String    @id @default(cuid())
-  name     String
-  type     FieldType
-  config   Json      @default("{}")
-  required Boolean   @default(false)
-  order    Int
-  tableId  String
-  table    Table     @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  id           String    @id @default(cuid())
+  name         String
+  type         FieldType
+  config       Json      @default("{}")
+  required     Boolean   @default(false)
+  order        Int
+  tableId      String
+  table        Table     @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  packFieldKey String?   // e.g. "Product Name" — canonical key in the pack definition
+  isCustom     Boolean   @default(false) // true = user added this field to a pack table
+  isHidden     Boolean   @default(false) // true = user hid this field without deleting it
 }
 
 enum FieldType {
@@ -77,35 +85,63 @@ model Record {
 }
 
 model Page {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   title       String
   icon        String?
   blocks      Json
   workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   packSource  String?
-  order       Int      @default(0)
-  createdAt   DateTime @default(now())
+  packPageKey String?   // canonical key from pack definition — never changes even if user renames
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
 }
 
+// Tracks every installed module pack and its version.
+// customizations stores only the user's DELTA on top of the canonical pack — not the full schema.
 model InstalledPack {
-  id          String   @id @default(cuid())
-  packId      String
-  workspaceId String
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  installedAt DateTime @default(now())
+  id             String                    @id @default(cuid())
+  packId         String
+  packVersion    String                    @default("1.0.0")
+  workspaceId    String
+  workspace      Workspace                 @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customizations WorkspaceSchemaOverride[]
+  installedAt    DateTime                  @default(now())
 
   @@unique([packId, workspaceId])
 }
 
+// Stores ONLY the user's changes on top of a canonical pack definition.
+// The runtime merges canonical + these overrides to produce the effective schema.
+// Never modify a PackDefinition in registry.ts — record the change here instead.
+model WorkspaceSchemaOverride {
+  id              String        @id @default(cuid())
+  installedPackId String
+  installedPack   InstalledPack @relation(fields: [installedPackId], references: [id], onDelete: Cascade)
+  overrideType    OverrideType
+  targetKey       String
+  payload         Json
+  createdAt       DateTime      @default(now())
+}
+
+// What kinds of changes a workspace can make on top of a canonical pack schema
+enum OverrideType {
+  ADD_FIELD
+  RENAME_FIELD
+  HIDE_FIELD
+  CHANGE_FIELD_OPTIONS
+  ADD_TABLE
+  RENAME_TABLE
+}
+
 model InstalledPlugin {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   pluginId    String
-  config      Json     @default("{}")
-  enabled     Boolean  @default(true)
+  config      Json      @default("{}")
+  enabled     Boolean   @default(true)
   workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  installedAt DateTime @default(now())
+  installedAt DateTime  @default(now())
 
   @@unique([pluginId, workspaceId])
 }
