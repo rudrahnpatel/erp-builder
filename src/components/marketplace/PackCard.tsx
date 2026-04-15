@@ -3,6 +3,7 @@
 import { PackDefinition } from "@/types/pack";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import {
   Package,
   Users,
@@ -11,6 +12,7 @@ import {
   Download,
   Check,
   ArrowRight,
+  Settings2,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -138,34 +140,57 @@ export function PackCard({
         ))}
       </div>
 
-      {/* Install Button */}
-      <Button
-        onClick={handleInstall}
-        disabled={installed || loading}
-        className="w-full gap-2 font-medium transition-all duration-300"
-        style={{
-          background: installed
-            ? "var(--success)"
-            : "var(--primary)",
-          color: "var(--primary-foreground)",
-          boxShadow: installed ? "none" : undefined,
-        }}
-      >
-        {installed ? (
-          <>
+      {/* Install + Configure Buttons */}
+      {installed ? (
+        <div className="flex flex-col gap-2">
+          <div
+            className="w-full flex items-center justify-center gap-2 h-9 rounded-md text-sm font-medium"
+            style={{
+              background: "color-mix(in oklch, var(--success), transparent 85%)",
+              color: "var(--success)",
+              border: "1px solid color-mix(in oklch, var(--success), transparent 70%)",
+            }}
+          >
             <Check className="h-4 w-4" /> Installed
-          </>
-        ) : loading ? (
-          <>
-            <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            Installing...
-          </>
-        ) : (
-          <>
-            <Download className="h-4 w-4" /> Install
-          </>
-        )}
-      </Button>
+          </div>
+          <Link href={`/modules/${pack.id}/configure`} className="w-full">
+            <Button
+              variant="outline"
+              className="w-full gap-2 font-medium"
+            >
+              <Settings2 className="h-4 w-4" /> Configure
+            </Button>
+          </Link>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-2">
+          <Button
+            onClick={handleInstall}
+            disabled={loading}
+            className="w-full gap-2 font-medium transition-all duration-300"
+            style={{
+              background: "var(--primary)",
+              color: "var(--primary-foreground)",
+            }}
+          >
+            {loading ? (
+              <>
+                <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Installing...
+              </>
+            ) : (
+              <>
+                <Download className="h-4 w-4" /> Install
+              </>
+            )}
+          </Button>
+          <Link href={`/modules/${pack.id}/configure`} className="w-full">
+            <Button variant="outline" className="w-full gap-2 font-medium text-xs h-8">
+              <Settings2 className="h-3.5 w-3.5" /> Configure first
+            </Button>
+          </Link>
+        </div>
+      )}
 
       {/* Hover glow effect */}
       <div

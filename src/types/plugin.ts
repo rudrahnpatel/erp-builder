@@ -23,4 +23,6 @@ export interface PluginDefinition {
   installs: number;
   configFields: PluginConfigField[];
   triggers: PluginTrigger[];
+  installed?: boolean;
+  enabled?: boolean;
 }
