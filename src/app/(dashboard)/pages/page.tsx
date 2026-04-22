@@ -29,6 +29,7 @@ import {
   Clock,
   IndianRupee,
   Receipt,
+  Layers,
 } from "lucide-react";
 
 const IconMap: Record<string, any> = {
@@ -116,14 +117,8 @@ export default function PagesPage() {
       {/* Header */}
       <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <p
-            className="text-[11px] font-medium uppercase tracking-[0.14em] mb-2 mono"
-            style={{ color: "var(--foreground-dimmed)" }}
-          >
-            / builder · pages
-          </p>
           <h1
-            className="text-3xl sm:text-4xl font-semibold"
+            className="text-3xl sm:text-4xl font-bold tracking-tight"
             style={{ color: "var(--foreground)" }}
           >
             Manage Pages
@@ -139,8 +134,12 @@ export default function PagesPage() {
         <Button
           onClick={handleCreatePage}
           disabled={creatingPage}
-          className="gap-2 font-semibold shrink-0"
-          style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+          className="gap-2 font-semibold shrink-0 rounded-xl pressable"
+          style={{
+            background: "linear-gradient(135deg, var(--primary), var(--primary-hover))",
+            color: "var(--primary-foreground)",
+            boxShadow: "0 2px 8px color-mix(in oklch, var(--primary), transparent 65%)",
+          }}
         >
           {creatingPage ? (
             <><Loader2 className="h-4 w-4 animate-spin" /> Creating…</>
@@ -152,7 +151,7 @@ export default function PagesPage() {
 
       {/* Pages Grid */}
       {pages.length > 0 ? (
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 stagger-children">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 stagger-children">
           {pages.map((page) => (
             <div
               key={page.id}
@@ -163,12 +162,12 @@ export default function PagesPage() {
               }}
               onClick={() => router.push(`/pages/${page.id}/edit`)}
             >
-              {/* Subtle top gradient */}
+              {/* Top accent */}
               <div
-                className="h-1.5 w-full transition-colors duration-300"
+                className="h-[3px] w-full"
                 style={{
                   background: page.packSource 
-                    ? "var(--primary-subtle)" 
+                    ? "var(--primary)" 
                     : "var(--accent-amber)",
                 }}
               />
@@ -176,7 +175,7 @@ export default function PagesPage() {
               <div className="p-5">
                 <div className="flex items-start justify-between mb-4">
                   <div
-                    className="h-10 w-10 rounded-lg flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+                    className="h-11 w-11 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
                     style={{
                       background: "var(--surface-3)",
                       color: "var(--foreground)",
@@ -192,29 +191,31 @@ export default function PagesPage() {
                     })()}
                   </div>
                   
-                  {/* Actions wrapper (click propagation stopped) */}
+                  {/* Actions */}
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
                     <button
-                      className="p-1.5 hover:bg-surface-3 rounded-md text-muted-foreground transition-colors"
+                      className="p-1.5 rounded-lg hover-bg-subtle focus-ring"
+                      style={{ color: "var(--foreground-muted)" }}
                       onClick={() => router.push(`/pages/${page.id}/edit`)}
                       title="Edit Page"
                     >
                       <PenLine className="h-4 w-4" />
                     </button>
-                    {!page.packSource && (
-                      <button
-                        className="p-1.5 hover:bg-danger-subtle text-danger rounded-md transition-colors"
-                        onClick={() => handleDeletePage(page.id, page.title)}
-                        title="Delete Page"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    )}
+                    <button
+                      className="p-1.5 rounded-lg transition-colors focus-ring"
+                      style={{ color: "var(--danger)" }}
+                      onClick={() => handleDeletePage(page.id, page.title)}
+                      title="Delete Page"
+                      onMouseEnter={(e) => { e.currentTarget.style.background = "var(--danger-subtle)"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
                 </div>
 
                 <h3
-                  className="text-base font-semibold mb-1 truncate"
+                  className="text-[15px] font-semibold mb-1 truncate"
                   style={{ color: "var(--foreground)" }}
                 >
                   {page.title}
@@ -223,9 +224,12 @@ export default function PagesPage() {
                 <div className="flex items-center gap-3 mt-4">
                   <span
                     className="inline-flex items-center gap-1.5 text-xs font-medium"
-                    style={{ color: "var(--foreground-muted)" }}
+                    style={{ color: "var(--success)" }}
                   >
-                    <Activity className="h-3.5 w-3.5" />
+                    <span
+                      className="h-1.5 w-1.5 rounded-full"
+                      style={{ background: "var(--success)" }}
+                    />
                     Active
                   </span>
                   
@@ -233,11 +237,12 @@ export default function PagesPage() {
                     <span
                       className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full"
                       style={{ 
-                        background: "var(--surface-3)", 
-                        color: "var(--foreground-dimmed)",
-                        border: "1px solid var(--border-subtle)"
+                        background: "color-mix(in oklch, var(--primary), transparent 88%)", 
+                        color: "var(--primary)",
+                        border: "1px solid color-mix(in oklch, var(--primary), transparent 75%)"
                       }}
                     >
+                      <Package className="h-2.5 w-2.5" />
                       Installed
                     </span>
                   )}
@@ -251,26 +256,26 @@ export default function PagesPage() {
           className="rounded-2xl p-12 text-center"
           style={{
             background: "var(--surface-1)",
-            border: "1px dashed var(--border)",
+            border: "2px dashed var(--border)",
           }}
         >
           <div
-            className="h-14 w-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
+            className="h-16 w-16 rounded-2xl flex items-center justify-center mx-auto mb-5"
             style={{
               background: "var(--surface-2)",
               color: "var(--foreground-muted)",
             }}
           >
-            <FileText className="h-6 w-6" aria-hidden="true" />
+            <Layers className="h-7 w-7" aria-hidden="true" />
           </div>
           <h3
-            className="text-base font-semibold mb-1"
+            className="text-lg font-semibold mb-2"
             style={{ color: "var(--foreground)" }}
           >
             No pages built yet
           </h3>
           <p
-            className="text-sm mb-5 max-w-sm mx-auto"
+            className="text-sm mb-6 max-w-sm mx-auto leading-relaxed"
             style={{ color: "var(--foreground-muted)" }}
           >
             Create a custom page from scratch or install modules from the marketplace
@@ -280,8 +285,12 @@ export default function PagesPage() {
             <Button
               onClick={handleCreatePage}
               disabled={creatingPage}
-              className="gap-2 font-semibold"
-              style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+              className="gap-2 font-semibold rounded-xl pressable"
+              style={{
+                background: "linear-gradient(135deg, var(--primary), var(--primary-hover))",
+                color: "var(--primary-foreground)",
+                boxShadow: "0 2px 8px color-mix(in oklch, var(--primary), transparent 65%)",
+              }}
             >
               {creatingPage ? (
                 <><Loader2 className="h-4 w-4 animate-spin" /> Creating…</>
@@ -292,7 +301,7 @@ export default function PagesPage() {
             <Button
               variant="outline"
               onClick={() => router.push('/modules')}
-              className="text-sm"
+              className="text-sm rounded-xl"
             >
               Browse Marketplace
             </Button>

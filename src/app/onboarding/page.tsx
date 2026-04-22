@@ -183,7 +183,7 @@ export default function OnboardingPage() {
         <div className="w-full max-w-2xl">
           {/* ─── STEP 0: Name Your App ─── */}
           {step === 0 && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+            <form onSubmit={(e) => { e.preventDefault(); if(canProceed()) setStep(step + 1); }} className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="text-center">
                 <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
                   <Building2 className="h-7 w-7 text-primary" />
@@ -224,7 +224,7 @@ export default function OnboardingPage() {
                   />
                 </div>
               </div>
-            </div>
+            </form>
           )}
 
           {/* ─── STEP 1: Choose Template ─── */}
@@ -343,7 +343,7 @@ export default function OnboardingPage() {
 
           {/* ─── STEP 2: Claim Domain ─── */}
           {step === 2 && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+            <form onSubmit={(e) => { e.preventDefault(); if(canProceed()) setStep(step + 1); }} className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="text-center">
                 <div className="h-14 w-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: "var(--primary-subtle)" }}>
                   <Globe className="h-7 w-7" style={{ color: "var(--primary)" }} />
@@ -430,7 +430,7 @@ export default function OnboardingPage() {
                   </p>
                 </div>
               </div>
-            </div>
+            </form>
           )}
 
           {/* ─── STEP 3: Launch ─── */}
@@ -541,8 +541,9 @@ export default function OnboardingPage() {
 
       {/* Bottom Navigation */}
       {step < 3 && (
-        <div className="sticky bottom-0 border-t px-4 sm:px-6 py-3 flex items-center justify-between glass" style={{ borderColor: "var(--border-subtle)" }}>
+        <div className="sticky bottom-0 z-50 border-t px-4 sm:px-6 py-3 flex items-center justify-between glass" style={{ borderColor: "var(--border-subtle)" }}>
           <Button
+            type="button"
             variant="ghost"
             disabled={step === 0}
             onClick={() => setStep(Math.max(0, step - 1))}
@@ -551,6 +552,7 @@ export default function OnboardingPage() {
             <ArrowLeft className="h-4 w-4" /> Back
           </Button>
           <Button
+            type="button"
             onClick={() => setStep(step + 1)}
             disabled={!canProceed()}
             className="gap-1.5"

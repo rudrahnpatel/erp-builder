@@ -72,7 +72,7 @@ export const lucideIconMap: Record<string, React.ElementType> = {
   x: X,
 };
 
-interface DynamicIconProps extends LucideProps {
+interface DynamicIconProps extends Omit<LucideProps, "name"> {
   name: string | null | undefined;
 }
 

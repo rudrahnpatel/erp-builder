@@ -222,6 +222,10 @@ export default function ConfigurePage({
     const [deploying, setDeploying] = useState(false);
     const [uninstalling, setUninstalling] = useState(false);
     const [readdingPage, setReaddingPage] = useState<string | null>(null);
+    const [pagesExpanded, setPagesExpanded] = useState(false);
+    const [expandedTables, setExpandedTables] = useState<Record<string, boolean>>(
+      Object.fromEntries(pack.tables.map(t => [t.name, true]))
+    );
 
     const toggleField = (key: string, required: boolean) => {
       if (required) return;
@@ -235,6 +239,11 @@ export default function ConfigurePage({
 
     const togglePage = (pageKey: string) => {
       setSelectedPages((prev) => ({ ...prev, [pageKey]: !prev[pageKey] }));
+    };
+
+    const toggleExpand = (e: React.MouseEvent, tableName: string) => {
+      e.stopPropagation();
+      setExpandedTables((prev) => ({ ...prev, [tableName]: !prev[tableName] }));
     };
 
     const activeTableCount = Object.values(selectedTables).filter(Boolean).length;
@@ -315,7 +324,12 @@ export default function ConfigurePage({
         const res = await fetch("/api/packs/install", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ packId }),
+          body: JSON.stringify({
+            packId,
+            selectedTables,
+            selectedFields,
+            selectedPages,
+          }),
         });
 
         if (res.status === 409) {
@@ -468,6 +482,7 @@ export default function ConfigurePage({
                 {pack.tables.map((table, ti) => {
                   const isTableIncluded = selectedTables[table.name] ?? true;
                   const isRequired = ti === 0 || !optionalTables.includes(table.name);
+                  const isExpanded = expandedTables[table.name] ?? true;
 
                   return (
                     <div
@@ -478,21 +493,20 @@ export default function ConfigurePage({
                         opacity: isTableIncluded ? 1 : 0.55,
                       }}
                     >
-                      {/* Table header row — clickable to toggle whole table */}
-                      <button
-                        onClick={() => toggleTable(table.name)}
-                        disabled={isRequired}
+                      {/* Table header row */}
+                      <div
                         className="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold transition-colors"
                         style={{
                           background: isTableIncluded ? "var(--surface-2)" : "var(--surface-1)",
                           color: isTableIncluded ? "var(--foreground)" : "var(--foreground-dimmed)",
-                          cursor: isRequired ? "default" : "pointer",
-                          borderBottom: isTableIncluded ? "1px solid var(--border-subtle)" : "none",
+                          borderBottom: isTableIncluded && isExpanded ? "1px solid var(--border-subtle)" : "none",
                         }}
                       >
-                        {/* Toggle indicator */}
-                        <div
-                          className="h-5 w-5 rounded border-2 flex items-center justify-center shrink-0 transition-all"
+                        {/* Toggle indicator (for inclusion) */}
+                        <button
+                          onClick={() => toggleTable(table.name)}
+                          disabled={isRequired}
+                          className="h-5 w-5 rounded border-2 flex items-center justify-center shrink-0 transition-all focus-ring focus-visible:outline-none"
                           style={{
                             borderColor: isTableIncluded
                               ? isRequired ? "var(--border-subtle)" : "var(--primary)"
@@ -500,6 +514,7 @@ export default function ConfigurePage({
                             background: isTableIncluded
                               ? isRequired ? "var(--surface-3)" : "var(--primary)"
                               : "transparent",
+                            cursor: isRequired ? "default" : "pointer"
                           }}
                         >
                           {isTableIncluded
@@ -508,10 +523,15 @@ export default function ConfigurePage({
                               : <Check className="h-3 w-3" style={{ color: "var(--primary-foreground)" }} />
                             : null
                           }
-                        </div>
+                        </button>
 
-                        <Database className="h-3.5 w-3.5 shrink-0" style={{ color: isTableIncluded ? "var(--primary)" : "var(--foreground-dimmed)" }} />
-                        <span>{table.name}</span>
+                        <div 
+                          className="flex items-center gap-3 flex-1 cursor-pointer" 
+                          onClick={(e) => isTableIncluded && toggleExpand(e, table.name)}
+                        >
+                          <Database className="h-3.5 w-3.5 shrink-0" style={{ color: isTableIncluded ? "var(--primary)" : "var(--foreground-dimmed)" }} />
+                          <span className="flex-1">{table.name}</span>
+                        </div>
 
                         <div className="ml-auto flex items-center gap-2">
                           {isRequired && (
@@ -535,20 +555,29 @@ export default function ConfigurePage({
                               {isTableIncluded ? "INCLUDED" : "EXCLUDED"}
                             </span>
                           )}
-                          {!isRequired && (
+                          
+                          <button 
+                            onClick={(e) => toggleExpand(e, table.name)}
+                            disabled={!isTableIncluded}
+                            className="p-1 rounded hover:bg-[var(--surface-3)] transition-colors focus-ring focus-visible:outline-none"
+                            style={{ 
+                              color: "var(--foreground-dimmed)",
+                              opacity: isTableIncluded ? 1 : 0.5,
+                              cursor: isTableIncluded ? "pointer" : "default"
+                            }}
+                          >
                             <ChevronDown
-                              className="h-3.5 w-3.5 transition-transform duration-200"
+                              className="h-4 w-4 transition-transform duration-200"
                               style={{
-                                color: "var(--foreground-dimmed)",
-                                transform: isTableIncluded ? "rotate(0deg)" : "rotate(-90deg)",
+                                transform: isExpanded && isTableIncluded ? "rotate(180deg)" : "rotate(0deg)",
                               }}
                             />
-                          )}
+                          </button>
                         </div>
-                      </button>
+                      </div>
 
-                      {/* Fields — only shown when table is included */}
-                      {isTableIncluded && (
+                      {/* Fields — only shown when table is included AND expanded */}
+                      {isTableIncluded && isExpanded && (
                         <div className="p-3 space-y-2" style={{ background: "var(--background)" }}>
                           {table.fields.map((field) => {
                             const key = `${table.name}::${field.name}`;
@@ -882,113 +911,122 @@ export default function ConfigurePage({
 
                 {/* Pages */}
                 <div className="space-y-2">
-                  <p
-                    className="text-[11px] uppercase tracking-widest font-semibold mono"
+                  <button
+                    onClick={() => setPagesExpanded(!pagesExpanded)}
+                    className="w-full flex items-center justify-between text-[11px] uppercase tracking-widest font-semibold mono px-3 py-2 rounded-lg hover:bg-[var(--surface-2)] transition-colors"
                     style={{ color: "var(--foreground-dimmed)" }}
                   >
-                    {isAlreadyInstalled ? "Module pages" : "Pages that will be created"}
-                  </p>
+                    <span>{isAlreadyInstalled ? "Module pages" : "Pages that will be created"}</span>
+                    <ChevronDown
+                      className="h-3.5 w-3.5 transition-transform"
+                      style={{ transform: pagesExpanded ? "rotate(180deg)" : "rotate(0deg)" }}
+                    />
+                  </button>
 
-                  {isAlreadyInstalled ? (
-                    /* Provenance-matched page status */
-                    pack.pageDefinitions.map((pageDef) => {
-                      const wsPage = pageKeyToWorkspacePage.get(pageDef.key);
-                      const isPresent = !!wsPage;
-                      const wasRenamed = isPresent && wsPage.title !== pageDef.title;
+                  {pagesExpanded && (
+                    <div className="space-y-2">
+                      {isAlreadyInstalled ? (
+                        /* Provenance-matched page status */
+                        pack.pageDefinitions.map((pageDef) => {
+                          const wsPage = pageKeyToWorkspacePage.get(pageDef.key);
+                          const isPresent = !!wsPage;
+                          const wasRenamed = isPresent && wsPage.title !== pageDef.title;
 
-                      return (
-                        <div
-                          key={pageDef.key}
-                          className="flex items-center gap-2 text-sm px-3 py-2.5 rounded-lg"
-                          style={{
-                            background: isPresent ? "var(--surface-2)" : "var(--surface-1)",
-                            border: isPresent ? "none" : "1px dashed var(--border-subtle)",
-                            opacity: isPresent ? 1 : 0.7,
-                          }}
-                        >
-                          {isPresent ? (
-                            <Check className="h-3.5 w-3.5 shrink-0" style={{ color: "var(--success)" }} />
-                          ) : (
-                            <AlertCircle className="h-3.5 w-3.5 shrink-0" style={{ color: "var(--danger)" }} />
-                          )}
-                          <div className="flex-1 min-w-0">
-                            <span style={{ color: isPresent ? "var(--foreground)" : "var(--foreground-dimmed)" }}>
-                              {isPresent ? wsPage.title : pageDef.title}
-                            </span>
-                            {wasRenamed && (
-                              <span
-                                className="ml-1.5 text-[10px]"
-                                style={{ color: "var(--foreground-dimmed)" }}
-                              >
-                                (was "{pageDef.title}")
-                              </span>
-                            )}
-                          </div>
-                          {isPresent ? (
-                            <span
-                              className="text-[9px] font-semibold px-1.5 py-0.5 rounded shrink-0"
-                              style={{ background: "color-mix(in oklch, var(--success), transparent 82%)", color: "var(--success)" }}
-                            >
-                              LIVE
-                            </span>
-                          ) : (
-                            <button
-                              onClick={() => handleReaddPage(pageDef.key)}
-                              disabled={readdingPage === pageDef.key}
-                              className="flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-md shrink-0 transition-colors"
+                          return (
+                            <div
+                              key={pageDef.key}
+                              className="flex items-center gap-2 text-sm px-3 py-2.5 rounded-lg"
                               style={{
-                                background: "var(--primary-subtle)",
-                                color: "var(--primary)",
-                                cursor: "pointer",
+                                background: isPresent ? "var(--surface-2)" : "var(--surface-1)",
+                                border: isPresent ? "none" : "1px dashed var(--border-subtle)",
+                                opacity: isPresent ? 1 : 0.7,
                               }}
                             >
-                              {readdingPage === pageDef.key ? (
-                                <Loader2 className="h-3 w-3 animate-spin" />
+                              {isPresent ? (
+                                <Check className="h-3.5 w-3.5 shrink-0" style={{ color: "var(--success)" }} />
                               ) : (
-                                <Plus className="h-3 w-3" />
+                                <AlertCircle className="h-3.5 w-3.5 shrink-0" style={{ color: "var(--danger)" }} />
                               )}
-                              Re-add
+                              <div className="flex-1 min-w-0">
+                                <span style={{ color: isPresent ? "var(--foreground)" : "var(--foreground-dimmed)" }}>
+                                  {isPresent ? wsPage.title : pageDef.title}
+                                </span>
+                                {wasRenamed && (
+                                  <span
+                                    className="ml-1.5 text-[10px]"
+                                    style={{ color: "var(--foreground-dimmed)" }}
+                                  >
+                                    (was "{pageDef.title}")
+                                  </span>
+                                )}
+                              </div>
+                              {isPresent ? (
+                                <span
+                                  className="text-[9px] font-semibold px-1.5 py-0.5 rounded shrink-0"
+                                  style={{ background: "color-mix(in oklch, var(--success), transparent 82%)", color: "var(--success)" }}
+                                >
+                                  LIVE
+                                </span>
+                              ) : (
+                                <button
+                                  onClick={() => handleReaddPage(pageDef.key)}
+                                  disabled={readdingPage === pageDef.key}
+                                  className="flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-md shrink-0 transition-colors"
+                                  style={{
+                                    background: "var(--primary-subtle)",
+                                    color: "var(--primary)",
+                                    cursor: "pointer",
+                                  }}
+                                >
+                                  {readdingPage === pageDef.key ? (
+                                    <Loader2 className="h-3 w-3 animate-spin" />
+                                  ) : (
+                                    <Plus className="h-3 w-3" />
+                                  )}
+                                  Re-add
+                                </button>
+                              )}
+                            </div>
+                          );
+                        })
+                      ) : (
+                        /* New install: toggleable page definitions */
+                        pack.pageDefinitions.map((p) => {
+                          const included = selectedPages[p.key] ?? true;
+                          return (
+                            <button
+                              key={p.key}
+                              onClick={() => togglePage(p.key)}
+                              className="w-full flex items-center gap-2 text-sm px-3 py-2 rounded-lg text-left transition-all"
+                              style={{
+                                background: included ? "var(--surface-2)" : "var(--surface-1)",
+                                opacity: included ? 1 : 0.5,
+                              }}
+                            >
+                              <div
+                                className="h-4 w-4 rounded border-2 flex items-center justify-center shrink-0 transition-all"
+                                style={{
+                                  borderColor: included ? "var(--primary)" : "var(--border-subtle)",
+                                  background: included ? "var(--primary)" : "transparent",
+                                }}
+                              >
+                                {included && (
+                                  <Check className="h-2.5 w-2.5" style={{ color: "var(--primary-foreground)" }} />
+                                )}
+                              </div>
+                              <span
+                                style={{
+                                  color: included ? "var(--foreground)" : "var(--foreground-dimmed)",
+                                  textDecoration: included ? "none" : "line-through",
+                                }}
+                              >
+                                {p.title}
+                              </span>
                             </button>
-                          )}
-                        </div>
-                      );
-                    })
-                  ) : (
-                    /* New install: toggleable page definitions */
-                    pack.pageDefinitions.map((p) => {
-                      const included = selectedPages[p.key] ?? true;
-                      return (
-                        <button
-                          key={p.key}
-                          onClick={() => togglePage(p.key)}
-                          className="w-full flex items-center gap-2 text-sm px-3 py-2 rounded-lg text-left transition-all"
-                          style={{
-                            background: included ? "var(--surface-2)" : "var(--surface-1)",
-                            opacity: included ? 1 : 0.5,
-                          }}
-                        >
-                          <div
-                            className="h-4 w-4 rounded border-2 flex items-center justify-center shrink-0 transition-all"
-                            style={{
-                              borderColor: included ? "var(--primary)" : "var(--border-subtle)",
-                              background: included ? "var(--primary)" : "transparent",
-                            }}
-                          >
-                            {included && (
-                              <Check className="h-2.5 w-2.5" style={{ color: "var(--primary-foreground)" }} />
-                            )}
-                          </div>
-                          <span
-                            style={{
-                              color: included ? "var(--foreground)" : "var(--foreground-dimmed)",
-                              textDecoration: included ? "none" : "line-through",
-                            }}
-                          >
-                            {p.title}
-                          </span>
-                        </button>
-                      );
-                    })
+                          );
+                        })
+                      )}
+                    </div>
                   )}
                 </div>
 

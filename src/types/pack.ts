@@ -26,8 +26,6 @@ export interface PackDefinition {
   icon: string;
   category: string;
   badge: "Free" | "Pro";
-  fields: number;
-  pages: number;
   tables: PackTableDefinition[];
   pageDefinitions: PackPageDefinition[];
 }

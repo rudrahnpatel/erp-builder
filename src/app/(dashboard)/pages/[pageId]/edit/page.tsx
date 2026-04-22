@@ -3,6 +3,7 @@
 import { useState, use, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
+import { useWorkspace } from "@/hooks/use-workspace";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -24,9 +25,12 @@ import {
   Code,
   Search,
   LayoutTemplate,
-  Layers
+  Layers,
+  Loader2
 } from "lucide-react";
 import Link from "next/link";
+import { TableView } from "@/components/blocks/TableView";
+import { KanbanView } from "@/components/blocks/KanbanView";
 
 interface PlacedBlock {
   id: string;
@@ -45,12 +49,6 @@ const blockPalette = [
   { type: "FORM", label: "Form", icon: <FileText className="h-4 w-4" /> },
 ];
 
-const sampleTableData = [
-  { name: "Precision Lathe X-10", sku: "LAT-2023-001", price: "₹4,250.00", stock: "12 Units", status: "In Stock" },
-  { name: "Hydraulic Press S0T", sku: "HYD-93-A", price: "₹8,900.00", stock: "3 Units", status: "Low Stock" },
-  { name: "Industrial Safety Mask", sku: "SAF-MASK-8", price: "₹75.50", stock: "450 Units", status: "In Stock" },
-];
-
 const KANBAN_COLS = ["To Do", "In Progress", "Review", "Done"];
 
 interface KanbanCard {
@@ -64,8 +62,15 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
   const { pageId } = use(params);
 
   const router = useRouter();
-  const { data: page, mutate: refreshPage } = useSWR(`/api/pages/${pageId}`, (url: string) => fetch(url).then(r => r.json()));
+  const { workspace } = useWorkspace();
   const { data: allPages, mutate: refreshAllPages } = useSWR(`/api/pages`, (url: string) => fetch(url).then(r => r.json()));
+
+  const pageFromCache = allPages?.find((p: any) => p.id === pageId);
+  const { data: page, mutate: refreshPage, isLoading } = useSWR(
+    `/api/pages/${pageId}`, 
+    (url: string) => fetch(url).then(r => r.json()),
+    { fallbackData: pageFromCache }
+  );
 
   const [blocks, setBlocks] = useState<PlacedBlock[]>([]);
   const [selectedBlock, setSelectedBlock] = useState<string | null>(null);
@@ -156,24 +161,45 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
 
   const getKanbanCards = (blockId: string) => kanbanCards[blockId] || defaultKanbanCards(blockId);
 
+  if (isLoading && !page) {
+    return (
+      <div className="h-[calc(100vh-3.5rem)] flex items-center justify-center -m-4 sm:-m-6 bg-background text-foreground">
+        <div className="flex flex-col items-center gap-3 text-muted-foreground animate-pulse">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-sm font-medium">Loading composer...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-[calc(100vh-3.5rem)] flex flex-col -m-4 sm:-m-6 bg-background text-foreground">
       {/* Top bar */}
-      <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-border/50 shrink-0 glass shadow-sm z-10 relative">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
-          <span className="opacity-80">Builder</span>
-          <ChevronRight className="h-3.5 w-3.5 opacity-50" />
-          <span className="text-foreground">ERP Composer</span>
-          <ChevronRight className="h-3.5 w-3.5 opacity-50" />
+      <div
+        className="flex items-center justify-between px-4 sm:px-6 py-3 border-b shrink-0 z-10 relative"
+        style={{
+          background: "color-mix(in oklch, var(--surface-1), transparent 30%)",
+          backdropFilter: "blur(16px)",
+          borderColor: "var(--border-subtle)",
+        }}
+      >
+        <div className="flex items-center gap-2 text-[13px] font-medium" style={{ color: "var(--foreground-muted)" }}>
+          <span>Composer</span>
+          <ChevronRight className="h-3.5 w-3.5 opacity-40" />
           <input
             value={pageTitle}
             onChange={(e) => setPageTitle(e.target.value)}
             disabled={preview}
-            className="px-2 py-0.5 rounded-md bg-secondary text-foreground max-w-[200px] outline-none font-semibold border border-transparent hover:border-border/60 focus:border-primary/50 transition-colors"
+            className="px-2.5 py-1 rounded-lg max-w-[200px] outline-none font-semibold text-sm transition-all focus-ring"
+            style={{
+              background: "var(--surface-2)",
+              color: "var(--foreground)",
+              border: "1px solid var(--border-subtle)",
+            }}
             placeholder="Page Title"
           />
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <Button
             variant={preview ? "default" : "outline"}
             size="sm"
@@ -196,7 +222,12 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
               await refreshPage();
               setIsSaving(false);
             }}
-            className="gap-2 text-xs font-semibold h-8 rounded-lg shadow-sm transition-all active:scale-95"
+            className="gap-2 text-xs font-semibold h-8 rounded-xl pressable"
+            style={{
+              background: "linear-gradient(135deg, var(--primary), var(--primary-hover))",
+              color: "var(--primary-foreground)",
+              boxShadow: "0 2px 8px color-mix(in oklch, var(--primary), transparent 65%)",
+            }}
           >
             <Save className="h-3.5 w-3.5" />
             {isSaving ? "Saving..." : "Publish Page"}
@@ -207,7 +238,7 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
       <div className="flex flex-col lg:flex-row flex-1 overflow-hidden relative">
         {/* Left Side: Page Switcher */}
         {!preview && (
-          <div className="hidden lg:flex w-[220px] border-r border-border/40 bg-surface-1 shadow-[inset_-10px_0_20px_-20px_rgba(0,0,0,0.1)] flex-col shrink-0 z-10 transition-all">
+          <div className="hidden lg:flex w-[220px] border-r flex-col shrink-0 z-10 transition-all" style={{ borderColor: "var(--border-subtle)", background: "var(--surface-1)" }}>
             <div className="p-4 border-b border-border/40 shrink-0 flex items-center gap-2 text-muted-foreground">
               <LayoutTemplate className="h-4 w-4" />
               <h3 className="text-[11px] font-bold uppercase tracking-widest">
@@ -323,13 +354,22 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
                   });
                   setDraggedIdx(null);
                 }}
-                className={`group relative rounded-2xl transition-all duration-300 ${
+                className={`group relative rounded-2xl transition-all duration-200 ${
                   !preview ? "cursor-grab active:cursor-grabbing" : ""
-                } bg-card border ${
+                } border ${
                   selectedBlock === block.id && !preview
-                    ? "border-primary ring-4 ring-primary/10 shadow-lg scale-[1.01]"
-                    : "border-border/40 hover:border-border/80 shadow-sm hover:shadow-md"
+                    ? "shadow-md"
+                    : "shadow-sm hover:shadow-md"
                 } ${draggedIdx === index ? "opacity-50" : ""}`}
+                style={{
+                  background: "var(--card)",
+                  borderColor: selectedBlock === block.id && !preview
+                    ? "var(--primary)"
+                    : "var(--border-subtle)",
+                  boxShadow: selectedBlock === block.id && !preview
+                    ? "0 0 0 3px color-mix(in oklch, var(--primary), transparent 85%)"
+                    : undefined,
+                }}
               >
                 {/* Block toolbar */}
                 {!preview && (
@@ -382,73 +422,41 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
                     </div>
                   )}
 
-                  {block.type === "TABLE_VIEW" && (
-                    <div>
-                      <div className="flex items-center justify-between mb-5">
-                        <div className="flex items-center gap-2.5">
-                          <div className="p-1.5 rounded-md bg-secondary text-muted-foreground">
-                            <Table2 className="h-4 w-4" />
-                          </div>
-                          <span className="text-base font-semibold text-foreground">
-                            {block.label}
-                          </span>
+                  {block.type === "TABLE_VIEW" && (() => {
+                    const tableRef = block.config?.tableRef;
+                    const resolvedTable = workspace?.tables?.find((t: any) => t.name === tableRef);
+                    if (!resolvedTable) {
+                      return (
+                        <div className="p-10 border-2 border-dashed border-border/40 rounded-xl flex flex-col items-center justify-center text-muted-foreground bg-secondary/20">
+                          <Table2 className="h-8 w-8 mb-3 opacity-40" />
+                          <p className="text-sm font-medium">No table connected.</p>
+                          <p className="text-xs mt-1 opacity-70">Pick one in Configuration → Target Database Table.</p>
                         </div>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-secondary rounded-lg">
-                          <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-                        </Button>
-                      </div>
-                      
-                      <div className="overflow-x-auto rounded-xl border border-border/40 bg-surface-1">
-                        <table className="w-full text-sm min-w-[600px]">
-                          <thead>
-                            <tr className="border-b border-border/40 bg-secondary/20">
-                              {["Name", "SKU", "Price", "Stock", "Status"].map((h) => (
-                                <th
-                                  key={h}
-                                  className="text-left px-4 py-3 text-xs font-bold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
-                                >
-                                  {h}
-                                </th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-border/30">
-                            {sampleTableData.map((row, i) => (
-                              <tr key={i} className="hover:bg-secondary/20 transition-colors">
-                                <td className="px-4 py-3.5 font-medium text-foreground whitespace-nowrap">
-                                  {row.name}
-                                </td>
-                                <td className="px-4 py-3.5 font-mono text-xs text-muted-foreground">
-                                  <Badge variant="outline" className="font-mono bg-background border-border/60 text-muted-foreground text-[10px]">
-                                    {row.sku}
-                                  </Badge>
-                                </td>
-                                <td className="px-4 py-3.5 text-foreground tabular-nums">
-                                  {row.price}
-                                </td>
-                                <td className="px-4 py-3.5 text-foreground">
-                                  {row.stock}
-                                </td>
-                                <td className="px-4 py-3.5">
-                                  <Badge
-                                    className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border-0 ${
-                                      row.status === "In Stock"
-                                        ? "bg-success/15 text-success hover:bg-success/25"
-                                        : "bg-destructive/10 text-destructive hover:bg-destructive/20"
-                                    }`}
-                                  >
-                                    {row.status}
-                                  </Badge>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  )}
+                      );
+                    }
+                    const visibleFields = block.config?.visibleFields ?? [];
+                    return (
+                      <TableView
+                        config={{ tableRef, visibleFields }}
+                        tableId={resolvedTable.id}
+                      />
+                    );
+                  })()}
 
                   {block.type === "KANBAN_VIEW" && (() => {
+                    const tableRef = block.config?.tableRef;
+                    const resolvedTable = workspace?.tables?.find((t: any) => t.name === tableRef);
+                    if (resolvedTable) {
+                      return (
+                        <KanbanView
+                          config={{
+                            tableRef,
+                            groupByField: block.config?.groupByField,
+                          }}
+                          tableId={resolvedTable.id}
+                        />
+                      );
+                    }
                     const cards = getKanbanCards(block.id);
                     return (
                       <div>
@@ -605,25 +613,25 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
 
         {/* Right Side: Tabbed Panel (Components & Properties) */}
         {!preview && (
-          <div className="hidden lg:flex w-[320px] border-l border-border/40 flex-col bg-surface-1 shadow-[inset_10px_0_20px_-20px_rgba(0,0,0,0.1)] shrink-0 z-10">
+          <div className="hidden lg:flex w-[320px] border-l flex-col shrink-0 z-10" style={{ borderColor: "var(--border-subtle)", background: "var(--surface-1)" }}>
             {/* Tab Headers */}
-            <div className="flex px-5 pt-5 border-b border-border/40 gap-6 shrink-0 bg-surface-1">
+            <div className="flex px-5 pt-4 pb-0 border-b gap-1 shrink-0" style={{ borderColor: "var(--border-subtle)", background: "var(--surface-1)" }}>
               <button
                 onClick={() => setRightTab("components")}
-                className={`pb-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors ${
+                className={`px-3 pb-3 pt-1 text-[12px] font-semibold border-b-2 transition-colors rounded-t-lg ${
                   rightTab === "components"
                     ? "border-primary text-primary"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
+                    : "border-transparent text-muted-foreground hover:text-foreground hover:bg-surface-3"
                 }`}
               >
                 Components
               </button>
               <button
                 onClick={() => setRightTab("properties")}
-                className={`pb-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors ${
+                className={`px-3 pb-3 pt-1 text-[12px] font-semibold border-b-2 transition-colors rounded-t-lg ${
                   rightTab === "properties"
                     ? "border-primary text-primary"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
+                    : "border-transparent text-muted-foreground hover:text-foreground hover:bg-surface-3"
                 }`}
               >
                 Configuration
@@ -649,7 +657,12 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
                         e.dataTransfer.effectAllowed = "copy";
                       }}
                       onClick={() => addBlock(block.type, block.label, block.icon)}
-                      className="group flex items-center gap-3 px-3.5 py-3 text-sm rounded-xl transition-all duration-200 whitespace-nowrap w-full shrink-0 border border-transparent hover:border-primary/20 hover:bg-primary/5 hover:text-primary hover:shadow-sm text-foreground/80 font-medium cursor-grab active:cursor-grabbing bg-card shadow-sm"
+                      className="group flex items-center gap-3 px-3.5 py-3 text-[13px] rounded-xl transition-all duration-200 whitespace-nowrap w-full shrink-0 font-medium cursor-grab active:cursor-grabbing card-interactive"
+                      style={{
+                        background: "var(--card)",
+                        border: "1px solid var(--border-subtle)",
+                        color: "var(--foreground)",
+                      }}
                     >
                       <div className="p-1.5 rounded-md bg-secondary/80 group-hover:bg-primary/10 group-hover:text-primary transition-colors text-muted-foreground flex items-center justify-center">
                         {block.icon}
@@ -725,10 +738,25 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
                           <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex justify-between">
                             <span>Target Database Table</span>
                           </label>
-                          <select className="w-full text-sm px-3.5 py-2.5 rounded-xl bg-card border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20 shadow-sm">
-                            <option>Products Database</option>
-                            <option>Suppliers Database</option>
-                            <option>Purchase Orders Database</option>
+                          <select
+                            className="w-full text-sm px-3.5 py-2.5 rounded-xl bg-card border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20 shadow-sm"
+                            value={blocks.find((b) => b.id === selectedBlock)?.config?.tableRef || ""}
+                            onChange={(e) => {
+                              setBlocks((prev) =>
+                                prev.map((b) =>
+                                  b.id === selectedBlock
+                                    ? { ...b, config: { ...(b.config || {}), tableRef: e.target.value } }
+                                    : b
+                                )
+                              );
+                            }}
+                          >
+                            <option value="" disabled>Select a table...</option>
+                            {workspace?.tables?.map((t: any) => (
+                              <option key={t.id} value={t.name}>
+                                {t.name}
+                              </option>
+                            ))}
                           </select>
                           <p className="text-[10px] text-muted-foreground/70 mt-1.5 leading-relaxed">Connect this component to fetch live runtime data from the backend schema.</p>
                         </div>
