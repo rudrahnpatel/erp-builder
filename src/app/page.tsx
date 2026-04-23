@@ -108,16 +108,16 @@ export default function LandingPage() {
             </span>
           </Link>
           <div className="flex items-center gap-2">
-            <Link href="/workspace">
+            <Link href="/login">
               <Button
                 variant="ghost"
                 size="sm"
                 className="text-sm hidden sm:inline-flex"
               >
-                Dashboard
+                Log in
               </Button>
             </Link>
-            <Link href="/onboarding">
+            <Link href="/register">
               <Button size="sm" className="gap-1.5 text-sm font-medium">
                 Start building <ArrowRight className="h-3.5 w-3.5" />
               </Button>
@@ -168,7 +168,7 @@ export default function LandingPage() {
               </p>
 
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mt-9">
-                <Link href="/onboarding">
+                <Link href="/register">
                   <Button
                     size="lg"
                     className="gap-2 text-base px-7 h-12 w-full sm:w-auto font-medium"
@@ -176,13 +176,13 @@ export default function LandingPage() {
                     Start building, free <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
-                <Link href="/workspace">
+                <Link href="/login">
                   <Button
                     variant="outline"
                     size="lg"
                     className="gap-2 text-base px-7 h-12 w-full sm:w-auto"
                   >
-                    See the demo workspace
+                    Login to workspace
                   </Button>
                 </Link>
               </div>
@@ -476,7 +476,7 @@ export default function LandingPage() {
               </p>
             </div>
             <div className="lg:col-span-4 lg:text-right">
-              <Link href="/onboarding">
+              <Link href="/register">
                 <Button
                   size="lg"
                   className="gap-2 text-base h-12 px-8 font-medium"

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 
 /**
  * Next.js 16 Proxy (renamed from Middleware).
@@ -62,15 +63,46 @@ function extractTenantSlug(host: string | null): string | null {
   return null;
 }
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { nextUrl } = request;
+  const path = nextUrl.pathname;
+
+  // --- 1. Authentication Check ---
+  const token = await getToken({ req: request });
+  const isAuth = !!token;
+  const isAuthPage = path.startsWith("/login") || path.startsWith("/register");
+
+  const isProtectedRoute = 
+    path.startsWith("/workspace") ||
+    path.startsWith("/modules") ||
+    path.startsWith("/plugins") ||
+    path.startsWith("/schema") ||
+    path.startsWith("/pages") ||
+    path.startsWith("/onboarding");
+
+  if (isAuthPage) {
+    if (isAuth) {
+      return NextResponse.redirect(new URL("/workspace", request.url));
+    }
+  } else if (isProtectedRoute) {
+    if (!isAuth) {
+      let from = path;
+      if (nextUrl.search) {
+        from += nextUrl.search;
+      }
+      return NextResponse.redirect(
+        new URL(`/login?from=${encodeURIComponent(from)}`, request.url)
+      );
+    }
+  }
+
+  // --- 2. Tenant Routing ---
   const host = request.headers.get("host");
   const slug = extractTenantSlug(host);
 
   if (!slug) return NextResponse.next();
 
   // Already rewritten or hitting the API / static assets — let it through.
-  const path = nextUrl.pathname;
   if (
     path.startsWith("/apps/") ||
     path.startsWith("/api/") ||
