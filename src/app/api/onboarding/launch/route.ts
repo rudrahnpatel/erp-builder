@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getWorkspace } from "@/lib/get-workspace";
 import { normalizeSlug, RESERVED_SLUGS } from "@/lib/slug";
+import { ensureBuiltinPages } from "@/lib/default-pages";
 
 export async function POST(req: Request) {
   try {
@@ -37,12 +38,13 @@ export async function POST(req: Request) {
       );
     }
 
-    const updated = await db.workspace.update({
-      where: { id: workspace.id },
-      data: {
-        name: appName,
-        slug,
-      },
+    const updated = await db.$transaction(async (tx) => {
+      const next = await tx.workspace.update({
+        where: { id: workspace.id },
+        data: { name: appName, slug },
+      });
+      await ensureBuiltinPages(tx, workspace.id);
+      return next;
     });
 
     // companyName is intentionally unused for now — there's no column for it

@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState, useRef } from "react";
+import { use } from "react";
 import useSWR from "swr";
 import Link from "next/link";
 import {
@@ -10,29 +10,13 @@ import {
   Filter,
   BarChart3,
   Search,
-  MoreHorizontal,
   Plus,
-  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { TableView } from "@/components/blocks/TableView";
+import { KanbanView } from "@/components/blocks/KanbanView";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
-
-const sampleTableData = [
-  { name: "Precision Lathe X-10", sku: "LAT-2023-001", price: "₹4,250.00", stock: "12 Units", status: "In Stock" },
-  { name: "Hydraulic Press S0T", sku: "HYD-93-A", price: "₹8,900.00", stock: "3 Units", status: "Low Stock" },
-  { name: "Industrial Safety Mask", sku: "SAF-MASK-8", price: "₹75.50", stock: "450 Units", status: "In Stock" },
-];
-
-const KANBAN_COLS = ["To Do", "In Progress", "Review", "Done"];
-
-interface KanbanCard {
-  id: string;
-  title: string;
-  tag: string;
-  col: string;
-}
 
 /**
  * Runtime custom-page view. Renders blocks the merchant composed in the
@@ -45,23 +29,6 @@ export default function TenantCustomPage({
 }) {
   const { slug, pageId } = use(params);
   const { data: page, error } = useSWR(`/api/pages/${pageId}`, fetcher);
-
-  const [kanbanCards, setKanbanCards] = useState<Record<string, KanbanCard[]>>({});
-  const kanbanDragCard = useRef<{ blockId: string; cardId: string } | null>(null);
-
-  const defaultKanbanCards = (blockId: string): KanbanCard[] => [
-    { id: `kc_${blockId}_1`, title: "Review Supplier Quotes", tag: "Procurement", col: "To Do" },
-    { id: `kc_${blockId}_2`, title: "Update Stock Levels", tag: "Inventory", col: "In Progress" },
-    { id: `kc_${blockId}_3`, title: "Quality Check — Batch 12", tag: "QC", col: "Review" },
-    { id: `kc_${blockId}_4`, title: "Dispatch Order #9921", tag: "Logistics", col: "Done" },
-  ];
-
-  const getKanbanCards = (blockId: string) => kanbanCards[blockId] || defaultKanbanCards(blockId);
-
-  const addKanbanCard = (blockId: string, col: string) => {
-    const newCard: KanbanCard = { id: `kc_${Date.now()}`, title: "New Task", tag: "Task", col };
-    setKanbanCards(prev => ({ ...prev, [blockId]: [...(prev[blockId] || defaultKanbanCards(blockId)), newCard] }));
-  };
 
   if (!page && !error) {
     return (
@@ -79,17 +46,22 @@ export default function TenantCustomPage({
       style={{ background: "var(--background)" }}
     >
       <div
-        className="flex items-center gap-3 px-4 sm:px-6 py-4 border-b shrink-0 glass"
-        style={{ borderColor: "var(--border-subtle)" }}
+        className="flex items-center gap-3 px-4 sm:px-6 py-4 border-b shrink-0"
+        style={{
+          borderColor: "var(--border-subtle)",
+          background: "color-mix(in oklch, var(--surface-1), transparent 30%)",
+          backdropFilter: "blur(16px)",
+        }}
       >
         <Link
           href={`/apps/${slug}`}
-          className="text-muted-foreground hover:text-foreground transition-colors mr-2"
+          className="p-1.5 rounded-lg hover-bg-subtle focus-ring transition-colors"
+          style={{ color: "var(--foreground-muted)" }}
         >
           <ArrowLeft className="h-4 w-4" />
         </Link>
         <span
-          className="font-semibold"
+          className="font-semibold text-[15px]"
           style={{ color: "var(--foreground)" }}
         >
           {page?.title || "Custom Page"}
@@ -121,10 +93,10 @@ export default function TenantCustomPage({
               return (
               <div
                 key={block.id || `block-${index}`}
-                className="rounded-xl overflow-hidden border shadow-sm"
+                className="rounded-xl overflow-hidden shadow-sm"
                 style={{
                   background: "var(--card)",
-                  borderColor: "var(--border-subtle)",
+                  border: "1px solid var(--border-subtle)",
                 }}
               >
                 <div className="p-5">
@@ -161,69 +133,14 @@ export default function TenantCustomPage({
                   )}
 
                   {block.type === "TABLE_VIEW" && (
-                    <div>
-                      <div className="flex items-center justify-between mb-5">
-                        <div className="flex items-center gap-2.5">
-                          <div className="p-1.5 rounded-md bg-secondary text-muted-foreground">
-                            <Table2 className="h-4 w-4" />
-                          </div>
-                          <span className="text-base font-semibold text-foreground">
-                            {displayLabel}
-                          </span>
-                        </div>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-secondary rounded-lg">
-                          <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-                        </Button>
+                    block.config?.tableId ? (
+                      <TableView config={block.config} tableId={block.config.tableId} />
+                    ) : (
+                      <div className="p-10 border-2 border-dashed border-border/40 rounded-xl flex flex-col items-center justify-center text-muted-foreground bg-secondary/20">
+                        <Table2 className="h-8 w-8 mb-3 opacity-40" />
+                        <p className="text-sm font-medium">No table connected to this block.</p>
                       </div>
-                      
-                      <div className="overflow-x-auto rounded-xl border border-border/40 bg-surface-1">
-                        <table className="w-full text-sm min-w-[600px]">
-                          <thead>
-                            <tr className="border-b border-border/40 bg-secondary/20">
-                              {["Name", "SKU", "Price", "Stock", "Status"].map((h) => (
-                                <th
-                                  key={h}
-                                  className="text-left px-4 py-3 text-xs font-bold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
-                                >
-                                  {h}
-                                </th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-border/30">
-                            {sampleTableData.map((row, i) => (
-                              <tr key={i} className="hover:bg-secondary/20 transition-colors">
-                                <td className="px-4 py-3.5 font-medium text-foreground whitespace-nowrap">
-                                  {row.name}
-                                </td>
-                                <td className="px-4 py-3.5 font-mono text-xs text-muted-foreground">
-                                  <Badge variant="outline" className="font-mono bg-background border-border/60 text-muted-foreground text-[10px]">
-                                    {row.sku}
-                                  </Badge>
-                                </td>
-                                <td className="px-4 py-3.5 text-foreground tabular-nums">
-                                  {row.price}
-                                </td>
-                                <td className="px-4 py-3.5 text-foreground">
-                                  {row.stock}
-                                </td>
-                                <td className="px-4 py-3.5">
-                                  <Badge
-                                    className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border-0 ${
-                                      row.status === "In Stock"
-                                        ? "bg-success/15 text-success hover:bg-success/25"
-                                        : "bg-destructive/10 text-destructive hover:bg-destructive/20"
-                                    }`}
-                                  >
-                                    {row.status}
-                                  </Badge>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
+                    )
                   )}
 
                   {block.type === "CHART" && (
@@ -235,83 +152,16 @@ export default function TenantCustomPage({
                     </div>
                   )}
 
-                  {block.type === "KANBAN_VIEW" && (() => {
-                    const cards = getKanbanCards(block.id || `kb_${index}`);
-                    const blockId = block.id || `kb_${index}`;
-                    return (
-                      <div>
-                        <div className="flex items-center justify-between mb-4">
-                          <span className="text-base font-semibold text-foreground">{displayLabel}</span>
-                          <Button
-                            size="sm" variant="outline"
-                            className="h-7 text-xs gap-1 rounded-lg"
-                            onClick={() => addKanbanCard(blockId, "To Do")}
-                          >
-                            <Plus className="h-3 w-3" /> Add Card
-                          </Button>
-                        </div>
-                        <div className="flex gap-3 overflow-x-auto pb-2">
-                          {KANBAN_COLS.map((col) => {
-                            const colCards = cards.filter(c => c.col === col);
-                            return (
-                              <div
-                                key={col}
-                                className="flex-1 min-w-[190px] rounded-xl p-3 bg-secondary/30 border border-border/30"
-                                onDragOver={(e) => e.preventDefault()}
-                                onDrop={(e) => {
-                                  e.preventDefault();
-                                  if (!kanbanDragCard.current || kanbanDragCard.current.blockId !== blockId) return;
-                                  const cardId = kanbanDragCard.current.cardId;
-                                  setKanbanCards(prev => ({
-                                    ...prev,
-                                    [blockId]: (prev[blockId] || defaultKanbanCards(blockId)).map(c =>
-                                      c.id === cardId ? { ...c, col } : c
-                                    )
-                                  }));
-                                  kanbanDragCard.current = null;
-                                }}
-                              >
-                                <div className="flex items-center justify-between mb-3 px-1">
-                                  <h4 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{col}</h4>
-                                  <span className="text-[10px] font-medium bg-background px-1.5 py-0.5 rounded text-muted-foreground border border-border/50">{colCards.length}</span>
-                                </div>
-                                <div className="space-y-2 min-h-[60px]">
-                                  {colCards.map(card => (
-                                    <div
-                                      key={card.id}
-                                      draggable
-                                      onDragStart={() => { kanbanDragCard.current = { blockId, cardId: card.id }; }}
-                                      className="rounded-lg p-3 text-sm bg-card border border-border/40 text-foreground shadow-sm hover:border-primary/30 hover:shadow-md transition-all cursor-grab active:cursor-grabbing active:opacity-60 group/card"
-                                    >
-                                      <p className="font-medium text-[13px] leading-snug">{card.title}</p>
-                                      <div className="flex items-center justify-between mt-2">
-                                        <Badge variant="secondary" className="text-[9px] h-4 px-1.5">{card.tag}</Badge>
-                                        <button
-                                          onClick={() => setKanbanCards(prev => ({
-                                            ...prev,
-                                            [blockId]: (prev[blockId] || defaultKanbanCards(blockId)).filter(c => c.id !== card.id)
-                                          }))}
-                                          className="opacity-0 group-hover/card:opacity-100 text-muted-foreground hover:text-destructive transition-all p-0.5 rounded"
-                                        >
-                                          <Trash2 className="h-3 w-3" />
-                                        </button>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                                <button
-                                  onClick={() => addKanbanCard(blockId, col)}
-                                  className="mt-2 w-full text-xs text-muted-foreground/60 hover:text-primary transition-colors py-1.5 rounded-lg hover:bg-primary/5 flex items-center justify-center gap-1"
-                                >
-                                  <Plus className="h-3 w-3" /> Add
-                                </button>
-                              </div>
-                            );
-                          })}
-                        </div>
+                  {block.type === "KANBAN_VIEW" && (
+                    block.config?.tableId ? (
+                      <KanbanView config={block.config} tableId={block.config.tableId} />
+                    ) : (
+                      <div className="p-10 border-2 border-dashed border-border/40 rounded-xl flex flex-col items-center justify-center text-muted-foreground bg-secondary/20">
+                        <Plus className="h-8 w-8 mb-3 opacity-40" />
+                        <p className="text-sm font-medium">No table connected to this Kanban block.</p>
                       </div>
-                    );
-                  })()}
+                    )
+                  )}
 
                   {block.type === "FORM" && (
                     <div className="space-y-4 max-w-lg p-2">

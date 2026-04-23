@@ -64,11 +64,13 @@
   color-scheme: dark;
 
   /* ── Background layers (deep midnight blue tint) ── */
-  --background: oklch(0.12 0.02 265);         /* Base canvas - deep navy */
-  --surface-1: oklch(0.15 0.02 265);          /* Sidebar, panels */
-  --surface-2: oklch(0.18 0.02 265);          /* Cards, elevated */
-  --surface-3: oklch(0.22 0.02 265);          /* Hover states */
-  --surface-overlay: oklch(0.12 0.02 265 / 0.9); /* Modals, overlays */
+  --background: oklch(0.11 0.02 265);         /* Base canvas - deep navy */
+  --surface-1: oklch(0.14 0.02 265);          /* Sidebar, panels */
+  --surface-2: oklch(0.18 0.025 265);         /* Cards, elevated */
+  --surface-3: oklch(0.23 0.025 265);         /* Hover states */
+  --surface-raised: oklch(0.20 0.025 265);    /* Raised elements, popovers */
+  --surface-sunken: oklch(0.09 0.015 265);    /* Inset wells, input fields */
+  --surface-overlay: oklch(0.11 0.02 265 / 0.92); /* Modals, overlays */
 
   /* ── Foreground scale ── */
   --foreground: oklch(0.96 0.01 270);         /* Primary text (#F1F2FA vibe) */
@@ -107,9 +109,9 @@
   --popover-foreground: oklch(0.98 0.005 280);
 
   /* ── Borders (slightly elevated blue tint) ── */
-  --border: oklch(0.24 0.02 265);
-  --border-subtle: oklch(0.18 0.02 265);
-  --input: oklch(0.24 0.02 265);
+  --border: oklch(0.28 0.025 265);
+  --border-subtle: oklch(0.20 0.02 265);
+  --input: oklch(0.25 0.02 265);
 
   /* ── Secondary / Muted ── */
   --secondary: oklch(0.20 0.02 265);
@@ -356,13 +358,86 @@
 .card-interactive {
   transition: transform var(--duration-normal) var(--ease-out-expo),
     box-shadow var(--duration-normal) var(--ease-out-expo),
-    border-color var(--duration-fast) ease;
+    border-color var(--duration-normal) ease,
+    background var(--duration-normal) ease;
 }
 
 .card-interactive:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   box-shadow: var(--shadow-lg);
   border-color: color-mix(in oklch, var(--primary), transparent 55%);
+}
+
+.card-interactive:active {
+  transform: translateY(0px) scale(0.99);
+}
+
+/* ── Hover lift — consistent hover raise for any element ── */
+.hover-lift {
+  transition: transform var(--duration-normal) var(--ease-out-expo),
+    box-shadow var(--duration-normal) var(--ease-out-expo);
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.hover-lift:active {
+  transform: translateY(0);
+}
+
+/* ── Hover background — for nav items, list items ── */
+.hover-bg-subtle {
+  transition: background var(--duration-fast) ease,
+    color var(--duration-fast) ease;
+}
+.hover-bg-subtle:hover {
+  background: var(--surface-3);
+}
+
+/* ── Sidebar nav item hover ── */
+.sidebar-nav-item {
+  transition: background var(--duration-fast) ease,
+    color var(--duration-fast) ease;
+}
+.sidebar-nav-item:hover {
+  background: var(--sidebar-accent);
+  color: var(--sidebar-foreground);
+}
+.sidebar-nav-item.active {
+  background: var(--sidebar-accent);
+  color: var(--primary);
+  font-weight: 500;
+}
+
+/* ── Focus ring ── */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* ── Table row hover ── */
+.table-row-hover {
+  transition: background var(--duration-fast) ease;
+}
+.table-row-hover:hover {
+  background: var(--surface-3);
+}
+
+/* ── Status colours ── */
+.status-success {
+  color: var(--success);
+  background: color-mix(in oklch, var(--success), transparent 88%);
+  border: 1px solid color-mix(in oklch, var(--success), transparent 70%);
+}
+.status-warning {
+  color: var(--warning);
+  background: color-mix(in oklch, var(--warning), transparent 88%);
+  border: 1px solid color-mix(in oklch, var(--warning), transparent 70%);
+}
+.status-danger {
+  color: var(--danger);
+  background: color-mix(in oklch, var(--danger), transparent 88%);
+  border: 1px solid color-mix(in oklch, var(--danger), transparent 70%);
 }
 
 /* ── Tabular numbers for data-heavy UI ── */

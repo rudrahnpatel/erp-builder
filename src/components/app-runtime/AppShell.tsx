@@ -11,6 +11,7 @@ import {
   X,
   Settings,
   Home,
+  ArrowLeft,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 
@@ -71,7 +72,7 @@ export function AppShell({
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-[240px] flex flex-col border-r transform transition-transform duration-300 lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-[248px] flex flex-col border-r transform transition-transform duration-300 lg:static lg:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
         style={{
@@ -81,34 +82,34 @@ export function AppShell({
       >
         {/* Brand */}
         <div
-          className="h-14 flex items-center px-4 border-b shrink-0"
+          className="h-[60px] flex items-center px-4 border-b shrink-0"
           style={{ borderColor: "var(--sidebar-border)" }}
         >
           <div
             className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0"
             style={{
-              background: "var(--primary)",
-              boxShadow: "inset 0 1px 0 oklch(1 0 0 / 0.18)",
+              background: "linear-gradient(135deg, var(--primary), var(--primary-hover))",
+              boxShadow: "inset 0 1px 0 oklch(1 0 0 / 0.18), 0 2px 8px oklch(0.08 0.02 260 / 0.5)",
             }}
           >
             <Building2 className="h-4.5 w-4.5 text-white" />
           </div>
           <div className="ml-2.5 min-w-0">
             <span
-              className="font-semibold text-sm block truncate tracking-tight"
+              className="font-semibold text-[13px] block truncate tracking-tight"
               style={{ color: "var(--sidebar-foreground)" }}
             >
               {workspace.name}
             </span>
             <span
-              className="text-[10px] uppercase tracking-[0.12em] mono"
+              className="text-[10px] tracking-[0.08em] mono"
               style={{ color: "var(--foreground-dimmed)" }}
             >
               {workspace.slug}.erpbuilder.app
             </span>
           </div>
           <button
-            className="ml-auto lg:hidden p-1 rounded"
+            className="ml-auto lg:hidden p-1 rounded hover-bg-subtle focus-ring"
             onClick={() => setSidebarOpen(false)}
             aria-label="Close menu"
           >
@@ -117,7 +118,7 @@ export function AppShell({
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
+        <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-1">
           {navItems.map((item) => {
             const active = isActive(item.href, item.exact);
             return (
@@ -125,20 +126,24 @@ export function AppShell({
                 key={item.href}
                 href={item.href}
                 onClick={() => setSidebarOpen(false)}
-                className="relative flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-colors"
-                style={{
-                  background: active ? "var(--sidebar-accent)" : "transparent",
-                  color: active ? "var(--primary)" : "var(--foreground-muted)",
-                  fontWeight: active ? 500 : 400,
-                }}
+                className={`relative flex items-center gap-2.5 px-3 py-2.5 text-[13px] rounded-lg focus-ring ${
+                  active
+                    ? "sidebar-nav-item active"
+                    : "sidebar-nav-item"
+                }`}
+                style={
+                  active
+                    ? undefined
+                    : { color: "var(--foreground-muted)" }
+                }
               >
                 {active && (
                   <span
-                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full animate-nav-indicator"
                     style={{ background: "var(--primary)" }}
                   />
                 )}
-                <item.icon className="h-4 w-4 shrink-0" />
+                <item.icon className="h-[18px] w-[18px] shrink-0" />
                 <span className="truncate">{item.label}</span>
               </Link>
             );
@@ -156,7 +161,7 @@ export function AppShell({
 
         {/* Bottom: theme + back to builder */}
         <div
-          className="px-2 py-2 border-t space-y-0.5"
+          className="px-2.5 py-2.5 border-t space-y-1"
           style={{ borderColor: "var(--sidebar-border)" }}
         >
           <div className="flex items-center justify-between px-1">
@@ -164,10 +169,10 @@ export function AppShell({
           </div>
           <Link
             href="/workspace"
-            className="flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-colors"
+            className="flex items-center gap-2.5 px-3 py-2 text-[13px] rounded-lg sidebar-nav-item focus-ring"
             style={{ color: "var(--foreground-muted)" }}
           >
-            <Settings className="h-4 w-4" />
+            <ArrowLeft className="h-4 w-4" />
             Back to builder
           </Link>
         </div>
@@ -177,7 +182,7 @@ export function AppShell({
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* Mobile top bar (only visible < lg) */}
         <div
-          className="lg:hidden h-14 flex items-center px-4 border-b shrink-0 gap-3"
+          className="lg:hidden h-[56px] flex items-center px-4 border-b shrink-0 gap-3"
           style={{
             borderColor: "var(--border-subtle)",
             background: "var(--surface-1)",
@@ -185,7 +190,7 @@ export function AppShell({
         >
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-1 rounded"
+            className="p-1 rounded hover-bg-subtle focus-ring"
             aria-label="Open menu"
           >
             <Menu className="h-5 w-5" style={{ color: "var(--foreground)" }} />

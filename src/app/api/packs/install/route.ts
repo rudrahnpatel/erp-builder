@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     const workspace = await getWorkspace();
     if (!workspace) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { packId } = await req.json();
+    const { packId, selectedTables = {}, selectedFields = {}, selectedPages = {} } = await req.json();
     if (!packId) return NextResponse.json({ error: "packId is required" }, { status: 400 });
 
     // Check if already installed
@@ -30,7 +30,14 @@ export async function POST(req: Request) {
       const tableIdMap: Record<string, string> = {};
 
       // 1. Create all tables + fields — tagged with pack provenance
-      for (const tableDef of pack.tables) {
+      for (let tIdx = 0; tIdx < pack.tables.length; tIdx++) {
+        const tableDef = pack.tables[tIdx];
+        const isTableRequired = tIdx === 0 || !pack.tables[tIdx].fields.some(f => f.required);
+        
+        // Let explicit skip occur only if it's not the required primary table
+        if (selectedTables[tableDef.name] === false && tIdx !== 0) {
+          continue;
+        }
         const table = await tx.table.create({
           data: {
             name: tableDef.name,
@@ -48,6 +55,10 @@ export async function POST(req: Request) {
         const fieldIdMap: Record<string, string> = {};
         for (let i = 0; i < tableDef.fields.length; i++) {
           const fieldDef = tableDef.fields[i];
+          const key = `${tableDef.name}::${fieldDef.name}`;
+          
+          if (selectedFields[key] === false && !fieldDef.required) continue;
+
           const config = { ...(fieldDef.config as object || {}) } as Record<string, unknown>;
 
           // Resolve RELATION fields: linked table name → real DB table ID
@@ -99,6 +110,8 @@ export async function POST(req: Request) {
       const createdPages = [];
       for (let i = 0; i < pack.pageDefinitions.length; i++) {
         const pageDef = pack.pageDefinitions[i];
+
+        if (selectedPages[pageDef.key] === false) continue;
 
         const resolvedBlocks = pageDef.blocks.map((block) => {
           const config: Record<string, Prisma.InputJsonValue> = {};

@@ -8,9 +8,129 @@ export const inventoryPack: PackDefinition = {
   icon: "package",
   category: "Operations",
   badge: "Free",
-  fields: 65,
-  pages: 6,
   tables: [
+    // ─── 1. Products (Catalog) ────────────────────────────────────────────────
+    {
+      name: "Products",
+      icon: "box",
+      fields: [
+        { name: "Product Name", type: "TEXT", required: true },
+        {
+          name: "Category",
+          type: "SINGLE_SELECT",
+          config: { options: ["Electronics", "Stationery", "Furniture", "Accessories", "Packaging"] },
+        },
+        { name: "HSN Code", type: "TEXT" },
+        { name: "Rate", type: "CURRENCY", config: { currency: "INR" } },
+        { name: "Measurable Unit", type: "TEXT" },
+      ],
+      seedData: [
+        {
+          "Product Name": "Wireless Mouse",
+          Category: "Electronics",
+          "HSN Code": "8471",
+          Rate: 850,
+          "Measurable Unit": "pcs",
+        },
+        {
+          "Product Name": "Mechanical Keyboard",
+          Category: "Electronics",
+          "HSN Code": "8471",
+          Rate: 3200,
+          "Measurable Unit": "pcs",
+        },
+        {
+          "Product Name": "A4 Paper Ream",
+          Category: "Stationery",
+          "HSN Code": "4802",
+          Rate: 320,
+          "Measurable Unit": "ream",
+        },
+      ],
+    },
+
+    // ─── 2. Stock ─────────────────────────────────────────────────────────────
+    {
+      name: "Stock",
+      icon: "layers",
+      fields: [
+        { name: "Item", type: "TEXT", required: true },
+        { name: "Unit", type: "TEXT" },
+        { name: "Current Stock", type: "NUMBER", required: true },
+        { name: "Price", type: "CURRENCY", config: { currency: "INR" } },
+        {
+          name: "Status",
+          type: "SINGLE_SELECT",
+          config: {
+            options: ["IN STOCK", "LOW STOCK", "OUT OF STOCK"],
+            autoCompute: "stock_status",
+          },
+        },
+      ],
+      seedData: [
+        {
+          Item: "LED Desk Lamp",
+          Unit: "pcs",
+          "Current Stock": 240,
+          Price: 1250,
+          Status: "IN STOCK",
+        },
+        {
+          Item: "Notebook A5",
+          Unit: "pcs",
+          "Current Stock": 80,
+          Price: 90,
+          Status: "LOW STOCK",
+        },
+        {
+          Item: "Ink Refill",
+          Unit: "bottle",
+          "Current Stock": 15,
+          Price: 280,
+          Status: "LOW STOCK",
+        },
+      ],
+    },
+
+    // ─── 3. Suppliers ─────────────────────────────────────────────────────────
+    {
+      name: "Suppliers",
+      icon: "truck",
+      fields: [
+        { name: "Company Name", type: "TEXT", required: true },
+        { name: "Contact Person", type: "TEXT" },
+        { name: "Contact Number", type: "PHONE" },
+        { name: "Address", type: "TEXT" },
+        { name: "GSTIN", type: "TEXT" },
+      ],
+      seedData: [
+        {
+          "Company Name": "Krishna Polymers",
+          "Contact Person": "Rahul Patel",
+          "Contact Number": "+91 98765 43210",
+          Address: "Phase 1, GIDC",
+          GSTIN: "24AAAAA0000A1Z5",
+        },
+      ],
+    },
+
+    // ─── 4. Customers ─────────────────────────────────────────────────────────
+    {
+      name: "Customers",
+      icon: "users",
+      fields: [
+        { name: "Customer Name", type: "TEXT", required: true },
+        { name: "Contact Number", type: "PHONE" },
+      ],
+      seedData: [
+        {
+          "Customer Name": "ABC Manufacturing",
+          "Contact Number": "+91 99887 76655",
+        },
+      ],
+    },
+
+    /* ===== COMMENTED OUT PREVIOUS TABLES =====
     // ─── 1. Products ──────────────────────────────────────────────────────────
     {
       name: "Products",
@@ -377,6 +497,7 @@ export const inventoryPack: PackDefinition = {
         { name: "Notes", type: "TEXT" },
       ],
     },
+    */
   ],
   pageDefinitions: [
     {
@@ -384,7 +505,128 @@ export const inventoryPack: PackDefinition = {
       title: "Products Overview",
       icon: "layout-dashboard",
       blocks: [
+        {
+          type: "TEXT",
+          config: {
+            content: "Product Catalog",
+            level: "h1",
+            description: "Manage your product catalog, maintain HSN codes and track rates.",
+          },
+        },
+        { type: "FILTER_BAR", config: { tableRef: "Products" } },
+        {
+          type: "TABLE_VIEW",
+          config: {
+            tableRef: "Products",
+            visibleFields: [
+              "Product Name",
+              "Category",
+              "HSN Code",
+              "Rate",
+              "Measurable Unit",
+            ],
+          },
+        },
+      ],
+    },
+    {
+      key: "stock_dashboard",
+      title: "Current Stock",
+      icon: "layers",
+      blocks: [
+        {
+          type: "TEXT",
+          config: {
+            content: "Stock Dashboard",
+            level: "h1",
+            description: "Inward inventory and stock tracking",
+          },
+        },
+        { type: "FILTER_BAR", config: { tableRef: "Stock" } },
+        {
+          type: "TABLE_VIEW",
+          config: {
+            tableRef: "Stock",
+            visibleFields: [
+              "Item",
+              "Unit",
+              "Current Stock",
+              "Price",
+              "Status",
+            ],
+          },
+        },
+      ],
+    },
+    {
+      key: "supplier_directory",
+      title: "Suppliers",
+      icon: "users",
+      blocks: [
+        {
+          type: "TEXT",
+          config: {
+            content: "Supplier Directory",
+            level: "h1",
+            description: "Manage supplier contacts, addresses, and GSTIN information.",
+          },
+        },
+        { type: "FILTER_BAR", config: { tableRef: "Suppliers" } },
+        {
+          type: "TABLE_VIEW",
+          config: {
+            tableRef: "Suppliers",
+            visibleFields: [
+              "Company Name",
+              "Contact Person",
+              "Contact Number",
+              "GSTIN",
+            ],
+          },
+        },
+      ],
+    },
+    {
+      key: "customer_directory",
+      title: "Customers",
+      icon: "users",
+      blocks: [
+        {
+          type: "TEXT",
+          config: {
+            content: "Customer Directory",
+            level: "h1",
+            description: "Manage customer contacts and phone numbers.",
+          },
+        },
+        { type: "FILTER_BAR", config: { tableRef: "Customers" } },
+        {
+          type: "TABLE_VIEW",
+          config: {
+            tableRef: "Customers",
+            visibleFields: [
+              "Customer Name",
+              "Contact Number",
+            ],
+          },
+        },
+      ],
+    },
+
+    /* ===== COMMENTED OUT PREVIOUS PAGES =====
+    {
+      key: "products_overview",
+      title: "Products Overview",
+      icon: "layout-dashboard",
+      blocks: [
         { type: "TEXT", config: { content: "Products Overview", level: "h1" } },
+        {
+          type: "TEXT",
+          config: {
+            content: "Manage your complete product catalog, monitor pricing, and track category-wise inventory levels. This dashboard is your central hub for all SKUs.",
+            level: "p",
+          },
+        },
         { type: "FILTER_BAR", config: { tableRef: "Products" } },
         {
           type: "TABLE_VIEW",
@@ -402,33 +644,20 @@ export const inventoryPack: PackDefinition = {
         },
       ],
     },
-    {
-      key: "low_stock_dashboard",
-      title: "Low Stock Dashboard",
-      icon: "alert-triangle",
-      blocks: [
-        { type: "TEXT", config: { content: "Low Stock Dashboard", level: "h1" } },
-        {
-          type: "TABLE_VIEW",
-          config: {
-            tableRef: "Products",
-            visibleFields: [
-              "Product Name",
-              "SKU",
-              "Category",
-              "Reorder Level",
-            ],
-            // We can add filtering configurations functionally later.
-          },
-        },
-      ],
-    },
+
     {
       key: "stock_movement_log",
       title: "Stock Movement Log",
       icon: "arrow-left-right",
       blocks: [
         { type: "TEXT", config: { content: "Stock Movements", level: "h1" } },
+        {
+          type: "TEXT",
+          config: {
+            content: "An audit trail of every stock entry. Track daily inward and outward movements, warehouse transfers, and adjustments to ensure inventory accuracy.",
+            level: "p",
+          },
+        },
         { type: "FILTER_BAR", config: { tableRef: "Stock Movements" } },
         {
           type: "TABLE_VIEW",
@@ -452,6 +681,13 @@ export const inventoryPack: PackDefinition = {
       icon: "users",
       blocks: [
         { type: "TEXT", config: { content: "Suppliers", level: "h1" } },
+        {
+          type: "TEXT",
+          config: {
+            content: "Your vendor rolodex. Keep vendor contact details handy and review approved payment terms for smoother supply chain operations.",
+            level: "p",
+          },
+        },
         { type: "FILTER_BAR", config: { tableRef: "Suppliers" } },
         {
           type: "TABLE_VIEW",
@@ -479,6 +715,13 @@ export const inventoryPack: PackDefinition = {
           config: { content: "Purchase Orders Kanban", level: "h1" },
         },
         {
+          type: "TEXT",
+          config: {
+            content: "Drag & drop purchase orders across stages. Easily visualize how much material is pending delivery vs received.",
+            level: "p",
+          },
+        },
+        {
           type: "KANBAN_VIEW",
           config: {
             tableRef: "Purchase Orders",
@@ -494,6 +737,13 @@ export const inventoryPack: PackDefinition = {
       blocks: [
         { type: "TEXT", config: { content: "Godown Overview", level: "h1" } },
         {
+          type: "TEXT",
+          config: {
+            content: "Manage your physical warehouse setup. Review storage capacities and assign managers across multiple states or regions.",
+            level: "p",
+          },
+        },
+        {
           type: "TABLE_VIEW",
           config: {
             tableRef: "Godowns",
@@ -508,6 +758,7 @@ export const inventoryPack: PackDefinition = {
         },
       ],
     },
+    */
   ],
 };
 
@@ -519,8 +770,6 @@ export const crmPack: PackDefinition = {
   icon: "users",
   category: "Sales",
   badge: "Free",
-  fields: 18,
-  pages: 5,
   tables: [
     {
       name: "Contacts",
@@ -596,7 +845,11 @@ export const crmPack: PackDefinition = {
       blocks: [
         {
           type: "TEXT",
-          config: { content: "Sales Pipeline", level: "h1" },
+          config: {
+            content: "Sales Pipeline",
+            level: "h1",
+            description: "Track key accounts from lead generation to closed-won. Keep your pipeline moving forward with visual deal stages.",
+          },
         },
         {
           type: "KANBAN_VIEW",
@@ -615,8 +868,6 @@ export const hrPack: PackDefinition = {
   icon: "briefcase",
   category: "HR & Payroll",
   badge: "Free",
-  fields: 30,
-  pages: 8,
   tables: [
     {
       name: "Employees",
@@ -659,7 +910,14 @@ export const hrPack: PackDefinition = {
       title: "Employee Directory",
       icon: "users",
       blocks: [
-        { type: "TEXT", config: { content: "Employee Directory", level: "h1" } },
+        {
+          type: "TEXT",
+          config: {
+            content: "Employee Directory",
+            level: "h1",
+            description: "Centralized hub for all employee profiles. Search by name or department to find team members instantly.",
+          },
+        },
         { type: "TABLE_VIEW", config: { tableRef: "Employees", visibleFields: ["Employee Name", "Employee ID", "Department", "Designation"] } },
       ],
     },
@@ -674,8 +932,6 @@ export const financePack: PackDefinition = {
   icon: "indian-rupee",
   category: "Finance",
   badge: "Pro",
-  fields: 22,
-  pages: 7,
   tables: [
     {
       name: "Invoices",
@@ -708,7 +964,14 @@ export const financePack: PackDefinition = {
       title: "Invoice Tracker",
       icon: "file-text",
       blocks: [
-        { type: "TEXT", config: { content: "Invoice Tracker", level: "h1" } },
+        {
+          type: "TEXT",
+          config: {
+            content: "Invoice Tracker",
+            level: "h1",
+            description: "Monitor accounts receivable. View drafted, sent, and overdue invoices to keep cash flow stable.",
+          },
+        },
         { type: "TABLE_VIEW", config: { tableRef: "Invoices", visibleFields: ["Invoice Number", "Customer", "Amount", "Status", "Due Date"] } },
       ],
     },

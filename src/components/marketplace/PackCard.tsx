@@ -135,8 +135,8 @@ export function PackCard({
       {/* Stats */}
       <div className="flex items-center gap-6 mb-5">
         {[
-          { value: pack.fields, label: "fields" },
-          { value: pack.pages, label: "pages" },
+          { value: pack.tables.reduce((acc, t) => acc + t.fields.length, 0), label: "fields" },
+          { value: pack.pageDefinitions.length, label: "pages" },
         ].map((s) => (
           <div
             key={s.label}
