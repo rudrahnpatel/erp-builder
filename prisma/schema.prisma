@@ -27,6 +27,7 @@ model Workspace {
   pages            Page[]
   installedPacks   InstalledPack[]
   installedPlugins InstalledPlugin[]
+  tenantUsers      TenantUser[]
   createdAt        DateTime          @default(now())
 }
 
@@ -144,4 +145,16 @@ model InstalledPlugin {
   installedAt DateTime  @default(now())
 
   @@unique([pluginId, workspaceId])
+}
+
+model TenantUser {
+  id          String    @id @default(cuid())
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  username    String
+  password    String    // Hashed
+  role        String    @default("admin")
+  createdAt   DateTime  @default(now())
+
+  @@unique([workspaceId, username])
 }

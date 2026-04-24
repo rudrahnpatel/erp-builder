@@ -8,7 +8,7 @@ export async function GET() {
     const workspace = await getWorkspace();
     if (!workspace) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const [tables, pages, installedPacks, installedPlugins] = await Promise.all([
+    const [tables, pages, installedPacks, installedPlugins, tenantAdmin] = await Promise.all([
       db.table.findMany({
         where: { workspaceId: workspace.id },
         include: { _count: { select: { records: true, fields: true } } },
@@ -24,6 +24,10 @@ export async function GET() {
       db.installedPlugin.findMany({
         where: { workspaceId: workspace.id },
       }),
+      db.tenantUser.findFirst({
+        where: { workspaceId: workspace.id, role: "admin" },
+        select: { id: true }
+      }),
     ]);
 
     return NextResponse.json({
@@ -37,6 +41,7 @@ export async function GET() {
         installedPacks: installedPacks.length,
         installedPlugins: installedPlugins.length,
       },
+      hasTenantAdmin: !!tenantAdmin,
       tables: tables.map((t) => ({
         id: t.id,
         name: t.name,

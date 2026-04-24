@@ -3,13 +3,14 @@ import { db } from "@/lib/db";
 import { getWorkspace } from "@/lib/get-workspace";
 import { normalizeSlug, RESERVED_SLUGS } from "@/lib/slug";
 import { ensureBuiltinPages } from "@/lib/default-pages";
+import bcrypt from "bcryptjs";
 
 export async function POST(req: Request) {
   try {
     const workspace = await getWorkspace();
     if (!workspace) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { appName, companyName, subdomain, presetId } = await req.json();
+    const { appName, companyName, subdomain, presetId, adminId, adminPassword } = await req.json();
 
     if (!appName) {
       return NextResponse.json({ error: "appName is required" }, { status: 400 });
@@ -44,6 +45,19 @@ export async function POST(req: Request) {
         data: { name: appName, slug },
       });
       await ensureBuiltinPages(tx, workspace.id);
+
+      if (adminId && adminPassword) {
+        const hashedPassword = await bcrypt.hash(adminPassword, 10);
+        await tx.tenantUser.create({
+          data: {
+            workspaceId: workspace.id,
+            username: adminId,
+            password: hashedPassword,
+            role: "admin",
+          },
+        });
+      }
+
       return next;
     });
 

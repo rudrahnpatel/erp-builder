@@ -2,7 +2,7 @@
 
 import { ReactNode, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Building2,
   LayoutDashboard,
@@ -12,6 +12,7 @@ import {
   Settings,
   Home,
   ArrowLeft,
+  LogOut,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 
@@ -38,9 +39,22 @@ export function AppShell({
   children: ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const base = `/apps/${workspace.slug}`;
+
+  async function handleLogout() {
+    setLoggingOut(true);
+    await fetch("/api/tenant/logout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug: workspace.slug }),
+    });
+    router.push(`/apps/${workspace.slug}/login`);
+    router.refresh();
+  }
 
   const navItems = [
     { href: base, label: "Home", icon: Home, exact: true },
@@ -55,6 +69,12 @@ export function AppShell({
 
   const isActive = (href: string, exact: boolean) =>
     exact ? pathname === href : pathname === href || pathname.startsWith(href + "/");
+
+  const isLoginPage = pathname === `${base}/login`;
+
+  if (isLoginPage) {
+    return <div className="min-h-screen flex items-center justify-center bg-[var(--background)]">{children}</div>;
+  }
 
   return (
     <div
@@ -159,7 +179,7 @@ export function AppShell({
           )}
         </nav>
 
-        {/* Bottom: theme + back to builder */}
+        {/* Bottom: theme + logout */}
         <div
           className="px-2.5 py-2.5 border-t space-y-1"
           style={{ borderColor: "var(--sidebar-border)" }}
@@ -167,14 +187,15 @@ export function AppShell({
           <div className="flex items-center justify-between px-1">
             <ThemeToggle />
           </div>
-          <Link
-            href="/workspace"
-            className="flex items-center gap-2.5 px-3 py-2 text-[13px] rounded-lg sidebar-nav-item focus-ring"
-            style={{ color: "var(--foreground-muted)" }}
+          <button
+            onClick={handleLogout}
+            disabled={loggingOut}
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] rounded-lg sidebar-nav-item focus-ring transition-colors"
+            style={{ color: "var(--danger)" }}
           >
-            <ArrowLeft className="h-4 w-4" />
-            Back to builder
-          </Link>
+            <LogOut className="h-4 w-4" />
+            {loggingOut ? "Signing out…" : "Sign Out"}
+          </button>
         </div>
       </aside>
 

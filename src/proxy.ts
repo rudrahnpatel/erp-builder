@@ -96,11 +96,42 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // --- 2. Tenant Routing ---
+  // --- 2. Tenant Routing & Tenant Auth ---
   const host = request.headers.get("host");
-  const slug = extractTenantSlug(host);
+  const hostSlug = extractTenantSlug(host);
+  
+  let tenantSlug = hostSlug;
+  let logicalPath = path;
 
-  if (!slug) return NextResponse.next();
+  if (!tenantSlug) {
+    // Not on a subdomain, but maybe accessing via apex /apps/[slug]/...
+    const match = path.match(/^\/apps\/([^/]+)(?:\/(.*))?$/);
+    if (match) {
+      tenantSlug = match[1];
+      logicalPath = "/" + (match[2] || "");
+    }
+  }
+
+  if (tenantSlug) {
+    // If it's a tenant request, enforce tenant auth (except for public assets/apis)
+    if (
+      !logicalPath.startsWith("/api/") &&
+      !logicalPath.startsWith("/_next/") &&
+      !logicalPath.startsWith("/favicon") &&
+      logicalPath !== "/login"
+    ) {
+      const authCookie = request.cookies.get(`tenant_auth_${tenantSlug}`);
+      if (!authCookie?.value) {
+        const loginUrl = new URL(
+          hostSlug ? `/login` : `/apps/${tenantSlug}/login`,
+          request.url
+        );
+        return NextResponse.redirect(loginUrl);
+      }
+    }
+  }
+
+  if (!hostSlug) return NextResponse.next();
 
   // Already rewritten or hitting the API / static assets — let it through.
   if (
@@ -114,7 +145,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const rewritten = new URL(`/apps/${slug}${path}`, request.url);
+  const rewritten = new URL(`/apps/${hostSlug}${path}`, request.url);
   rewritten.search = nextUrl.search;
   return NextResponse.rewrite(rewritten);
 }

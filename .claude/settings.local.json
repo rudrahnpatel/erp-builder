@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(awk 'NR<=95 || NR>=268' \"src/app/\\(dashboard\\)/workspace/page.tsx\")"
+    ]
+  }
+}

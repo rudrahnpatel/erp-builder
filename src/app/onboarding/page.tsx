@@ -80,6 +80,8 @@ export default function OnboardingPage() {
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
   const [buildMode, setBuildMode] = useState<"preset" | "custom" | null>(null);
   const [subdomain, setSubdomain] = useState("");
+  const [adminId, setAdminId] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
   const [domainAvailable, setDomainAvailable] = useState<boolean | null>(null);
   const [domainReason, setDomainReason] = useState<string | null>(null);
   const [checkingDomain, setCheckingDomain] = useState(false);
@@ -117,6 +119,8 @@ export default function OnboardingPage() {
           companyName,
           subdomain,
           presetId: selectedPreset,
+          adminId,
+          adminPassword,
         })
       });
       
@@ -139,7 +143,7 @@ export default function OnboardingPage() {
   const canProceed = () => {
     if (step === 0) return appName.trim().length >= 2;
     if (step === 1) return buildMode === "custom" || selectedPreset !== null;
-    if (step === 2) return domainAvailable === true;
+    if (step === 2) return domainAvailable === true && adminId.trim().length >= 3 && adminPassword.length >= 6;
     return true;
   };
 
@@ -430,6 +434,43 @@ export default function OnboardingPage() {
                       cname.erpbuilder.app
                     </code>
                   </p>
+                </div>
+
+                {/* Admin Account Setup */}
+                <div className="pt-4 border-t" style={{ borderColor: "var(--border-subtle)" }}>
+                  <h3 className="text-sm font-medium mb-4" style={{ color: "var(--foreground)" }}>
+                    Admin Account Setup
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium block mb-1.5" style={{ color: "var(--foreground)" }}>
+                        Admin Username / ID
+                      </label>
+                      <Input
+                        value={adminId}
+                        onChange={(e) => setAdminId(e.target.value)}
+                        placeholder="admin"
+                        className="h-11 text-base"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium block mb-1.5" style={{ color: "var(--foreground)" }}>
+                        Admin Password
+                      </label>
+                      <Input
+                        type="password"
+                        value={adminPassword}
+                        onChange={(e) => setAdminPassword(e.target.value)}
+                        placeholder="••••••••"
+                        className="h-11 text-base"
+                        required
+                      />
+                      <p className="text-xs mt-1.5" style={{ color: "var(--foreground-muted)" }}>
+                        Must be at least 6 characters long
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </form>

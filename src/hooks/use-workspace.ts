@@ -12,6 +12,7 @@ export type WorkspaceData = {
     installedPacks: number;
     installedPlugins: number;
   };
+  hasTenantAdmin?: boolean;
   tables: Array<{
     id: string;
     name: string;
