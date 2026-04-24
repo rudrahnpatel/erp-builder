@@ -1,11 +1,21 @@
 "use client";
 
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Topbar } from "@/components/layout/Topbar";
+import { useWorkspace } from "@/hooks/use-workspace";
+import { useRouter } from "next/navigation";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { workspace, isLoading } = useWorkspace();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && workspace?.slug?.startsWith("u-")) {
+      router.push("/onboarding");
+    }
+  }, [workspace, isLoading, router]);
 
   return (
     <div

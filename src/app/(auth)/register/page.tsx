@@ -44,7 +44,7 @@ export default function RegisterPage() {
         toast.error("Failed to sign in after registration");
       } else {
         toast.success("Account created successfully!");
-        router.push("/workspace");
+        router.push("/onboarding");
         router.refresh();
       }
     } catch (error: any) {

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+import { signOut } from "next-auth/react";
 import {
   Building2,
   LayoutDashboard,
@@ -220,6 +221,7 @@ export function Sidebar() {
           {!collapsed && "Help & docs"}
         </button>
         <button
+          onClick={() => signOut({ callbackUrl: "/login" })}
           className={`flex w-full items-center gap-2.5 px-3 py-2 text-[13px] rounded-lg transition-colors duration-150 focus-ring ${
             collapsed ? "justify-center" : ""
           }`}
