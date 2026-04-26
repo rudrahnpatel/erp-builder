@@ -35,6 +35,7 @@ export function Sidebar() {
         { href: "/modules", label: t("common.marketplace"), icon: Blocks },
         { href: "/pages", label: t("common.managePages"), icon: FileText },
         { href: "/tables", label: t("common.manageTables"), icon: Database },
+        { href: "/plugins", label: t("common.plugins"), icon: Puzzle },
       ],
     },
   ];
