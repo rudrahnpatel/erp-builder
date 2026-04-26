@@ -11,12 +11,30 @@ import {
   BarChart3,
   Search,
   Plus,
+  Calendar,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TableView } from "@/components/blocks/TableView";
 import { KanbanView } from "@/components/blocks/KanbanView";
+import { MetricCard } from "@/components/blocks/MetricCard";
+import { ExportButton } from "@/components/blocks/ExportButton";
+import { ImageBlock } from "@/components/blocks/ImageBlock";
+import { GstCalculator } from "@/components/blocks/GstCalculator";
+import { SettingsPage } from "@/components/app-runtime/SettingsPage";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
+
+const blockSizeStyle = (cfg: any): React.CSSProperties => {
+  const widthPct = typeof cfg?.widthPct === "number" ? cfg.widthPct : 100;
+  const heightPx = typeof cfg?.heightPx === "number" ? cfg.heightPx : undefined;
+  const isFull = widthPct >= 99.5;
+  return {
+    flexBasis: isFull ? "100%" : `calc(${widthPct}% - 12px)`,
+    maxWidth: "100%",
+    minWidth: isFull ? undefined : "200px",
+    height: heightPx ? `${heightPx}px` : undefined,
+  };
+};
 
 /**
  * Runtime custom-page view. Renders blocks the merchant composed in the
@@ -35,6 +53,18 @@ export default function TenantCustomPage({
       <div className="flex h-full items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
+    );
+  }
+
+  // Settings is a system page rendered with a hardcoded tabs UI (General /
+  // Preferences / Users) rather than the block-based composer output. Users
+  // tab replaces what used to be a standalone "User Management" page.
+  if (page?.packPageKey === "settings") {
+    return (
+      <SettingsPage
+        workspaceName={page.workspace?.name || page.title || "Workspace"}
+        workspaceSlug={page.workspace?.slug || slug}
+      />
     );
   }
 
@@ -69,10 +99,10 @@ export default function TenantCustomPage({
       </div>
 
       <div className="flex-1 overflow-auto p-4 sm:p-8">
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="max-w-4xl mx-auto flex flex-wrap items-start gap-6">
           {blocks.length === 0 ? (
             <div
-              className="text-center p-12 text-sm border-2 border-dashed rounded-xl"
+              className="text-center p-12 text-sm border-2 border-dashed rounded-xl basis-full"
               style={{
                 borderColor: "var(--border-subtle)",
                 color: "var(--foreground-muted)",
@@ -97,6 +127,7 @@ export default function TenantCustomPage({
                 style={{
                   background: "var(--card)",
                   border: "1px solid var(--border-subtle)",
+                  ...blockSizeStyle(block.config),
                 }}
               >
                 <div className="p-5">
@@ -117,7 +148,7 @@ export default function TenantCustomPage({
                   )}
 
                   {block.type === "FILTER_BAR" && (
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                       <div className="flex-1 relative group w-full">
                         <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                         <input
@@ -126,10 +157,48 @@ export default function TenantCustomPage({
                           className="w-full pl-10 pr-4 py-2 text-sm rounded-xl bg-secondary/30 border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground/60"
                         />
                       </div>
+                      {block.config?.includeDateRange && (
+                        <div className="flex items-center gap-2 shrink-0">
+                          <div className="relative">
+                            <Calendar className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                            <input
+                              type="date"
+                              className="pl-8 pr-2 py-2 text-sm rounded-xl bg-secondary/30 border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20"
+                            />
+                          </div>
+                          <span className="text-xs text-muted-foreground">to</span>
+                          <div className="relative">
+                            <Calendar className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                            <input
+                              type="date"
+                              className="pl-8 pr-2 py-2 text-sm rounded-xl bg-secondary/30 border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20"
+                            />
+                          </div>
+                        </div>
+                      )}
                       <Button variant="outline" className="gap-2 shrink-0 h-10 rounded-xl bg-background border-border/60 hover:bg-secondary/50">
                         <Filter className="h-4 w-4" /> Filter
                       </Button>
                     </div>
+                  )}
+
+                  {block.type === "METRIC" && (
+                    <MetricCard
+                      config={{ ...block.config, metricLabel: block.config?.metricLabel || displayLabel }}
+                      tableId={block.config?.tableId}
+                    />
+                  )}
+
+                  {block.type === "EXPORT_BUTTON" && (
+                    <ExportButton config={block.config || {}} tableId={block.config?.tableId} />
+                  )}
+
+                  {block.type === "IMAGE" && (
+                    <ImageBlock config={block.config || {}} />
+                  )}
+
+                  {block.type === "GST_CALCULATOR" && (
+                    <GstCalculator config={block.config || {}} />
                   )}
 
                   {block.type === "TABLE_VIEW" && (

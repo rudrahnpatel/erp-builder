@@ -28,7 +28,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 lg:hidden transition-opacity duration-300"
+          className="fixed inset-0 z-40 md:hidden transition-opacity duration-300"
           style={{
             background: "oklch(0.08 0.020 260 / 0.55)",
             backdropFilter: "blur(6px)",
@@ -40,8 +40,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
       {/* Sidebar — hidden on mobile, slide-in on toggle */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 lg:static lg:z-auto transform transition-transform duration-300 ease-[var(--ease-out-expo)] ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        className={`fixed inset-y-0 left-0 z-50 md:static md:z-auto transform transition-transform duration-300 ease-[var(--ease-out-expo)] ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
         <Sidebar />

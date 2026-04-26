@@ -29,24 +29,28 @@ const recentActivity = [
     time: "2 minutes ago",
     type: "module",
     icon: CheckCircle2,
+    href: "/modules",
   },
   {
     action: "Product Table schema updated",
     time: "15 minutes ago",
     type: "schema",
     icon: Database,
+    href: "/tables",
   },
   {
     action: "WhatsApp plugin configured",
     time: "1 hour ago",
     type: "plugin",
     icon: Puzzle,
+    href: "/plugins",
   },
   {
     action: "Attendance Module deployed",
     time: "3 hours ago",
     type: "module",
     icon: Zap,
+    href: "/modules",
   },
 ];
 
@@ -125,6 +129,7 @@ export default function WorkspacePage() {
       icon: Package,
       detail: "Total active",
       accentVar: "--accent-blue",
+      href: "/modules",
     },
     {
       label: "Active Plugins",
@@ -132,6 +137,7 @@ export default function WorkspacePage() {
       icon: Puzzle,
       detail: "Total active",
       accentVar: "--accent-violet",
+      href: "/plugins",
     },
     {
       label: "Tables Created",
@@ -139,6 +145,7 @@ export default function WorkspacePage() {
       icon: Database,
       detail: `${workspace.stats.totalRecords} total records`,
       accentVar: "--accent-emerald",
+      href: "/tables",
     },
     {
       label: "Custom Pages",
@@ -146,6 +153,7 @@ export default function WorkspacePage() {
       icon: FileText,
       detail: "Total pages",
       accentVar: "--accent-amber",
+      href: "/pages",
     }
   ];
 
@@ -229,9 +237,10 @@ export default function WorkspacePage() {
       {/* ── Stats Grid ── */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 stagger-children">
         {stats.map((stat) => (
-          <div
+          <Link
             key={stat.label}
-            className="group rounded-xl p-5 transition-all duration-300 card-interactive relative overflow-hidden"
+            href={stat.href}
+            className="group rounded-xl p-5 transition-all duration-300 card-interactive relative overflow-hidden focus-ring cursor-pointer"
             style={{
               background: "var(--card)",
               border: "1px solid var(--border-subtle)",
@@ -243,8 +252,12 @@ export default function WorkspacePage() {
               style={{ background: `var(${stat.accentVar})` }}
             />
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-medium" style={{ color: "var(--foreground-muted)" }}>
+              <span className="text-xs font-medium flex items-center gap-1.5" style={{ color: "var(--foreground-muted)" }}>
                 {stat.label}
+                <ArrowUpRight
+                  className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all duration-200 -translate-x-0.5 group-hover:translate-x-0"
+                  style={{ color: `var(${stat.accentVar})` }}
+                />
               </span>
               <div
                 className="h-9 w-9 rounded-lg flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
@@ -265,7 +278,7 @@ export default function WorkspacePage() {
             <p className="text-xs mt-1.5" style={{ color: "var(--foreground-dimmed)" }}>
               {stat.detail}
             </p>
-          </div>
+          </Link>
         ))}
       </div>
 
@@ -319,12 +332,22 @@ export default function WorkspacePage() {
       <div className="grid gap-5 lg:grid-cols-5">
         {/* Activity Timeline */}
         <div className="lg:col-span-3">
-          <h2
-            className="text-sm font-semibold mb-4"
-            style={{ color: "var(--foreground)" }}
-          >
-            Recent Activity
-          </h2>
+          <div className="flex items-end justify-between mb-4">
+            <h2
+              className="text-sm font-semibold"
+              style={{ color: "var(--foreground)" }}
+            >
+              Recent Activity
+            </h2>
+            <Link
+              href="/modules"
+              className="inline-flex items-center gap-1 text-xs font-medium transition-colors hover:underline focus-ring rounded"
+              style={{ color: "var(--primary)" }}
+            >
+              View all
+              <ArrowUpRight className="h-3 w-3" />
+            </Link>
+          </div>
           <div
             className="rounded-xl overflow-hidden"
             style={{
@@ -333,9 +356,10 @@ export default function WorkspacePage() {
             }}
           >
             {recentActivity.map((item, i) => (
-              <div
+              <Link
                 key={i}
-                className="flex items-center gap-4 px-5 py-4 hover-bg-subtle group"
+                href={item.href}
+                className="flex items-center gap-4 px-5 py-4 hover-bg-subtle group focus-ring transition-colors"
                 style={{
                   borderBottom:
                     i < recentActivity.length - 1
@@ -367,8 +391,12 @@ export default function WorkspacePage() {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <span className="text-sm font-medium" style={{ color: "var(--foreground)" }}>
+                  <span className="text-sm font-medium flex items-center gap-1.5" style={{ color: "var(--foreground)" }}>
                     {item.action}
+                    <ArrowUpRight
+                      className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all duration-200 -translate-x-0.5 group-hover:translate-x-0"
+                      style={{ color: "var(--primary)" }}
+                    />
                   </span>
                 </div>
 
@@ -376,7 +404,7 @@ export default function WorkspacePage() {
                   <Clock className="h-3 w-3" />
                   <span className="text-xs whitespace-nowrap">{item.time}</span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

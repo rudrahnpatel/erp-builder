@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Building2, LogIn, Eye, EyeOff } from "lucide-react";
+import { LogIn, Eye, EyeOff, KeyRound, X } from "lucide-react";
+
+const REMEMBERED_USERNAME_KEY = (slug: string) => `erpbuilder:tenant:${slug}:rememberedUsername`;
 
 export default function TenantLoginPage() {
   const params = useParams();
@@ -13,8 +15,22 @@ export default function TenantLoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showForgotInfo, setShowForgotInfo] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Restore the remembered username for this tenant on first paint. We never
+  // persist the password — only the identifier the user explicitly opted to
+  // save.
+  useEffect(() => {
+    if (typeof window === "undefined" || !slug) return;
+    const saved = window.localStorage.getItem(REMEMBERED_USERNAME_KEY(slug));
+    if (saved) {
+      setUsername(saved);
+      setRememberMe(true);
+    }
+  }, [slug]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,6 +49,15 @@ export default function TenantLoginPage() {
         throw new Error(data.error || "Login failed");
       }
 
+      if (typeof window !== "undefined" && slug) {
+        const key = REMEMBERED_USERNAME_KEY(slug);
+        if (rememberMe) {
+          window.localStorage.setItem(key, username);
+        } else {
+          window.localStorage.removeItem(key);
+        }
+      }
+
       router.push(`/apps/${slug}`);
       router.refresh();
     } catch (err: any) {
@@ -42,15 +67,27 @@ export default function TenantLoginPage() {
     }
   };
 
+  const initial = (slug?.[0] || "W").toUpperCase();
+
   return (
     <div className="w-full max-w-md animate-in fade-in slide-in-from-bottom-4 duration-300">
       <div className="text-center mb-8">
-        <div className="h-16 w-16 mx-auto rounded-2xl flex items-center justify-center mb-6" style={{ background: "linear-gradient(135deg, var(--primary), var(--primary-hover))", boxShadow: "0 10px 25px -5px var(--primary-subtle)" }}>
-          <Building2 className="h-8 w-8 text-white" />
+        <div
+          className="h-16 w-16 mx-auto rounded-2xl flex items-center justify-center mb-6"
+          style={{
+            background: "linear-gradient(135deg, var(--primary), var(--primary-hover))",
+            boxShadow: "0 10px 25px -5px var(--primary-subtle), inset 0 1px 0 oklch(1 0 0 / 0.18)",
+          }}
+        >
+          <span className="text-2xl font-bold text-white tracking-tight uppercase select-none">
+            {initial}
+          </span>
         </div>
-        <h1 className="text-3xl font-bold" style={{ color: "var(--foreground)" }}>Sign In</h1>
-        <p className="mt-2 text-sm" style={{ color: "var(--foreground-muted)" }}>
-          Welcome back to {slug}.erpbuilder.app
+        <h1 className="text-3xl font-bold" style={{ color: "var(--foreground)" }}>
+          {slug || "Workspace"}
+        </h1>
+        <p className="mt-2 text-sm mono" style={{ color: "var(--foreground-muted)" }}>
+          {slug}.erpbuilder.app
         </p>
       </div>
 
@@ -99,6 +136,28 @@ export default function TenantLoginPage() {
           </div>
         </div>
 
+        <div className="flex items-center justify-between text-sm">
+          <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="h-4 w-4 rounded border-2 cursor-pointer"
+              style={{ borderColor: "var(--border)" }}
+            />
+            <span style={{ color: "var(--foreground-muted)" }}>Remember me</span>
+          </label>
+          <button
+            type="button"
+            onClick={() => setShowForgotInfo(true)}
+            className="inline-flex items-center gap-1 font-medium hover:underline focus-ring rounded"
+            style={{ color: "var(--primary)" }}
+          >
+            <KeyRound className="h-3.5 w-3.5" />
+            Forgot password?
+          </button>
+        </div>
+
         <Button
           type="submit"
           disabled={loading}
@@ -112,10 +171,64 @@ export default function TenantLoginPage() {
           Sign In
         </Button>
       </form>
-      
+
       <p className="text-center mt-6 text-xs" style={{ color: "var(--foreground-dimmed)" }}>
         Secured by ERP Builder
       </p>
+
+      {showForgotInfo && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{
+            background: "oklch(0 0 0 / 0.5)",
+            backdropFilter: "blur(8px)",
+          }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowForgotInfo(false);
+          }}
+        >
+          <div
+            className="w-full max-w-sm rounded-2xl p-6 shadow-2xl border animate-in fade-in zoom-in-95 duration-200"
+            style={{ background: "var(--card)", borderColor: "var(--border-subtle)" }}
+          >
+            <div className="flex items-start justify-between gap-3 mb-3">
+              <div
+                className="h-10 w-10 rounded-xl flex items-center justify-center"
+                style={{
+                  background: "color-mix(in oklch, var(--primary), transparent 88%)",
+                  color: "var(--primary)",
+                }}
+              >
+                <KeyRound className="h-5 w-5" />
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowForgotInfo(false)}
+                className="rounded-lg p-1 hover-bg-subtle focus-ring"
+                style={{ color: "var(--foreground-dimmed)" }}
+                aria-label="Close"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <h3 className="text-lg font-semibold mb-1.5" style={{ color: "var(--foreground)" }}>
+              Reset password
+            </h3>
+            <p className="text-sm leading-relaxed mb-5" style={{ color: "var(--foreground-muted)" }}>
+              Tenant accounts on this workspace are managed by the workspace
+              owner. Contact your administrator and they can reset your password
+              from <strong>Settings → Users</strong> in the builder.
+            </p>
+            <Button
+              type="button"
+              onClick={() => setShowForgotInfo(false)}
+              className="w-full h-10"
+            >
+              Got it
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -14,6 +14,9 @@ export async function GET(
 
   const page = await db.page.findFirst({
     where: { id, workspaceId: workspace.id },
+    include: {
+      workspace: { select: { name: true, slug: true } },
+    },
   });
 
   if (!page) return NextResponse.json({ error: "Page not found" }, { status: 404 });

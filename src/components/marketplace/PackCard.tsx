@@ -11,9 +11,9 @@ import {
   IndianRupee,
   Download,
   Check,
-  ArrowRight,
   Settings2,
   Trash2,
+  Sparkles,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -50,17 +50,24 @@ const colorMap: Record<string, { bg: string; text: string; glow: string }> = {
 export function PackCard({
   pack,
   installed = false,
+  installedVersion,
   onInstall,
   onUninstall,
+  onUpdate,
 }: {
   pack: PackDefinition;
   installed?: boolean;
+  installedVersion?: string;
   onInstall?: (packId: string) => Promise<void> | void;
   onUninstall?: (packId: string) => Promise<void> | void;
+  onUpdate?: (packId: string) => Promise<void> | void;
 }) {
   const [loading, setLoading] = useState(false);
   const [unloading, setUnloading] = useState(false);
+  const [updating, setUpdating] = useState(false);
   const colors = colorMap[pack.icon] || colorMap.package;
+  const updateAvailable =
+    installed && !!installedVersion && installedVersion !== pack.version;
 
   const handleInstall = async () => {
     if (installed || loading) return;
@@ -79,6 +86,16 @@ export function PackCard({
       await onUninstall?.(pack.id);
     } finally {
       setUnloading(false);
+    }
+  };
+
+  const handleUpdate = async () => {
+    if (!updateAvailable || updating) return;
+    setUpdating(true);
+    try {
+      await onUpdate?.(pack.id);
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -157,16 +174,51 @@ export function PackCard({
       {/* Install + Configure Buttons */}
       {installed ? (
         <div className="flex flex-col gap-2">
-          <div
-            className="w-full flex items-center justify-center gap-2 h-9 rounded-md text-sm font-medium"
-            style={{
-              background: "color-mix(in oklch, var(--success), transparent 85%)",
-              color: "var(--success)",
-              border: "1px solid color-mix(in oklch, var(--success), transparent 70%)",
-            }}
-          >
-            <Check className="h-4 w-4" /> Installed
-          </div>
+          {updateAvailable ? (
+            <button
+              onClick={handleUpdate}
+              disabled={updating}
+              className="w-full flex items-center justify-center gap-2 h-9 rounded-md text-sm font-medium transition-all focus-ring pressable disabled:opacity-70"
+              style={{
+                background:
+                  "linear-gradient(135deg, var(--accent-amber), color-mix(in oklch, var(--accent-amber), black 10%))",
+                color: "white",
+                boxShadow:
+                  "0 2px 8px color-mix(in oklch, var(--accent-amber), transparent 60%)",
+              }}
+            >
+              {updating ? (
+                <>
+                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Updating…
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4" />
+                  Update to v{pack.version}
+                </>
+              )}
+            </button>
+          ) : (
+            <div
+              className="w-full flex items-center justify-center gap-2 h-9 rounded-md text-sm font-medium"
+              style={{
+                background: "color-mix(in oklch, var(--success), transparent 85%)",
+                color: "var(--success)",
+                border: "1px solid color-mix(in oklch, var(--success), transparent 70%)",
+              }}
+            >
+              <Check className="h-4 w-4" /> Installed
+              {installedVersion && (
+                <span
+                  className="text-[10px] mono tracking-[0.08em] opacity-70"
+                  style={{ color: "var(--success)" }}
+                >
+                  v{installedVersion}
+                </span>
+              )}
+            </div>
+          )}
           <div className="flex gap-2">
             <Link href={`/modules/${pack.id}/configure`} className="flex-1">
               <Button

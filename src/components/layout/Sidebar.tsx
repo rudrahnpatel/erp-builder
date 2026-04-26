@@ -19,20 +19,22 @@ import {
   Database,
 } from "lucide-react";
 import { useWorkspace } from "@/hooks/use-workspace";
+import { useLanguage } from "@/lib/i18n";
 
 export function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
-  const { workspace } = useWorkspace();
+  const { workspace, isLoading } = useWorkspace();
+  const { t } = useLanguage();
 
   const navSections = [
     {
-      label: "Builder",
+      label: t("common.builder"),
       items: [
-        { href: "/workspace", label: "Dashboard", icon: LayoutDashboard },
-        { href: "/modules", label: "Marketplace", icon: Blocks },
-        { href: "/pages", label: "Manage Pages", icon: FileText },
-        { href: "/tables", label: "Manage Tables", icon: Database },
+        { href: "/workspace", label: t("common.dashboard"), icon: LayoutDashboard },
+        { href: "/modules", label: t("common.marketplace"), icon: Blocks },
+        { href: "/pages", label: t("common.managePages"), icon: FileText },
+        { href: "/tables", label: t("common.manageTables"), icon: Database },
       ],
     },
   ];
@@ -74,21 +76,39 @@ export function Sidebar() {
           />
         </div>
         {!collapsed && (
-          <div className="ml-2.5 min-w-0 animate-fade-in-up">
-            <span
-              className="font-semibold text-[13px] block leading-tight truncate tracking-tight"
-              style={{ color: "var(--sidebar-foreground)" }}
-            >
-              {workspace?.name || "The Ledger"}
-            </span>
-            <span
-              className="text-[10px] tracking-[0.08em] mono block mt-0.5"
-              style={{ color: "var(--foreground-dimmed)" }}
-            >
-              {workspace?.slug
-                ? `${workspace.slug}.erpbuilder.app`
-                : "workspace"}
-            </span>
+          <div className="ml-2.5 min-w-0 flex-1 animate-fade-in-up">
+            {isLoading && !workspace ? (
+              <>
+                <span
+                  className="block h-3 rounded-md w-24 animate-pulse"
+                  style={{ background: "var(--surface-2)" }}
+                  aria-hidden="true"
+                />
+                <span
+                  className="block h-2 rounded-md w-32 mt-1.5 animate-pulse"
+                  style={{ background: "var(--surface-2)" }}
+                  aria-hidden="true"
+                />
+                <span className="sr-only">Loading workspace…</span>
+              </>
+            ) : (
+              <>
+                <span
+                  className="font-semibold text-[13px] block leading-tight truncate tracking-tight"
+                  style={{ color: "var(--sidebar-foreground)" }}
+                >
+                  {workspace?.name || "Workspace"}
+                </span>
+                <span
+                  className="text-[10px] tracking-[0.08em] mono block mt-0.5"
+                  style={{ color: "var(--foreground-dimmed)" }}
+                >
+                  {workspace?.slug
+                    ? `${workspace.slug}.erpbuilder.app`
+                    : ""}
+                </span>
+              </>
+            )}
           </div>
         )}
         {/* Collapse toggle — always visible in header */}
@@ -175,7 +195,7 @@ export function Sidebar() {
             href={`/apps/${workspace.slug}`}
             target="_blank"
             rel="noopener"
-            title={collapsed ? "Open my ERP" : undefined}
+            title={collapsed ? t("common.openMyErp") : undefined}
             className={`w-full flex items-center gap-2 text-[13px] font-semibold rounded-xl px-3 py-2.5 transition-all duration-200 pressable ${
               collapsed ? "justify-center px-0" : ""
             }`}
@@ -190,7 +210,7 @@ export function Sidebar() {
             <Zap className="h-4 w-4" />
             {!collapsed && (
               <>
-                Open my ERP
+                {t("common.openMyErp")}
                 <ExternalLink className="h-3 w-3 ml-auto opacity-60" />
               </>
             )}
@@ -218,7 +238,7 @@ export function Sidebar() {
           style={{ color: "var(--foreground-muted)" }}
         >
           <HelpCircle className="h-4 w-4" />
-          {!collapsed && "Help & docs"}
+          {!collapsed && t("common.helpDocs")}
         </button>
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
@@ -234,7 +254,7 @@ export function Sidebar() {
           }}
         >
           <LogOut className="h-4 w-4" />
-          {!collapsed && "Logout"}
+          {!collapsed && t("common.logout")}
         </button>
       </div>
     </div>

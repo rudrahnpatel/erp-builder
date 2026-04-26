@@ -7,6 +7,23 @@ import { useWorkspace } from "@/hooks/use-workspace";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { toast } from "sonner";
+import {
   Table2,
   Kanban,
   Type,
@@ -26,11 +43,24 @@ import {
   Search,
   LayoutTemplate,
   Layers,
-  Loader2
+  Loader2,
+  Hash,
+  Download,
+  Image as ImageIcon,
+  Calendar,
+  Calculator,
+  PanelLeftClose,
+  PanelLeftOpen,
+  PanelRightClose,
+  PanelRightOpen,
 } from "lucide-react";
 import Link from "next/link";
 import { TableView } from "@/components/blocks/TableView";
 import { KanbanView } from "@/components/blocks/KanbanView";
+import { MetricCard } from "@/components/blocks/MetricCard";
+import { ExportButton } from "@/components/blocks/ExportButton";
+import { ImageBlock } from "@/components/blocks/ImageBlock";
+import { GstCalculator } from "@/components/blocks/GstCalculator";
 
 interface PlacedBlock {
   id: string;
@@ -43,13 +73,33 @@ interface PlacedBlock {
 const blockPalette = [
   { type: "TABLE_VIEW", label: "Table View", icon: <Table2 className="h-4 w-4" /> },
   { type: "KANBAN_VIEW", label: "Kanban Board", icon: <Kanban className="h-4 w-4" /> },
-  { type: "TEXT", label: "Text/Heading", icon: <Type className="h-4 w-4" /> },
-  { type: "FILTER_BAR", label: "Filter Bar", icon: <Filter className="h-4 w-4" /> },
+  { type: "METRIC", label: "KPI Metric", icon: <Hash className="h-4 w-4" /> },
   { type: "CHART", label: "Chart", icon: <BarChart3 className="h-4 w-4" /> },
+  { type: "TEXT", label: "Text/Heading", icon: <Type className="h-4 w-4" /> },
+  { type: "IMAGE", label: "Image / Logo", icon: <ImageIcon className="h-4 w-4" /> },
+  { type: "FILTER_BAR", label: "Filter Bar", icon: <Filter className="h-4 w-4" /> },
   { type: "FORM", label: "Form", icon: <FileText className="h-4 w-4" /> },
+  { type: "EXPORT_BUTTON", label: "Export (CSV)", icon: <Download className="h-4 w-4" /> },
+  { type: "GST_CALCULATOR", label: "GST Calculator", icon: <Calculator className="h-4 w-4" /> },
 ];
 
 const KANBAN_COLS = ["To Do", "In Progress", "Review", "Done"];
+
+const blockSizeStyle = (cfg: any): React.CSSProperties => {
+  const widthPct = typeof cfg?.widthPct === "number" ? cfg.widthPct : 100;
+  const heightPx = typeof cfg?.heightPx === "number" ? cfg.heightPx : undefined;
+  const isFull = widthPct >= 99.5;
+  return {
+    flexBasis: isFull ? "100%" : `calc(${widthPct}% - 12px)`,
+    maxWidth: "100%",
+    minWidth: isFull ? undefined : "200px",
+    height: heightPx ? `${heightPx}px` : undefined,
+  };
+};
+
+const SIZE_SNAP_POINTS = [25, 33.333, 50, 66.667, 75, 100] as const;
+
+type ResizeAxis = "left" | "right" | "top" | "bottom";
 
 interface KanbanCard {
   id: string;
@@ -80,6 +130,130 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
   const [pageTitle, setPageTitle] = useState("");
   const [rightTab, setRightTab] = useState<"components" | "properties">("components");
   const [loadedPageId, setLoadedPageId] = useState<string | null>(null);
+  const [leftCollapsed, setLeftCollapsed] = useState(false);
+  const [rightCollapsed, setRightCollapsed] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
+  const canvasGridRef = useRef<HTMLDivElement | null>(null);
+
+  const startResize = (
+    e: React.PointerEvent<HTMLDivElement>,
+    blockId: string,
+    axis: ResizeAxis
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const blockEl = (e.currentTarget as HTMLElement).closest("[data-block-id]") as HTMLElement | null;
+    const grid = canvasGridRef.current;
+    if (!blockEl || !grid) return;
+
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const blockRect = blockEl.getBoundingClientRect();
+    const startWidthPx = blockRect.width;
+    const startHeightPx = blockRect.height;
+    const gridWidth = grid.getBoundingClientRect().width;
+
+    setIsResizing(true);
+    const cursor = axis === "left" || axis === "right" ? "ew-resize" : "ns-resize";
+    document.body.style.cursor = cursor;
+    document.body.style.userSelect = "none";
+
+    const onMove = (ev: PointerEvent) => {
+      const dx = ev.clientX - startX;
+      const dy = ev.clientY - startY;
+      setBlocks((prev) =>
+        prev.map((b) => {
+          if (b.id !== blockId) return b;
+          const cfg = { ...(b.config || {}) };
+          if (axis === "right") {
+            const newW = Math.max(180, Math.min(gridWidth, startWidthPx + dx));
+            cfg.widthPct = (newW / gridWidth) * 100;
+          } else if (axis === "left") {
+            const newW = Math.max(180, Math.min(gridWidth, startWidthPx - dx));
+            cfg.widthPct = (newW / gridWidth) * 100;
+          } else if (axis === "bottom") {
+            cfg.heightPx = Math.max(80, startHeightPx + dy);
+          } else if (axis === "top") {
+            cfg.heightPx = Math.max(80, startHeightPx - dy);
+          }
+          return { ...b, config: cfg };
+        })
+      );
+    };
+
+    const onUp = () => {
+      setBlocks((prev) =>
+        prev.map((b) => {
+          if (b.id !== blockId) return b;
+          const cfg = { ...(b.config || {}) };
+          if (typeof cfg.widthPct === "number") {
+            const closest = SIZE_SNAP_POINTS.reduce(
+              (a, c) => (Math.abs(c - cfg.widthPct) < Math.abs(a - cfg.widthPct) ? c : a),
+              100 as number
+            );
+            if (Math.abs(closest - cfg.widthPct) < 5) cfg.widthPct = closest;
+          }
+          return { ...b, config: cfg };
+        })
+      );
+      setIsResizing(false);
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+    };
+
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+  };
+
+  // Ordered, filtered copy of the workspace pages used to drive the left rail.
+  // Kept local so drag-and-drop can reorder optimistically before the PATCH
+  // round-trip resolves.
+  const [orderedPages, setOrderedPages] = useState<any[]>([]);
+
+  useEffect(() => {
+    const visible = (allPages || []).filter(
+      (p: any) =>
+        p.packPageKey !== "user_management" && p.packPageKey !== "settings"
+    );
+    setOrderedPages(visible);
+  }, [allPages]);
+
+  const pageSensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const handlePagesDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIdx = orderedPages.findIndex((p) => p.id === active.id);
+    const newIdx = orderedPages.findIndex((p) => p.id === over.id);
+    if (oldIdx < 0 || newIdx < 0) return;
+
+    const next = arrayMove(orderedPages, oldIdx, newIdx);
+    setOrderedPages(next);
+
+    try {
+      const res = await fetch("/api/pages/reorder", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pageIds: next.map((p) => p.id) }),
+      });
+      if (!res.ok) throw new Error("reorder failed");
+      refreshAllPages();
+    } catch {
+      toast.error("Failed to save new page order");
+      setOrderedPages(
+        (allPages || []).filter(
+          (p: any) =>
+            p.packPageKey !== "user_management" && p.packPageKey !== "settings"
+        )
+      );
+    }
+  };
   // kanban state: per-block map of cards
   const [kanbanCards, setKanbanCards] = useState<Record<string, KanbanCard[]>>({});
   const kanbanDragCard = useRef<{ blockId: string; cardId: string } | null>(null);
@@ -200,6 +374,38 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
           />
         </div>
         <div className="flex items-center gap-2">
+          {!preview && (
+            <div className="hidden md:flex items-center gap-1 mr-1">
+              <button
+                type="button"
+                onClick={() => setLeftCollapsed((c) => !c)}
+                title={leftCollapsed ? "Show pages list" : "Hide pages list"}
+                aria-label={leftCollapsed ? "Show pages list" : "Hide pages list"}
+                className="p-1.5 rounded-lg hover-bg-subtle focus-ring transition-colors"
+                style={{ color: "var(--foreground-muted)" }}
+              >
+                {leftCollapsed ? (
+                  <PanelLeftOpen className="h-4 w-4" />
+                ) : (
+                  <PanelLeftClose className="h-4 w-4" />
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => setRightCollapsed((c) => !c)}
+                title={rightCollapsed ? "Show inspector" : "Hide inspector"}
+                aria-label={rightCollapsed ? "Show inspector" : "Hide inspector"}
+                className="p-1.5 rounded-lg hover-bg-subtle focus-ring transition-colors"
+                style={{ color: "var(--foreground-muted)" }}
+              >
+                {rightCollapsed ? (
+                  <PanelRightOpen className="h-4 w-4" />
+                ) : (
+                  <PanelRightClose className="h-4 w-4" />
+                )}
+              </button>
+            </div>
+          )}
           <Button
             variant={preview ? "default" : "outline"}
             size="sm"
@@ -237,7 +443,7 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
 
       <div className="flex flex-col lg:flex-row flex-1 overflow-hidden relative">
         {/* Left Side: Page Switcher */}
-        {!preview && (
+        {!preview && !leftCollapsed && (
           <div className="hidden lg:flex w-[220px] border-r flex-col shrink-0 z-10 transition-all" style={{ borderColor: "var(--border-subtle)", background: "var(--surface-1)" }}>
             <div className="p-4 border-b border-border/40 shrink-0 flex items-center gap-2 text-muted-foreground">
               <LayoutTemplate className="h-4 w-4" />
@@ -246,30 +452,26 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
               </h3>
             </div>
             <div className="flex-1 overflow-y-auto p-3 space-y-1">
-              {allPages?.map((p: any) => (
-                <Link
-                  key={p.id}
-                  href={`/pages/${p.id}/edit`}
-                  className={`group flex items-center gap-2.5 px-3 py-2.5 text-sm rounded-xl transition-colors ${
-                    p.id === pageId
-                      ? "bg-primary/10 text-primary font-medium"
-                      : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
-                  }`}
+              <DndContext
+                sensors={pageSensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handlePagesDragEnd}
+              >
+                <SortableContext
+                  items={orderedPages.map((p) => p.id)}
+                  strategy={verticalListSortingStrategy}
                 >
-                  <FileText className={`h-4 w-4 shrink-0 ${p.id === pageId ? "text-primary" : "opacity-60"}`} />
-                  <span className="truncate flex-1">{p.title}</span>
-                  {p.id === pageId && (
-                    <button
-                      onClick={(e) => { e.preventDefault(); deletePage(); }}
-                      title="Delete page"
-                      className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:text-destructive transition-all"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
-                  )}
-                </Link>
-              ))}
-              {allPages?.length === 0 && (
+                  {orderedPages.map((p: any) => (
+                    <SortablePageLink
+                      key={p.id}
+                      page={p}
+                      active={p.id === pageId}
+                      onDelete={deletePage}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
+              {orderedPages.length === 0 && (
                 <div className="text-xs text-muted-foreground/60 text-center py-4">No pages found</div>
               )}
             </div>
@@ -313,12 +515,13 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
             }
           }}
         >
-          <div className="max-w-4xl mx-auto space-y-6 stagger-children pb-20">
+          <div ref={canvasGridRef} className="max-w-4xl mx-auto flex flex-wrap items-start gap-6 stagger-children pb-20">
             {blocks.map((block, index) => (
               <div
                 key={block.id || `block-${index}`}
+                data-block-id={block.id}
                 onClick={() => !preview && setSelectedBlock(block.id)}
-                draggable={!preview}
+                draggable={!preview && !isResizing}
                 onDragStart={(e) => {
                   e.dataTransfer.effectAllowed = "move";
                   setDraggedIdx(index);
@@ -369,8 +572,55 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
                   boxShadow: selectedBlock === block.id && !preview
                     ? "0 0 0 3px color-mix(in oklch, var(--primary), transparent 85%)"
                     : undefined,
+                  ...blockSizeStyle(block.config),
                 }}
               >
+                {/* Resize handles — visible when block is selected */}
+                {!preview && selectedBlock === block.id && (
+                  <>
+                    {(["right", "left"] as const).map((side) => (
+                      <div
+                        key={side}
+                        onPointerDown={(e) => startResize(e, block.id, side)}
+                        onMouseDown={(e) => e.stopPropagation()}
+                        onClick={(e) => e.stopPropagation()}
+                        onDragStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                        title={`Drag to resize width`}
+                        className={`absolute top-1/2 -translate-y-1/2 ${side === "right" ? "-right-2" : "-left-2"} w-4 h-10 cursor-ew-resize z-30 flex items-center justify-center`}
+                      >
+                        <span
+                          className="block w-3 h-3 rounded-full"
+                          style={{
+                            background: "var(--primary)",
+                            border: "2px solid var(--background)",
+                            boxShadow: "0 1px 3px color-mix(in oklch, black, transparent 70%)",
+                          }}
+                        />
+                      </div>
+                    ))}
+                    {(["bottom", "top"] as const).map((side) => (
+                      <div
+                        key={side}
+                        onPointerDown={(e) => startResize(e, block.id, side)}
+                        onMouseDown={(e) => e.stopPropagation()}
+                        onClick={(e) => e.stopPropagation()}
+                        onDragStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                        title={`Drag to resize height`}
+                        className={`absolute left-1/2 -translate-x-1/2 ${side === "bottom" ? "-bottom-2" : "-top-2"} w-10 h-4 cursor-ns-resize z-30 flex items-center justify-center`}
+                      >
+                        <span
+                          className="block w-3 h-3 rounded-full"
+                          style={{
+                            background: "var(--primary)",
+                            border: "2px solid var(--background)",
+                            boxShadow: "0 1px 3px color-mix(in oklch, black, transparent 70%)",
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </>
+                )}
+
                 {/* Block toolbar */}
                 {!preview && (
                   <div className="absolute -top-3 left-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
@@ -406,7 +656,7 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
                   )}
 
                   {block.type === "FILTER_BAR" && (
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                       <div className="flex-1 relative group w-full">
                         <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                         <input
@@ -416,6 +666,27 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
                           readOnly={!preview}
                         />
                       </div>
+                      {block.config?.includeDateRange && (
+                        <div className="flex items-center gap-2 shrink-0">
+                          <div className="relative">
+                            <Calendar className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                            <input
+                              type="date"
+                              className="pl-8 pr-2 py-2 text-sm rounded-xl bg-secondary/30 border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20"
+                              readOnly={!preview}
+                            />
+                          </div>
+                          <span className="text-xs text-muted-foreground">to</span>
+                          <div className="relative">
+                            <Calendar className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                            <input
+                              type="date"
+                              className="pl-8 pr-2 py-2 text-sm rounded-xl bg-secondary/30 border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20"
+                              readOnly={!preview}
+                            />
+                          </div>
+                        </div>
+                      )}
                       <Button variant="outline" className="gap-2 shrink-0 h-10 rounded-xl bg-background border-border/60 hover:bg-secondary/50">
                         <Filter className="h-4 w-4" /> Filter
                       </Button>
@@ -552,6 +823,36 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
                     </div>
                   )}
 
+                  {block.type === "METRIC" && (() => {
+                    const tableRef = block.config?.tableRef;
+                    const resolvedTable = workspace?.tables?.find((t: any) => t.name === tableRef);
+                    return (
+                      <MetricCard
+                        config={{ ...block.config, metricLabel: block.config?.metricLabel || block.label }}
+                        tableId={resolvedTable?.id}
+                      />
+                    );
+                  })()}
+
+                  {block.type === "EXPORT_BUTTON" && (() => {
+                    const tableRef = block.config?.tableRef;
+                    const resolvedTable = workspace?.tables?.find((t: any) => t.name === tableRef);
+                    return (
+                      <ExportButton
+                        config={block.config || {}}
+                        tableId={resolvedTable?.id}
+                      />
+                    );
+                  })()}
+
+                  {block.type === "IMAGE" && (
+                    <ImageBlock config={block.config || {}} />
+                  )}
+
+                  {block.type === "GST_CALCULATOR" && (
+                    <GstCalculator config={block.config || {}} />
+                  )}
+
                   {block.type === "FORM" && (
                     <div className="space-y-4 max-w-lg p-2">
                       <div className="space-y-1.5 mb-2">
@@ -599,7 +900,7 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
                     if (bDef) addBlock(bDef.type, bDef.label, bDef.icon);
                   }
                 }}
-                className="rounded-2xl p-10 text-center transition-all duration-300 border-2 border-dashed border-border/60 bg-transparent text-muted-foreground hover:border-primary/50 hover:bg-primary/5 hover:text-primary cursor-pointer group"
+                className="rounded-2xl p-10 text-center transition-all duration-300 border-2 border-dashed border-border/60 bg-transparent text-muted-foreground hover:border-primary/50 hover:bg-primary/5 hover:text-primary cursor-pointer group basis-full"
               >
                 <div className="bg-secondary/80 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/10 transition-colors">
                   <Plus className="h-5 w-5 opacity-70" />
@@ -612,7 +913,7 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
         </div>
 
         {/* Right Side: Tabbed Panel (Components & Properties) */}
-        {!preview && (
+        {!preview && !rightCollapsed && (
           <div className="hidden lg:flex w-[320px] border-l flex-col shrink-0 z-10" style={{ borderColor: "var(--border-subtle)", background: "var(--surface-1)" }}>
             {/* Tab Headers */}
             <div className="flex px-5 pt-4 pb-0 border-b gap-1 shrink-0" style={{ borderColor: "var(--border-subtle)", background: "var(--surface-1)" }}>
@@ -701,17 +1002,97 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
                         <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                           Display Title
                         </label>
-                        <input 
+                        <input
                           type="text"
                           value={blocks.find((b) => b.id === selectedBlock)?.label || ""}
                           onChange={(e) => {
-                            setBlocks(prev => prev.map(b => 
+                            setBlocks(prev => prev.map(b =>
                               b.id === selectedBlock ? { ...b, label: e.target.value } : b
                             ));
                           }}
                           className="w-full text-sm px-3.5 py-2.5 rounded-xl bg-card border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20 shadow-sm"
                         />
                       </div>
+
+                      {/* Block Size — quick presets + readout. Drag the handles on the canvas to fine-tune. */}
+                      {(() => {
+                        const b = blocks.find((x) => x.id === selectedBlock);
+                        const widthPct = typeof b?.config?.widthPct === "number" ? b!.config!.widthPct : 100;
+                        const heightPx = typeof b?.config?.heightPx === "number" ? b!.config!.heightPx : undefined;
+                        const widthLabel = widthPct >= 99.5 ? "Full" : `${Math.round(widthPct)}%`;
+                        const heightLabel = heightPx ? `${Math.round(heightPx)}px` : "Auto";
+                        const setWidth = (pct: number) =>
+                          setBlocks((prev) =>
+                            prev.map((x) =>
+                              x.id === selectedBlock
+                                ? { ...x, config: { ...(x.config || {}), widthPct: pct } }
+                                : x
+                            )
+                          );
+                        const resetSize = () =>
+                          setBlocks((prev) =>
+                            prev.map((x) => {
+                              if (x.id !== selectedBlock) return x;
+                              const cfg = { ...(x.config || {}) };
+                              delete cfg.widthPct;
+                              delete cfg.heightPx;
+                              return { ...x, config: cfg };
+                            })
+                          );
+                        const presets: { label: string; pct: number }[] = [
+                          { label: "Full", pct: 100 },
+                          { label: "1/2", pct: 50 },
+                          { label: "1/3", pct: 33.333 },
+                        ];
+                        return (
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                                Block Size
+                              </label>
+                              <span className="text-[10px] font-medium text-muted-foreground/70 tabular-nums">
+                                {widthLabel} × {heightLabel}
+                              </span>
+                            </div>
+                            <div className="grid grid-cols-4 gap-1.5">
+                              {presets.map((opt) => {
+                                const active = Math.abs(widthPct - opt.pct) < 1;
+                                return (
+                                  <button
+                                    key={opt.label}
+                                    type="button"
+                                    onClick={() => setWidth(opt.pct)}
+                                    className="px-2 py-2 rounded-lg text-xs font-semibold transition-colors border"
+                                    style={{
+                                      background: active ? "color-mix(in oklch, var(--primary), transparent 88%)" : "var(--card)",
+                                      borderColor: active ? "var(--primary)" : "var(--border-subtle)",
+                                      color: active ? "var(--primary)" : "var(--foreground-muted)",
+                                    }}
+                                  >
+                                    {opt.label}
+                                  </button>
+                                );
+                              })}
+                              <button
+                                type="button"
+                                onClick={resetSize}
+                                title="Reset size"
+                                className="px-2 py-2 rounded-lg text-xs font-semibold transition-colors border"
+                                style={{
+                                  background: "var(--card)",
+                                  borderColor: "var(--border-subtle)",
+                                  color: "var(--foreground-muted)",
+                                }}
+                              >
+                                Reset
+                              </button>
+                            </div>
+                            <p className="text-[10px] text-muted-foreground/70 leading-relaxed">
+                              Or drag the dots around the selected block on the canvas.
+                            </p>
+                          </div>
+                        );
+                      })()}
 
                       {blocks.find((b) => b.id === selectedBlock)?.type === "TEXT" && (
                         <div className="space-y-2">
@@ -731,36 +1112,298 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
                         </div>
                       )}
 
-                      {/* Data Source Field for Table/Kanban */}
-                      {(blocks.find((b) => b.id === selectedBlock)?.type === "TABLE_VIEW" || 
-                        blocks.find((b) => b.id === selectedBlock)?.type === "KANBAN_VIEW") && (
-                        <div className="space-y-2 pt-4 border-t border-border/30">
-                          <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex justify-between">
-                            <span>Target Database Table</span>
-                          </label>
-                          <select
-                            className="w-full text-sm px-3.5 py-2.5 rounded-xl bg-card border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20 shadow-sm"
-                            value={blocks.find((b) => b.id === selectedBlock)?.config?.tableRef || ""}
-                            onChange={(e) => {
-                              setBlocks((prev) =>
-                                prev.map((b) =>
-                                  b.id === selectedBlock
-                                    ? { ...b, config: { ...(b.config || {}), tableRef: e.target.value } }
-                                    : b
+                      {/* Data Source Field for Table/Kanban/Export/Metric */}
+                      {(() => {
+                        const b = blocks.find((b) => b.id === selectedBlock);
+                        const needsTable =
+                          b?.type === "TABLE_VIEW" ||
+                          b?.type === "KANBAN_VIEW" ||
+                          b?.type === "EXPORT_BUTTON" ||
+                          b?.type === "METRIC" ||
+                          b?.type === "FILTER_BAR";
+                        if (!needsTable) return null;
+                        const helperText =
+                          b?.type === "METRIC"
+                            ? "Optional — bind a table to show a live record count instead of a static value."
+                            : b?.type === "EXPORT_BUTTON"
+                            ? "Records from this table will be downloaded as CSV."
+                            : b?.type === "FILTER_BAR"
+                            ? "The table the filters will apply to."
+                            : "Connect this component to fetch live runtime data from the backend schema.";
+                        return (
+                          <div className="space-y-2 pt-4 border-t border-border/30">
+                            <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex justify-between">
+                              <span>
+                                {b?.type === "METRIC" ? "Live Count From Table" : "Target Database Table"}
+                              </span>
+                            </label>
+                            <select
+                              className="w-full text-sm px-3.5 py-2.5 rounded-xl bg-card border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20 shadow-sm"
+                              value={b?.config?.tableRef || ""}
+                              onChange={(e) => {
+                                setBlocks((prev) =>
+                                  prev.map((x) =>
+                                    x.id === selectedBlock
+                                      ? { ...x, config: { ...(x.config || {}), tableRef: e.target.value } }
+                                      : x
+                                  )
+                                );
+                              }}
+                            >
+                              <option value="">{b?.type === "METRIC" ? "None (use static value)" : "Select a table..."}</option>
+                              {workspace?.tables?.map((t: any) => (
+                                <option key={t.id} value={t.name}>
+                                  {t.name}
+                                </option>
+                              ))}
+                            </select>
+                            <p className="text-[10px] text-muted-foreground/70 mt-1.5 leading-relaxed">{helperText}</p>
+                          </div>
+                        );
+                      })()}
+
+                      {/* METRIC configuration */}
+                      {blocks.find((b) => b.id === selectedBlock)?.type === "METRIC" && (() => {
+                        const b = blocks.find((b) => b.id === selectedBlock)!;
+                        const cfg = b.config || {};
+                        const update = (patch: Record<string, unknown>) =>
+                          setBlocks((prev) =>
+                            prev.map((x) =>
+                              x.id === selectedBlock
+                                ? { ...x, config: { ...(x.config || {}), ...patch } }
+                                : x
+                            )
+                          );
+                        return (
+                          <div className="space-y-3 pt-4 border-t border-border/30">
+                            <div className="space-y-1.5">
+                              <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Metric Label</label>
+                              <input
+                                type="text"
+                                value={cfg.metricLabel || ""}
+                                placeholder="e.g. Today's Sales"
+                                onChange={(e) => update({ metricLabel: e.target.value })}
+                                className="w-full text-sm px-3.5 py-2.5 rounded-xl bg-card border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20"
+                              />
+                            </div>
+                            <div className="space-y-1.5">
+                              <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Static Value</label>
+                              <input
+                                type="text"
+                                value={cfg.metricValue || ""}
+                                placeholder="e.g. ₹50,000"
+                                onChange={(e) => update({ metricValue: e.target.value })}
+                                className="w-full text-sm px-3.5 py-2.5 rounded-xl bg-card border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20"
+                              />
+                              <p className="text-[10px] text-muted-foreground/70">Ignored when a table is bound above — live count takes over.</p>
+                            </div>
+                            <div className="space-y-1.5">
+                              <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Trend Caption</label>
+                              <input
+                                type="text"
+                                value={cfg.metricTrend || ""}
+                                placeholder="e.g. +12% vs last month"
+                                onChange={(e) => update({ metricTrend: e.target.value })}
+                                className="w-full text-sm px-3.5 py-2.5 rounded-xl bg-card border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20"
+                              />
+                            </div>
+                            <div className="space-y-1.5">
+                              <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Accent</label>
+                              <select
+                                value={cfg.metricAccent || "blue"}
+                                onChange={(e) => update({ metricAccent: e.target.value })}
+                                className="w-full text-sm px-3.5 py-2.5 rounded-xl bg-card border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20"
+                              >
+                                <option value="blue">Blue</option>
+                                <option value="emerald">Emerald</option>
+                                <option value="amber">Amber</option>
+                                <option value="violet">Violet</option>
+                                <option value="rose">Rose</option>
+                              </select>
+                            </div>
+                          </div>
+                        );
+                      })()}
+
+                      {/* EXPORT_BUTTON configuration */}
+                      {blocks.find((b) => b.id === selectedBlock)?.type === "EXPORT_BUTTON" && (() => {
+                        const b = blocks.find((b) => b.id === selectedBlock)!;
+                        const cfg = b.config || {};
+                        return (
+                          <div className="space-y-1.5 pt-4 border-t border-border/30">
+                            <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Button Label</label>
+                            <input
+                              type="text"
+                              value={cfg.exportLabel || ""}
+                              placeholder="Export CSV"
+                              onChange={(e) =>
+                                setBlocks((prev) =>
+                                  prev.map((x) =>
+                                    x.id === selectedBlock
+                                      ? { ...x, config: { ...(x.config || {}), exportLabel: e.target.value } }
+                                      : x
+                                  )
                                 )
-                              );
-                            }}
-                          >
-                            <option value="" disabled>Select a table...</option>
-                            {workspace?.tables?.map((t: any) => (
-                              <option key={t.id} value={t.name}>
-                                {t.name}
-                              </option>
-                            ))}
-                          </select>
-                          <p className="text-[10px] text-muted-foreground/70 mt-1.5 leading-relaxed">Connect this component to fetch live runtime data from the backend schema.</p>
-                        </div>
-                      )}
+                              }
+                              className="w-full text-sm px-3.5 py-2.5 rounded-xl bg-card border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20"
+                            />
+                          </div>
+                        );
+                      })()}
+
+                      {/* IMAGE configuration */}
+                      {blocks.find((b) => b.id === selectedBlock)?.type === "IMAGE" && (() => {
+                        const b = blocks.find((b) => b.id === selectedBlock)!;
+                        const cfg = b.config || {};
+                        const update = (patch: Record<string, unknown>) =>
+                          setBlocks((prev) =>
+                            prev.map((x) =>
+                              x.id === selectedBlock
+                                ? { ...x, config: { ...(x.config || {}), ...patch } }
+                                : x
+                            )
+                          );
+                        return (
+                          <div className="space-y-3 pt-4 border-t border-border/30">
+                            <div className="space-y-1.5">
+                              <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Image URL</label>
+                              <input
+                                type="url"
+                                value={cfg.imageUrl || ""}
+                                placeholder="https://…/logo.png"
+                                onChange={(e) => update({ imageUrl: e.target.value })}
+                                className="w-full text-sm px-3.5 py-2.5 rounded-xl bg-card border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20"
+                              />
+                            </div>
+                            <div className="space-y-1.5">
+                              <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Alt Text</label>
+                              <input
+                                type="text"
+                                value={cfg.imageAlt || ""}
+                                placeholder="Company logo"
+                                onChange={(e) => update({ imageAlt: e.target.value })}
+                                className="w-full text-sm px-3.5 py-2.5 rounded-xl bg-card border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20"
+                              />
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div className="space-y-1.5">
+                                <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Width</label>
+                                <select
+                                  value={cfg.imageWidth || "md"}
+                                  onChange={(e) => update({ imageWidth: e.target.value })}
+                                  className="w-full text-sm px-3 py-2.5 rounded-xl bg-card border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20"
+                                >
+                                  <option value="sm">Small</option>
+                                  <option value="md">Medium</option>
+                                  <option value="lg">Large</option>
+                                  <option value="full">Full</option>
+                                </select>
+                              </div>
+                              <div className="space-y-1.5">
+                                <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Align</label>
+                                <select
+                                  value={cfg.imageAlign || "center"}
+                                  onChange={(e) => update({ imageAlign: e.target.value })}
+                                  className="w-full text-sm px-3 py-2.5 rounded-xl bg-card border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20"
+                                >
+                                  <option value="left">Left</option>
+                                  <option value="center">Center</option>
+                                  <option value="right">Right</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })()}
+
+                      {/* GST_CALCULATOR configuration */}
+                      {blocks.find((b) => b.id === selectedBlock)?.type === "GST_CALCULATOR" && (() => {
+                        const b = blocks.find((b) => b.id === selectedBlock)!;
+                        const cfg = b.config || {};
+                        const update = (patch: Record<string, unknown>) =>
+                          setBlocks((prev) =>
+                            prev.map((x) =>
+                              x.id === selectedBlock
+                                ? { ...x, config: { ...(x.config || {}), ...patch } }
+                                : x
+                            )
+                          );
+                        return (
+                          <div className="space-y-3 pt-4 border-t border-border/30">
+                            <div className="space-y-1.5">
+                              <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Default Amount (₹)</label>
+                              <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={cfg.gstDefaultAmount ?? ""}
+                                placeholder="1000"
+                                onChange={(e) =>
+                                  update({
+                                    gstDefaultAmount:
+                                      e.target.value === "" ? undefined : parseFloat(e.target.value),
+                                  })
+                                }
+                                className="w-full text-sm px-3.5 py-2.5 rounded-xl bg-card border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20"
+                              />
+                            </div>
+                            <div className="space-y-1.5">
+                              <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Default GST Rate</label>
+                              <select
+                                value={cfg.gstDefaultRate || "18%"}
+                                onChange={(e) => update({ gstDefaultRate: e.target.value })}
+                                className="w-full text-sm px-3.5 py-2.5 rounded-xl bg-card border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20"
+                              >
+                                <option value="0%">0%</option>
+                                <option value="5%">5%</option>
+                                <option value="12%">12%</option>
+                                <option value="18%">18%</option>
+                                <option value="28%">28%</option>
+                              </select>
+                            </div>
+                            <div className="space-y-1.5">
+                              <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Tax Split</label>
+                              <select
+                                value={cfg.gstSplit || "intrastate"}
+                                onChange={(e) => update({ gstSplit: e.target.value })}
+                                className="w-full text-sm px-3.5 py-2.5 rounded-xl bg-card border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20"
+                              >
+                                <option value="intrastate">Intrastate (CGST + SGST)</option>
+                                <option value="interstate">Interstate (IGST)</option>
+                              </select>
+                              <p className="text-[10px] text-muted-foreground/70">Intrastate splits GST equally between centre and state. Interstate uses the unified IGST.</p>
+                            </div>
+                          </div>
+                        );
+                      })()}
+
+                      {/* FILTER_BAR date range toggle */}
+                      {blocks.find((b) => b.id === selectedBlock)?.type === "FILTER_BAR" && (() => {
+                        const b = blocks.find((b) => b.id === selectedBlock)!;
+                        const cfg = b.config || {};
+                        return (
+                          <div className="space-y-2 pt-4 border-t border-border/30">
+                            <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={!!cfg.includeDateRange}
+                                onChange={(e) =>
+                                  setBlocks((prev) =>
+                                    prev.map((x) =>
+                                      x.id === selectedBlock
+                                        ? { ...x, config: { ...(x.config || {}), includeDateRange: e.target.checked } }
+                                        : x
+                                    )
+                                  )
+                                }
+                                className="h-4 w-4 rounded border-border/60 focus:ring-primary/30"
+                              />
+                              <span className="font-medium text-foreground">Include date range picker</span>
+                            </label>
+                            <p className="text-[10px] text-muted-foreground/70">Adds two date inputs so users can filter records by a start and end date.</p>
+                          </div>
+                        );
+                      })()}
                       
                       <div className="pt-4 border-t border-border/30">
                         <Button
@@ -779,6 +1422,67 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function SortablePageLink({
+  page,
+  active,
+  onDelete,
+}: {
+  page: any;
+  active: boolean;
+  onDelete: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: page.id });
+
+  const style: React.CSSProperties = {
+    transform: transform
+      ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
+      : undefined,
+    transition,
+    opacity: isDragging ? 0.6 : 1,
+    zIndex: isDragging ? 10 : undefined,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <Link
+        href={`/pages/${page.id}/edit`}
+        className={`group flex items-center gap-2 px-2 py-2.5 text-sm rounded-xl transition-colors ${
+          active
+            ? "bg-primary/10 text-primary font-medium"
+            : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+        }`}
+      >
+        <button
+          {...attributes}
+          {...listeners}
+          onClick={(e) => e.preventDefault()}
+          title="Drag to reorder"
+          className="p-0.5 -ml-0.5 rounded cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-60 hover:!opacity-100 transition-opacity"
+        >
+          <GripVertical className="h-3.5 w-3.5" />
+        </button>
+        <FileText
+          className={`h-4 w-4 shrink-0 ${active ? "text-primary" : "opacity-60"}`}
+        />
+        <span className="truncate flex-1">{page.title}</span>
+        {active && (
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              onDelete();
+            }}
+            title="Delete page"
+            className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:text-destructive transition-all"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        )}
+      </Link>
     </div>
   );
 }

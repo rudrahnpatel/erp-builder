@@ -32,33 +32,7 @@ export const DEFAULT_WORKSPACE_PAGES: DefaultPageSeed[] = [
     key: "settings",
     title: "Settings",
     icon: "settings",
-    blocks: [
-      {
-        type: "TEXT",
-        config: {
-          content: "Settings",
-          level: "h1",
-          description:
-            "Workspace and app configuration. Preferences, integrations and billing live here.",
-        },
-      },
-    ],
-  },
-  {
-    key: "user_management",
-    title: "User Management",
-    icon: "users",
-    blocks: [
-      {
-        type: "TEXT",
-        config: {
-          content: "User Management",
-          level: "h1",
-          description:
-            "Invite teammates, manage roles and review access for this app.",
-        },
-      },
-    ],
+    blocks: [],
   },
 ];
 

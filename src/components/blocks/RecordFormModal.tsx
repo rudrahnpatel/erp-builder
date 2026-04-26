@@ -4,6 +4,35 @@ import { useEffect, useState } from "react";
 import { X, Save, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+// Indian mobile numbers: 10 digits after the optional +91 / 91 / 0 country prefix.
+// First digit must be 6, 7, 8, or 9 per TRAI numbering.
+function normalizeIndianPhone(raw: string): string {
+  return raw.replace(/[^\d]/g, "");
+}
+
+function validateIndianPhone(raw: string): string | null {
+  if (!raw) return null;
+  const digits = normalizeIndianPhone(raw);
+  // Strip leading 91 / 0 prefix, then require 10-digit subscriber number.
+  const subscriber = digits.replace(/^(91|0)/, "");
+  if (subscriber.length !== 10) {
+    return "Enter a 10-digit Indian mobile number";
+  }
+  if (!/^[6-9]/.test(subscriber)) {
+    return "Indian mobile numbers start with 6, 7, 8, or 9";
+  }
+  return null;
+}
+
+function validateEmail(raw: string): string | null {
+  if (!raw) return null;
+  // Lightweight check — server is the real authority. Only block obvious junk.
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw)) {
+    return "Enter a valid email address";
+  }
+  return null;
+}
+
 function isAutoComputeField(field: any, allFields: any[]): boolean {
   if (field?.config?.autoCompute) return true;
   // Heuristic for already-installed packs that pre-date the autoCompute config:
@@ -56,6 +85,7 @@ export function RecordFormModal({
 }) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<Record<string, any>>({});
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (!isOpen) return;
@@ -64,12 +94,33 @@ export function RecordFormModal({
     } else {
       setFormData({});
     }
+    setFieldErrors({});
   }, [isOpen, recordId, recordData]);
 
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Re-run validators on submit so users can't bypass an inline error by
+    // submitting before the onChange handler stores the message.
+    const errors: Record<string, string> = {};
+    for (const f of fields) {
+      const raw = formData[f.id];
+      if (typeof raw !== "string") continue;
+      if (f.type === "PHONE") {
+        const msg = validateIndianPhone(raw);
+        if (msg) errors[f.id] = msg;
+      } else if (f.type === "EMAIL") {
+        const msg = validateEmail(raw);
+        if (msg) errors[f.id] = msg;
+      }
+    }
+    if (Object.keys(errors).length) {
+      setFieldErrors(errors);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -209,6 +260,86 @@ export function RecordFormModal({
                      required={f.required}
                      placeholder={f.type === "CURRENCY" ? "0.00" : "0"}
                    />
+                 ) : f.type === "PHONE" ? (
+                   <>
+                     <div className="flex items-stretch rounded-xl overflow-hidden" style={{ border: `1px solid ${fieldErrors[key] ? "var(--danger)" : "var(--border)"}` }}>
+                       <span
+                         className="px-3 flex items-center text-sm font-medium mono shrink-0"
+                         style={{
+                           background: "var(--surface-2)",
+                           color: "var(--foreground-muted)",
+                           borderRight: "1px solid var(--border)",
+                         }}
+                         aria-hidden="true"
+                       >
+                         +91
+                       </span>
+                       <input
+                         type="tel"
+                         inputMode="numeric"
+                         maxLength={14}
+                         className="flex-1 text-sm px-3 py-3 outline-none transition-all"
+                         style={{
+                           background: "var(--surface-sunken)",
+                           color: "var(--foreground)",
+                         }}
+                         value={formData[key] || ""}
+                         onChange={(e) => {
+                           const v = e.target.value;
+                           setFormData({ ...formData, [key]: v });
+                           const msg = validateIndianPhone(v);
+                           setFieldErrors((prev) => {
+                             const next = { ...prev };
+                             if (msg) next[key] = msg;
+                             else delete next[key];
+                             return next;
+                           });
+                         }}
+                         required={f.required}
+                         placeholder="98765 43210"
+                       />
+                     </div>
+                     {fieldErrors[key] ? (
+                       <p className="text-[11px] mt-1" style={{ color: "var(--danger)" }}>
+                         {fieldErrors[key]}
+                       </p>
+                     ) : (
+                       <p className="text-[11px] mt-1" style={{ color: "var(--foreground-dimmed)" }}>
+                         10-digit Indian mobile number
+                       </p>
+                     )}
+                   </>
+                 ) : f.type === "EMAIL" ? (
+                   <>
+                     <input
+                       type="email"
+                       className="w-full text-sm px-4 py-3 rounded-xl outline-none transition-all focus-ring"
+                       style={{
+                         background: "var(--surface-sunken)",
+                         border: `1px solid ${fieldErrors[key] ? "var(--danger)" : "var(--border)"}`,
+                         color: "var(--foreground)",
+                       }}
+                       value={formData[key] || ""}
+                       onChange={(e) => {
+                         const v = e.target.value;
+                         setFormData({ ...formData, [key]: v });
+                         const msg = validateEmail(v);
+                         setFieldErrors((prev) => {
+                           const next = { ...prev };
+                           if (msg) next[key] = msg;
+                           else delete next[key];
+                           return next;
+                         });
+                       }}
+                       required={f.required}
+                       placeholder="name@example.com"
+                     />
+                     {fieldErrors[key] && (
+                       <p className="text-[11px] mt-1" style={{ color: "var(--danger)" }}>
+                         {fieldErrors[key]}
+                       </p>
+                     )}
+                   </>
                  ) : (
                    <input
                      type="text"

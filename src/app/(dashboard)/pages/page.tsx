@@ -1,9 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useWorkspace } from "@/hooks/use-workspace";
+import {
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  rectSortingStrategy,
+  sortableKeyboardCoordinates,
+  useSortable,
+} from "@dnd-kit/sortable";
 import {
   FileText,
   LayoutDashboard,
@@ -30,6 +46,7 @@ import {
   IndianRupee,
   Receipt,
   Layers,
+  GripVertical,
 } from "lucide-react";
 
 const IconMap: Record<string, any> = {
@@ -55,12 +72,64 @@ const IconMap: Record<string, any> = {
 };
 import { Button } from "@/components/ui/button";
 
+// System pages are rendered with a hardcoded UI at runtime (Settings has its
+// own tabs component; user_management is merged into Settings → Users). Both
+// are hidden from this builder grid since there's nothing meaningful to edit
+// via the block composer.
+const SYSTEM_PAGE_KEYS = new Set(["settings", "user_management"]);
+
+type PageItem = NonNullable<ReturnType<typeof useWorkspace>["workspace"]>["pages"][number];
+
 export default function PagesPage() {
   const router = useRouter();
   const { workspace, refetch } = useWorkspace();
 
-  const pages = workspace?.pages || [];
   const [creatingPage, setCreatingPage] = useState(false);
+  // Local copy so we can reorder optimistically during DnD without waiting
+  // for SWR to round-trip back to this component.
+  const [pages, setPages] = useState<PageItem[]>([]);
+
+  useEffect(() => {
+    const visible = (workspace?.pages || []).filter(
+      (p) => !p.packPageKey || !SYSTEM_PAGE_KEYS.has(p.packPageKey)
+    );
+    setPages(visible);
+  }, [workspace?.pages]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = pages.findIndex((p) => p.id === active.id);
+    const newIndex = pages.findIndex((p) => p.id === over.id);
+    if (oldIndex < 0 || newIndex < 0) return;
+
+    const next = arrayMove(pages, oldIndex, newIndex);
+    setPages(next);
+
+    try {
+      const res = await fetch("/api/pages/reorder", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pageIds: next.map((p) => p.id) }),
+      });
+      if (!res.ok) throw new Error("reorder failed");
+      // Keep SWR cache in sync so sidebars elsewhere pick up the new order.
+      refetch();
+    } catch {
+      toast.error("Failed to save new page order");
+      // Roll back to the server's current ordering.
+      const visible = (workspace?.pages || []).filter(
+        (p) => !p.packPageKey || !SYSTEM_PAGE_KEYS.has(p.packPageKey)
+      );
+      setPages(visible);
+    }
+  };
 
   const handleCreatePage = async () => {
     setCreatingPage(true);
@@ -151,106 +220,27 @@ export default function PagesPage() {
 
       {/* Pages Grid */}
       {pages.length > 0 ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 stagger-children">
-          {pages.map((page) => (
-            <div
-              key={page.id}
-              className="group relative flex flex-col justify-between rounded-xl transition-all duration-300 card-interactive cursor-pointer overflow-hidden"
-              style={{
-                background: "var(--card)",
-                border: "1px solid var(--border-subtle)",
-              }}
-              onClick={() => router.push(`/pages/${page.id}/edit`)}
-            >
-              {/* Top accent */}
-              <div
-                className="h-[3px] w-full"
-                style={{
-                  background: page.packSource 
-                    ? "var(--primary)" 
-                    : "var(--accent-amber)",
-                }}
-              />
-              
-              <div className="p-5">
-                <div className="flex items-start justify-between mb-4">
-                  <div
-                    className="h-11 w-11 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
-                    style={{
-                      background: "var(--surface-3)",
-                      color: "var(--foreground)",
-                    }}
-                  >
-                    {(() => {
-                      const IconComponent = page.icon ? IconMap[page.icon] : LayoutDashboard;
-                      return IconComponent ? (
-                        <IconComponent className="h-5 w-5" />
-                      ) : (
-                        <LayoutDashboard className="h-5 w-5" />
-                      );
-                    })()}
-                  </div>
-                  
-                  {/* Actions */}
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
-                    <button
-                      className="p-1.5 rounded-lg hover-bg-subtle focus-ring"
-                      style={{ color: "var(--foreground-muted)" }}
-                      onClick={() => router.push(`/pages/${page.id}/edit`)}
-                      title="Edit Page"
-                    >
-                      <PenLine className="h-4 w-4" />
-                    </button>
-                    <button
-                      className="p-1.5 rounded-lg transition-colors focus-ring"
-                      style={{ color: "var(--danger)" }}
-                      onClick={() => handleDeletePage(page.id, page.title)}
-                      title="Delete Page"
-                      onMouseEnter={(e) => { e.currentTarget.style.background = "var(--danger-subtle)"; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-
-                <h3
-                  className="text-[15px] font-semibold mb-1 truncate"
-                  style={{ color: "var(--foreground)" }}
-                >
-                  {page.title}
-                </h3>
-                
-                <div className="flex items-center gap-3 mt-4">
-                  <span
-                    className="inline-flex items-center gap-1.5 text-xs font-medium"
-                    style={{ color: "var(--success)" }}
-                  >
-                    <span
-                      className="h-1.5 w-1.5 rounded-full"
-                      style={{ background: "var(--success)" }}
-                    />
-                    Active
-                  </span>
-                  
-                  {page.packSource && (
-                    <span
-                      className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full"
-                      style={{ 
-                        background: "color-mix(in oklch, var(--primary), transparent 88%)", 
-                        color: "var(--primary)",
-                        border: "1px solid color-mix(in oklch, var(--primary), transparent 75%)"
-                      }}
-                    >
-                      <Package className="h-2.5 w-2.5" />
-                      Installed
-                    </span>
-                  )}
-                </div>
-              </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={pages.map((p) => p.id)}
+            strategy={rectSortingStrategy}
+          >
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {pages.map((page) => (
+                <SortablePageCard
+                  key={page.id}
+                  page={page}
+                  onOpen={() => router.push(`/pages/${page.id}/edit`)}
+                  onDelete={() => handleDeletePage(page.id, page.title)}
+                />
+              ))}
             </div>
-          ))}
-        </div>
+          </SortableContext>
+        </DndContext>
       ) : (
         <div
           className="rounded-2xl p-12 text-center"
@@ -308,6 +298,135 @@ export default function PagesPage() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function SortablePageCard({
+  page,
+  onOpen,
+  onDelete,
+}: {
+  page: PageItem;
+  onOpen: () => void;
+  onDelete: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: page.id });
+
+  const style: React.CSSProperties = {
+    transform: transform
+      ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
+      : undefined,
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 10 : undefined,
+    background: "var(--card)",
+    border: "1px solid var(--border-subtle)",
+  };
+
+  const IconComponent = page.icon ? IconMap[page.icon] : LayoutDashboard;
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="group relative flex flex-col justify-between rounded-xl transition-all duration-300 card-interactive cursor-pointer overflow-hidden"
+      onClick={onOpen}
+    >
+      <div
+        className="h-[3px] w-full"
+        style={{
+          background: page.packSource ? "var(--primary)" : "var(--accent-amber)",
+        }}
+      />
+
+      <div className="p-5">
+        <div className="flex items-start justify-between mb-4">
+          <div
+            className="h-11 w-11 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+            style={{ background: "var(--surface-3)", color: "var(--foreground)" }}
+          >
+            {IconComponent ? (
+              <IconComponent className="h-5 w-5" />
+            ) : (
+              <LayoutDashboard className="h-5 w-5" />
+            )}
+          </div>
+
+          <div
+            className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              {...attributes}
+              {...listeners}
+              className="p-1.5 rounded-lg hover-bg-subtle focus-ring cursor-grab active:cursor-grabbing"
+              style={{ color: "var(--foreground-muted)" }}
+              title="Drag to reorder"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <GripVertical className="h-4 w-4" />
+            </button>
+            <button
+              className="p-1.5 rounded-lg hover-bg-subtle focus-ring"
+              style={{ color: "var(--foreground-muted)" }}
+              onClick={onOpen}
+              title="Edit Page"
+            >
+              <PenLine className="h-4 w-4" />
+            </button>
+            <button
+              className="p-1.5 rounded-lg transition-colors focus-ring"
+              style={{ color: "var(--danger)" }}
+              onClick={onDelete}
+              title="Delete Page"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "var(--danger-subtle)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+              }}
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+
+        <h3
+          className="text-[15px] font-semibold mb-1 truncate"
+          style={{ color: "var(--foreground)" }}
+        >
+          {page.title}
+        </h3>
+
+        <div className="flex items-center gap-3 mt-4">
+          <span
+            className="inline-flex items-center gap-1.5 text-xs font-medium"
+            style={{ color: "var(--success)" }}
+          >
+            <span
+              className="h-1.5 w-1.5 rounded-full"
+              style={{ background: "var(--success)" }}
+            />
+            Active
+          </span>
+
+          {page.packSource && (
+            <span
+              className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full"
+              style={{
+                background: "color-mix(in oklch, var(--primary), transparent 88%)",
+                color: "var(--primary)",
+                border: "1px solid color-mix(in oklch, var(--primary), transparent 75%)",
+              }}
+            >
+              <Package className="h-2.5 w-2.5" />
+              Installed
+            </span>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

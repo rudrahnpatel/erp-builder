@@ -8,48 +8,20 @@ export const inventoryPack: PackDefinition = {
   icon: "package",
   category: "Operations",
   badge: "Free",
+  // 1.1.0: added GST Rate (%) to Products, Reorder Level to Stock,
+  // and expanded Customers (Email, GSTIN, Billing Address, City, State,
+  // Credit Limit, Payment Terms).
+  // 1.2.0: linked Products → Suppliers (Preferred Supplier) and
+  // Products → Customers (Frequent Customer) via RELATION fields so the
+  // marketplace stops reporting `0 relations` on those tables.
+  version: "1.2.0",
   tables: [
-    // ─── 1. Products (Catalog) ────────────────────────────────────────────────
-    {
-      name: "Products",
-      icon: "box",
-      fields: [
-        { name: "Product Name", type: "TEXT", required: true },
-        {
-          name: "Category",
-          type: "SINGLE_SELECT",
-          config: { options: ["Electronics", "Stationery", "Furniture", "Accessories", "Packaging"] },
-        },
-        { name: "HSN Code", type: "TEXT" },
-        { name: "Rate", type: "CURRENCY", config: { currency: "INR" } },
-        { name: "Measurable Unit", type: "TEXT" },
-      ],
-      seedData: [
-        {
-          "Product Name": "Wireless Mouse",
-          Category: "Electronics",
-          "HSN Code": "8471",
-          Rate: 850,
-          "Measurable Unit": "pcs",
-        },
-        {
-          "Product Name": "Mechanical Keyboard",
-          Category: "Electronics",
-          "HSN Code": "8471",
-          Rate: 3200,
-          "Measurable Unit": "pcs",
-        },
-        {
-          "Product Name": "A4 Paper Ream",
-          Category: "Stationery",
-          "HSN Code": "4802",
-          Rate: 320,
-          "Measurable Unit": "ream",
-        },
-      ],
-    },
-
-    // ─── 2. Stock ─────────────────────────────────────────────────────────────
+    // ─── 1. Stock ─────────────────────────────────────────────────────────────
+    // NOTE: order matters — RELATION fields can only resolve to tables that
+    // were created earlier in this list during a fresh install. Suppliers and
+    // Customers must come before Products (which links to both). For existing
+    // installs, the /api/packs/update endpoint resolves cross-table refs from
+    // the DB so order there doesn't matter.
     {
       name: "Stock",
       icon: "layers",
@@ -57,6 +29,7 @@ export const inventoryPack: PackDefinition = {
         { name: "Item", type: "TEXT", required: true },
         { name: "Unit", type: "TEXT" },
         { name: "Current Stock", type: "NUMBER", required: true },
+        { name: "Reorder Level", type: "NUMBER" },
         { name: "Price", type: "CURRENCY", config: { currency: "INR" } },
         {
           name: "Status",
@@ -72,6 +45,7 @@ export const inventoryPack: PackDefinition = {
           Item: "LED Desk Lamp",
           Unit: "pcs",
           "Current Stock": 240,
+          "Reorder Level": 50,
           Price: 1250,
           Status: "IN STOCK",
         },
@@ -79,6 +53,7 @@ export const inventoryPack: PackDefinition = {
           Item: "Notebook A5",
           Unit: "pcs",
           "Current Stock": 80,
+          "Reorder Level": 100,
           Price: 90,
           Status: "LOW STOCK",
         },
@@ -86,13 +61,14 @@ export const inventoryPack: PackDefinition = {
           Item: "Ink Refill",
           Unit: "bottle",
           "Current Stock": 15,
+          "Reorder Level": 25,
           Price: 280,
           Status: "LOW STOCK",
         },
       ],
     },
 
-    // ─── 3. Suppliers ─────────────────────────────────────────────────────────
+    // ─── 2. Suppliers ─────────────────────────────────────────────────────────
     {
       name: "Suppliers",
       icon: "truck",
@@ -114,18 +90,108 @@ export const inventoryPack: PackDefinition = {
       ],
     },
 
-    // ─── 4. Customers ─────────────────────────────────────────────────────────
+    // ─── 3. Customers ─────────────────────────────────────────────────────────
     {
       name: "Customers",
       icon: "users",
       fields: [
         { name: "Customer Name", type: "TEXT", required: true },
         { name: "Contact Number", type: "PHONE" },
+        { name: "Email", type: "EMAIL" },
+        { name: "GSTIN", type: "TEXT" },
+        { name: "Billing Address", type: "TEXT" },
+        { name: "City", type: "TEXT" },
+        {
+          name: "State",
+          type: "SINGLE_SELECT",
+          config: {
+            options: [
+              "Andhra Pradesh", "Assam", "Bihar", "Chhattisgarh", "Delhi",
+              "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
+              "Kerala", "Madhya Pradesh", "Maharashtra", "Odisha", "Punjab",
+              "Rajasthan", "Tamil Nadu", "Telangana", "Uttar Pradesh",
+              "Uttarakhand", "West Bengal",
+            ],
+          },
+        },
+        { name: "Credit Limit", type: "CURRENCY", config: { currency: "INR" } },
+        {
+          name: "Payment Terms",
+          type: "SINGLE_SELECT",
+          config: { options: ["Advance", "COD", "Net 7", "Net 15", "Net 30", "Net 45"] },
+        },
       ],
       seedData: [
         {
           "Customer Name": "ABC Manufacturing",
           "Contact Number": "+91 99887 76655",
+          Email: "accounts@abcmfg.in",
+          GSTIN: "27AABCA1234A1Z5",
+          "Billing Address": "Plot 18, MIDC Industrial Area",
+          City: "Pune",
+          State: "Maharashtra",
+          "Credit Limit": 250000,
+          "Payment Terms": "Net 30",
+        },
+      ],
+    },
+
+    // ─── 4. Products (Catalog) ────────────────────────────────────────────────
+    // Listed last so its RELATION fields can resolve to Suppliers + Customers
+    // during a fresh install.
+    {
+      name: "Products",
+      icon: "box",
+      fields: [
+        { name: "Product Name", type: "TEXT", required: true },
+        {
+          name: "Category",
+          type: "SINGLE_SELECT",
+          config: { options: ["Electronics", "Stationery", "Furniture", "Accessories", "Packaging"] },
+        },
+        { name: "HSN Code", type: "TEXT" },
+        { name: "Rate", type: "CURRENCY", config: { currency: "INR" } },
+        {
+          name: "GST Rate (%)",
+          type: "SINGLE_SELECT",
+          config: { options: ["0%", "5%", "12%", "18%", "28%"] },
+        },
+        { name: "Measurable Unit", type: "TEXT" },
+        {
+          name: "Preferred Supplier",
+          type: "RELATION",
+          config: { linkedTable: "Suppliers" },
+        },
+        {
+          name: "Frequent Customer",
+          type: "RELATION",
+          config: { linkedTable: "Customers" },
+        },
+      ],
+      seedData: [
+        {
+          "Product Name": "Wireless Mouse",
+          Category: "Electronics",
+          "HSN Code": "8471",
+          Rate: 850,
+          "GST Rate (%)": "18%",
+          "Measurable Unit": "pcs",
+        },
+        {
+          "Product Name": "Mechanical Keyboard",
+          Category: "Electronics",
+          "HSN Code": "8471",
+          Rate: 3200,
+          "GST Rate (%)": "18%",
+          "Measurable Unit": "pcs",
+        },
+        {
+          "Product Name": "A4 Paper Ream",
+          Category: "Stationery",
+          "HSN Code": "4802",
+          Rate: 320,
+          "GST Rate (%)": "12%",
+          "Measurable Unit": "ream",
         },
       ],
     },
@@ -523,6 +589,7 @@ export const inventoryPack: PackDefinition = {
               "Category",
               "HSN Code",
               "Rate",
+              "GST Rate (%)",
               "Measurable Unit",
             ],
           },
@@ -551,6 +618,7 @@ export const inventoryPack: PackDefinition = {
               "Item",
               "Unit",
               "Current Stock",
+              "Reorder Level",
               "Price",
               "Status",
             ],
@@ -596,7 +664,7 @@ export const inventoryPack: PackDefinition = {
           config: {
             content: "Customer Directory",
             level: "h1",
-            description: "Manage customer contacts and phone numbers.",
+            description: "Manage customer contacts, billing addresses, GSTIN, and payment terms.",
           },
         },
         { type: "FILTER_BAR", config: { tableRef: "Customers" } },
@@ -607,6 +675,10 @@ export const inventoryPack: PackDefinition = {
             visibleFields: [
               "Customer Name",
               "Contact Number",
+              "Email",
+              "City",
+              "GSTIN",
+              "Payment Terms",
             ],
           },
         },
@@ -770,6 +842,7 @@ export const crmPack: PackDefinition = {
   icon: "users",
   category: "Sales",
   badge: "Free",
+  version: "1.0.0",
   tables: [
     {
       name: "Contacts",
@@ -868,6 +941,7 @@ export const hrPack: PackDefinition = {
   icon: "briefcase",
   category: "HR & Payroll",
   badge: "Free",
+  version: "1.0.0",
   tables: [
     {
       name: "Employees",
@@ -932,6 +1006,7 @@ export const financePack: PackDefinition = {
   icon: "indian-rupee",
   category: "Finance",
   badge: "Pro",
+  version: "1.0.0",
   tables: [
     {
       name: "Invoices",

@@ -5,11 +5,12 @@ import { toast } from "sonner";
 import { PackCard } from "@/components/marketplace/PackCard";
 import {
   inventoryPack,
+  financePack,
 } from "@/lib/packs/registry";
-import { Search, ArrowRight, PackageSearch } from "lucide-react";
+import { Search, ArrowRight, PackageSearch, Sparkles, ShoppingCart, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const allPacks = [inventoryPack];
+const allPacks = [inventoryPack, financePack];
 
 const categories = [
   "All Modules",
@@ -19,15 +20,37 @@ const categories = [
   "HR & Payroll",
 ];
 
+const COMING_SOON: Record<string, { title: string; blurb: string; icon: any; eta: string }> = {
+  Sales: {
+    title: "CRM & Sales — coming soon",
+    blurb:
+      "Lead pipelines, deal kanbans, field-agent tracking, and quote-to-invoice flows tuned for Indian SMEs.",
+    icon: ShoppingCart,
+    eta: "Q3 2026",
+  },
+  "HR & Payroll": {
+    title: "HR & Payroll — coming soon",
+    blurb:
+      "Attendance, EPF/ESI payroll sheets, leave requests, and compliance filings. Built for 10–200 person teams.",
+    icon: Users,
+    eta: "Q4 2026",
+  },
+};
+
 import { useWorkspace } from "@/hooks/use-workspace";
 
 export default function ModulesPage() {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All Modules");
+  const [waitlisted, setWaitlisted] = useState<Record<string, boolean>>({});
   const { workspace, refetch } = useWorkspace();
 
   // Show installed packs visually if workspace is loaded, else empty fallback
   const installedPacks = workspace?.installedPacks || [];
+  const installedPackDetails = workspace?.installedPackDetails || [];
+  const installedVersionByPack: Record<string, string> = Object.fromEntries(
+    installedPackDetails.map((p) => [p.packId, p.packVersion])
+  );
 
   const filteredPacks = allPacks.filter((pack) => {
     const matchesSearch =
@@ -63,6 +86,44 @@ export default function ModulesPage() {
       }
     } catch (err) {
       toast.error(`Couldn't install ${label}`, {
+        id: pending,
+        description: "Network error. Check your connection and try again.",
+      });
+    }
+  };
+
+  const handleUpdate = async (packId: string) => {
+    const pack = allPacks.find((p) => p.id === packId);
+    const label = pack?.name || "module";
+    const pending = toast.loading(`Updating ${label}…`);
+    try {
+      const res = await fetch("/api/packs/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ packId }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        await refetch();
+        const parts: string[] = [];
+        if (data.added?.tables?.length) parts.push(`${data.added.tables.length} table(s)`);
+        if (data.added?.fields?.length) parts.push(`${data.added.fields.length} field(s)`);
+        if (data.added?.pages?.length) parts.push(`${data.added.pages.length} page(s)`);
+        const summary = parts.length
+          ? `Added: ${parts.join(", ")}`
+          : "No additions needed — version stamped.";
+        toast.success(`${label} updated to v${data.toVersion ?? pack?.version}`, {
+          id: pending,
+          description: summary,
+        });
+      } else {
+        toast.error(`Couldn't update ${label}`, {
+          id: pending,
+          description: data.error || "The server rejected the request.",
+        });
+      }
+    } catch (err) {
+      toast.error(`Couldn't update ${label}`, {
         id: pending,
         description: "Network error. Check your connection and try again.",
       });
@@ -200,11 +261,88 @@ export default function ModulesPage() {
               key={pack.id}
               pack={pack}
               installed={installedPacks.includes(pack.id)}
+              installedVersion={installedVersionByPack[pack.id]}
               onInstall={handleInstall}
               onUninstall={handleUninstall}
+              onUpdate={handleUpdate}
             />
           ))}
         </div>
+      ) : search === "" && COMING_SOON[activeCategory] ? (
+        // Empty because the category itself hasn't shipped yet → show a
+        // category-specific "coming soon" waitlist card instead of a generic
+        // "no results" state.
+        (() => {
+          const info = COMING_SOON[activeCategory];
+          const Icon = info.icon;
+          const joined = !!waitlisted[activeCategory];
+          return (
+            <div
+              className="rounded-2xl p-10 sm:p-12 text-center relative overflow-hidden"
+              style={{
+                background: "var(--surface-1)",
+                border: "1px dashed var(--border)",
+              }}
+            >
+              <div
+                className="absolute -right-24 -top-24 h-64 w-64 rounded-full blur-3xl pointer-events-none"
+                style={{ background: "var(--primary-glow)" }}
+                aria-hidden="true"
+              />
+              <div className="relative z-10">
+                <div
+                  className="h-14 w-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
+                  style={{
+                    background:
+                      "color-mix(in oklch, var(--primary), transparent 88%)",
+                    color: "var(--primary)",
+                  }}
+                >
+                  <Icon className="h-6 w-6" aria-hidden="true" />
+                </div>
+                <span
+                  className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium mono mb-3"
+                  style={{
+                    background:
+                      "color-mix(in oklch, var(--accent-amber), transparent 85%)",
+                    color: "var(--accent-amber)",
+                    border:
+                      "1px solid color-mix(in oklch, var(--accent-amber), transparent 70%)",
+                  }}
+                >
+                  <Sparkles className="h-3 w-3" aria-hidden="true" />
+                  ETA {info.eta}
+                </span>
+                <h3
+                  className="text-lg font-semibold mb-2"
+                  style={{ color: "var(--foreground)" }}
+                >
+                  {info.title}
+                </h3>
+                <p
+                  className="text-sm mb-6 max-w-md mx-auto leading-relaxed"
+                  style={{ color: "var(--foreground-muted)" }}
+                >
+                  {info.blurb}
+                </p>
+                <Button
+                  variant={joined ? "outline" : "default"}
+                  size="sm"
+                  disabled={joined}
+                  onClick={() => {
+                    setWaitlisted((w) => ({ ...w, [activeCategory]: true }));
+                    toast.success(
+                      `You're on the ${activeCategory} waitlist`,
+                      { description: "We'll email when the module is ready." }
+                    );
+                  }}
+                >
+                  {joined ? "On the waitlist ✓" : "Notify me when available"}
+                </Button>
+              </div>
+            </div>
+          );
+        })()
       ) : (
         <div
           className="rounded-2xl p-12 text-center"

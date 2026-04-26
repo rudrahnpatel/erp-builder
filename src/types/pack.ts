@@ -26,6 +26,7 @@ export interface PackDefinition {
   icon: string;
   category: string;
   badge: "Free" | "Pro";
+  version: string; // bump this when fields/tables/pages change so installs can detect updates
   tables: PackTableDefinition[];
   pageDefinitions: PackPageDefinition[];
 }

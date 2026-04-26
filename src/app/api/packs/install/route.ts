@@ -145,7 +145,7 @@ export async function POST(req: Request) {
       await tx.installedPack.create({
         data: {
           packId,
-          packVersion: "1.0.0", // bump this in registry.ts when schemas change
+          packVersion: pack.version,
           workspaceId: workspace.id,
         },
       });

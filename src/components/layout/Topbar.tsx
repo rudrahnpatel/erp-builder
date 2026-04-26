@@ -1,9 +1,11 @@
 "use client";
 
-import { Bell, Search, Menu, Command, LogOut, Settings, ChevronDown } from "lucide-react";
+import { Bell, Search, Menu, Command, LogOut, Settings, ChevronDown, Languages } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useSession, signOut } from "next-auth/react";
+import { useLanguage } from "@/lib/i18n";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +19,14 @@ import {
 export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
   const { data: session } = useSession();
   const router = useRouter();
+  const [isMac, setIsMac] = useState(false);
+  const { lang, setLang, t } = useLanguage();
+
+  useEffect(() => {
+    const platform =
+      (navigator as any).userAgentData?.platform || navigator.platform || "";
+    setIsMac(/Mac|iPhone|iPad|iPod/i.test(platform));
+  }, []);
 
   return (
     <div
@@ -32,7 +42,7 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
         {/* Mobile hamburger */}
         <button
           onClick={onMenuToggle}
-          className="lg:hidden p-1.5 rounded-md hover-bg-subtle focus-ring"
+          className="md:hidden p-1.5 rounded-md hover-bg-subtle focus-ring"
           style={{ color: "var(--foreground-muted)" }}
         >
           <Menu className="h-5 w-5" />
@@ -49,7 +59,7 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
         >
           <Search className="h-3.5 w-3.5 shrink-0" />
           <span className="flex-1 text-left truncate text-[13px]">
-            Search modules, tables, pages...
+            {t("common.search")}
           </span>
           <kbd
             className="hidden md:flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[10px] font-medium"
@@ -59,35 +69,89 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
               border: "1px solid var(--border)",
             }}
           >
-            <Command className="h-2.5 w-2.5" />K
+            {isMac ? <Command className="h-2.5 w-2.5" /> : <span>Ctrl</span>}
+            {isMac ? "K" : "+K"}
           </kbd>
         </button>
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
+        {/* Language toggle — flips between English and Hindi. Persisted in
+            localStorage; reflected immediately across components via
+            window event. */}
+        <button
+          type="button"
+          onClick={() => setLang(lang === "en" ? "hi" : "en")}
+          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium hover-bg-subtle focus-ring"
+          style={{ color: "var(--foreground-muted)" }}
+          title={t("common.language")}
+          aria-label={`${t("common.language")}: ${lang === "en" ? t("common.english") : t("common.hindi")}`}
+        >
+          <Languages className="h-3.5 w-3.5" />
+          <span className="mono">{lang === "en" ? "EN" : "हि"}</span>
+        </button>
+
         {/* Theme toggle */}
         <div>
           <ThemeToggle />
         </div>
 
         {/* Notification bell */}
-        <button
-          className="relative p-2 rounded-lg hover-bg-subtle focus-ring"
-          style={{ color: "var(--foreground-muted)" }}
-        >
-          <Bell className="h-[18px] w-[18px]" />
-          {/* Badge counter */}
-          <span
-            className="absolute -top-0.5 -right-0.5 h-4 min-w-4 flex items-center justify-center rounded-full text-[9px] font-bold px-1"
-            style={{
-              background: "var(--danger)",
-              color: "white",
-              boxShadow: "0 0 8px color-mix(in oklch, var(--danger), transparent 50%)",
-            }}
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            aria-label="Notifications"
+            className="relative p-2 rounded-lg hover-bg-subtle focus-ring"
+            style={{ color: "var(--foreground-muted)" }}
           >
-            3
-          </span>
-        </button>
+            <Bell className="h-[18px] w-[18px]" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            sideOffset={8}
+            className="w-80 p-0 overflow-hidden"
+          >
+            <div
+              className="flex items-center justify-between px-3 py-2.5"
+              style={{ borderBottom: "1px solid var(--border-subtle)" }}
+            >
+              <p
+                className="text-sm font-semibold"
+                style={{ color: "var(--foreground)" }}
+              >
+                {t("common.notifications")}
+              </p>
+              <span
+                className="text-[10px] uppercase tracking-wider font-medium"
+                style={{ color: "var(--foreground-dimmed)" }}
+              >
+                {t("common.allCaughtUp")}
+              </span>
+            </div>
+            <div className="px-4 py-8 text-center">
+              <div
+                className="h-10 w-10 rounded-xl flex items-center justify-center mx-auto mb-3"
+                style={{
+                  background: "var(--surface-2)",
+                  color: "var(--foreground-muted)",
+                }}
+              >
+                <Bell className="h-4 w-4" />
+              </div>
+              <p
+                className="text-sm font-medium mb-1"
+                style={{ color: "var(--foreground)" }}
+              >
+                {t("common.noNotifications")}
+              </p>
+              <p
+                className="text-xs leading-relaxed"
+                style={{ color: "var(--foreground-dimmed)" }}
+              >
+                {t("common.notificationHint")}
+              </p>
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <DropdownMenu>
           <DropdownMenuTrigger
@@ -160,7 +224,7 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
                 className="gap-2.5 px-2.5 py-2 text-sm cursor-pointer"
               >
                 <Settings className="h-4 w-4" style={{ color: "var(--foreground-muted)" }} />
-                <span>Settings</span>
+                <span>{t("common.settings")}</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator className="my-1" />
               <DropdownMenuItem
@@ -169,7 +233,7 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
                 className="gap-2.5 px-2.5 py-2 text-sm cursor-pointer"
               >
                 <LogOut className="h-4 w-4" />
-                <span>Log out</span>
+                <span>{t("common.logout")}</span>
               </DropdownMenuItem>
             </div>
           </DropdownMenuContent>

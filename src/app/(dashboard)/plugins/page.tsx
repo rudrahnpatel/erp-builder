@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { allPlugins } from "@/lib/plugins/registry";
 import { PluginDefinition } from "@/types/plugin";
+import { useWorkspace } from "@/hooks/use-workspace";
 import {
   MessageCircle,
   Fingerprint,
@@ -18,8 +20,19 @@ import {
   Users,
   ToggleLeft,
   ToggleRight,
+  Link2,
+  AlertCircle,
 } from "lucide-react";
 import useSWR from "swr";
+
+// Map a plugin id → which built-in module supplies the table(s) it reconciles
+// with. Used to render a "Install <pack> to enable this flow" hint when the
+// user installs a plugin without the supporting module. Keep this list in
+// sync with packRegistry as new packs ship.
+const PACK_FOR_PLUGIN: Record<string, { packId: string; packName: string }> = {
+  "razorpay-payments": { packId: "finance", packName: "Finance" },
+  "gst-invoice": { packId: "finance", packName: "Finance" },
+};
 
 const iconMap: Record<string, React.ReactNode> = {
   "message-circle": <MessageCircle className="h-5 w-5" />,
@@ -35,8 +48,14 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function PluginsPage() {
   const [search, setSearch] = useState("");
-  
+  const { workspace } = useWorkspace();
+
   const { data: plugins, mutate, isLoading } = useSWR<PluginDefinition[]>("/api/plugins", fetcher);
+
+  const installedPackIds = new Set(workspace?.installedPacks || []);
+  const tablesByName = new Map(
+    (workspace?.tables || []).map((t) => [t.name, t])
+  );
 
   const filteredPlugins = (plugins || allPlugins).filter(
     (p) =>
@@ -167,6 +186,72 @@ export default function PluginsPage() {
                 <p className="text-sm text-muted-foreground leading-snug mb-3 pr-2">
                   {plugin.description}
                 </p>
+
+                {/* Connected to — surfaces which tables this plugin reads or
+                    writes against, plus a one-click hint to install the
+                    supporting module if it isn't there yet. */}
+                {plugin.triggers && plugin.triggers.length > 0 && (() => {
+                  const tableNames = Array.from(
+                    new Set(plugin.triggers.map((t: any) => t.table).filter(Boolean))
+                  ) as string[];
+                  if (tableNames.length === 0) return null;
+                  const requiredPack = PACK_FOR_PLUGIN[plugin.id];
+                  const missingPack =
+                    requiredPack && !installedPackIds.has(requiredPack.packId);
+                  return (
+                    <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        <Link2 className="h-3 w-3 inline mr-1 -mt-0.5" />
+                        Connected to
+                      </span>
+                      {tableNames.map((name) => {
+                        const t = tablesByName.get(name);
+                        return t ? (
+                          <Link
+                            key={name}
+                            href={`/schema/${t.id}`}
+                            className="text-[11px] font-medium px-2 py-0.5 rounded-md transition-colors hover:underline"
+                            style={{
+                              background: "color-mix(in oklch, var(--primary), transparent 88%)",
+                              color: "var(--primary)",
+                              border: "1px solid color-mix(in oklch, var(--primary), transparent 75%)",
+                            }}
+                          >
+                            {name}
+                          </Link>
+                        ) : (
+                          <span
+                            key={name}
+                            className="text-[11px] font-medium px-2 py-0.5 rounded-md"
+                            style={{
+                              background: "var(--surface-3)",
+                              color: "var(--foreground-dimmed)",
+                              border: "1px solid var(--border-subtle)",
+                            }}
+                            title="Table not present in this workspace"
+                          >
+                            {name}
+                          </span>
+                        );
+                      })}
+                      {missingPack && (
+                        <Link
+                          href="/modules"
+                          className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md transition-colors hover:underline"
+                          style={{
+                            background: "color-mix(in oklch, var(--accent-amber), transparent 88%)",
+                            color: "var(--accent-amber)",
+                            border: "1px solid color-mix(in oklch, var(--accent-amber), transparent 75%)",
+                          }}
+                          title={`Install the ${requiredPack.packName} module to enable this flow`}
+                        >
+                          <AlertCircle className="h-3 w-3" />
+                          Install {requiredPack.packName}
+                        </Link>
+                      )}
+                    </div>
+                  );
+                })()}
                 
                 <div className="flex items-center gap-4 text-[11px] font-medium text-muted-foreground/80 lowercase mt-auto">
                   <span className="flex items-center gap-1.5 bg-secondary/40 px-2 py-1 rounded-md">

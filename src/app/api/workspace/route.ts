@@ -58,6 +58,10 @@ export async function GET() {
         packPageKey: p.packPageKey,
       })),
       installedPacks: installedPacks.map((p) => p.packId),
+      installedPackDetails: installedPacks.map((p) => ({
+        packId: p.packId,
+        packVersion: p.packVersion,
+      })),
       installedPlugins: installedPlugins.map((p) => ({
         pluginId: p.pluginId,
         enabled: p.enabled,

@@ -29,6 +29,10 @@ export type WorkspaceData = {
     packPageKey: string | null;
   }>;
   installedPacks: string[];
+  installedPackDetails?: Array<{
+    packId: string;
+    packVersion: string;
+  }>;
   installedPlugins: Array<{
     pluginId: string;
     enabled: boolean;

@@ -30,7 +30,7 @@ export default async function TenantAppLayout({
     }),
     db.page.findMany({
       where: { workspaceId: workspace.id },
-      select: { id: true, title: true },
+      select: { id: true, title: true, icon: true, packPageKey: true, packSource: true },
       orderBy: { order: "asc" },
     }),
   ]);

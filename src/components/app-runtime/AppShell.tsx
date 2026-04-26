@@ -6,12 +6,10 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   Building2,
   LayoutDashboard,
-  Database,
   Menu,
   X,
   Settings,
   Home,
-  ArrowLeft,
   LogOut,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -28,7 +26,13 @@ export type AppShellWorkspace = {
   name: string;
   slug: string;
   tables: Array<{ id: string; name: string }>;
-  pages: Array<{ id: string; title: string }>;
+  pages: Array<{
+    id: string;
+    title: string;
+    icon?: string | null;
+    packPageKey?: string | null;
+    packSource?: string | null;
+  }>;
 };
 
 export function AppShell({
@@ -56,10 +60,17 @@ export function AppShell({
     router.refresh();
   }
 
+  // System pages: user_management is merged into Settings → Users tab, so it
+  // is never linked directly in the tenant nav. Settings is pinned at the
+  // bottom with a separator rather than mixed in with custom pages.
+  const settingsPage = workspace.pages.find((p) => p.packPageKey === "settings");
+  const nonSystemPages = workspace.pages.filter(
+    (p) => p.packPageKey !== "settings" && p.packPageKey !== "user_management"
+  );
+
   const navItems = [
     { href: base, label: "Home", icon: Home, exact: true },
-    // Render only Custom Pages in the sidebar rather than raw disconnected database tables
-    ...workspace.pages.map((p) => ({
+    ...nonSystemPages.map((p) => ({
       href: `${base}/pages/${p.id}`,
       label: p.title,
       icon: LayoutDashboard,
@@ -169,7 +180,7 @@ export function AppShell({
             );
           })}
 
-          {workspace.tables.length === 0 && workspace.pages.length === 0 && (
+          {workspace.tables.length === 0 && nonSystemPages.length === 0 && (
             <div
               className="px-3 py-6 text-xs text-center"
               style={{ color: "var(--foreground-dimmed)" }}
@@ -179,12 +190,35 @@ export function AppShell({
           )}
         </nav>
 
-        {/* Bottom: theme + logout */}
+        {/* Bottom: settings (pinned), theme + logout */}
         <div
           className="px-2.5 py-2.5 border-t space-y-1"
           style={{ borderColor: "var(--sidebar-border)" }}
         >
-          <div className="flex items-center justify-between px-1">
+          {settingsPage && (() => {
+            const href = `${base}/pages/${settingsPage.id}`;
+            const active = isActive(href, false);
+            return (
+              <Link
+                href={href}
+                onClick={() => setSidebarOpen(false)}
+                className={`relative flex items-center gap-2.5 px-3 py-2.5 text-[13px] rounded-lg focus-ring ${
+                  active ? "sidebar-nav-item active" : "sidebar-nav-item"
+                }`}
+                style={active ? undefined : { color: "var(--foreground-muted)" }}
+              >
+                {active && (
+                  <span
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full animate-nav-indicator"
+                    style={{ background: "var(--primary)" }}
+                  />
+                )}
+                <Settings className="h-[18px] w-[18px] shrink-0" />
+                <span className="truncate">{settingsPage.title}</span>
+              </Link>
+            );
+          })()}
+          <div className="flex items-center justify-between px-1 pt-1">
             <ThemeToggle />
           </div>
           <button
