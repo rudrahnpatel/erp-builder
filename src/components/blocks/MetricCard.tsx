@@ -45,46 +45,43 @@ export function MetricCard({
       : Minus;
 
   return (
-    <div
-      className="relative overflow-hidden rounded-xl p-5"
-      style={{
-        background: "var(--card)",
-        border: "1px solid var(--border-subtle)",
-      }}
-    >
+    <div className="relative h-full flex flex-col justify-center">
       <div
-        className="absolute top-0 left-0 right-0 h-[2px]"
+        className="absolute -top-5 -left-5 -right-5 h-[3px]"
         style={{ background: `var(${accentVar})` }}
       />
       <div className="flex items-start justify-between mb-3">
         <span
-          className="text-xs font-medium"
+          className="text-xs font-semibold uppercase tracking-wider"
           style={{ color: "var(--foreground-muted)" }}
         >
           {label}
         </span>
         <div
-          className="h-9 w-9 rounded-lg flex items-center justify-center"
+          className="h-9 w-9 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110"
           style={{
-            background: `color-mix(in oklch, var(${accentVar}), transparent 85%)`,
+            background: `color-mix(in oklch, var(${accentVar}), transparent 88%)`,
             color: `var(${accentVar})`,
+            boxShadow: `0 0 12px color-mix(in oklch, var(${accentVar}), transparent 90%)`,
           }}
         >
           <Hash className="h-4 w-4" />
         </div>
       </div>
       <div
-        className="text-3xl font-bold tabular-nums leading-none"
+        className="text-4xl font-bold tabular-nums leading-tight tracking-tight"
         style={{ color: "var(--foreground)" }}
       >
         {value}
       </div>
       {trend && (
         <div
-          className="mt-2 flex items-center gap-1 text-xs font-medium"
+          className="mt-3 flex items-center gap-1.5 text-sm font-semibold"
           style={{ color: `var(${accentVar})` }}
         >
-          <TrendIcon className="h-3.5 w-3.5" />
+          <div className="p-0.5 rounded-md" style={{ background: `color-mix(in oklch, var(${accentVar}), transparent 90%)` }}>
+            <TrendIcon className="h-3.5 w-3.5" />
+          </div>
           {trend}
         </div>
       )}

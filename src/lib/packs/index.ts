@@ -11,7 +11,7 @@ export const packRegistry: Record<string, PackDefinition> = {
   // CRM and HR remain hidden behind "coming soon" until they get the same
   // schema-update treatment as Inventory.
   // [crmPack.id]: crmPack,
-  // [hrPack.id]: hrPack,
+  [hrPack.id]: hrPack,
 };
 
 export function getPackById(packId: string): PackDefinition | undefined {

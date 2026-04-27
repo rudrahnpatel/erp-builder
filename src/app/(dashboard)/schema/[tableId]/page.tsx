@@ -29,11 +29,11 @@ const fieldTypes = [
   { value: "DATE", label: "Date", color: "var(--accent-amber)" },
   { value: "SINGLE_SELECT", label: "Select", color: "var(--accent-violet)" },
   { value: "CURRENCY", label: "Currency", color: "var(--accent-rose)" },
-  { value: "RELATION", label: "Relation", color: "oklch(0.60 0.18 270)" },
-  { value: "PHONE", label: "Phone", color: "var(--accent-cyan)" },
-  { value: "EMAIL", label: "Email", color: "oklch(0.65 0.15 210)" },
+  { value: "RELATION", label: "Relation", color: "#6366f1" },
+  { value: "PHONE", label: "Phone", color: "#06b6d4" },
+  { value: "EMAIL", label: "Email", color: "#8b5cf6" },
   { value: "CHECKBOX", label: "Checkbox", color: "var(--foreground-muted)" },
-  { value: "TIME", label: "Time", color: "oklch(0.72 0.14 55)" },
+  { value: "TIME", label: "Time", color: "#f59e0b" },
 ];
 
 interface FieldItem {
@@ -484,7 +484,7 @@ export default function SchemaDesignerPage({ params }: { params: Promise<{ table
                 <span className="flex items-center gap-1.5">
                   <span
                     className="h-2 w-2 rounded-full"
-                    style={{ background: "oklch(0.60 0.18 270)" }}
+                    style={{ background: "#6366f1" }}
                   />
                   {fields.filter((f) => f.type === "RELATION").length} relation
                 </span>

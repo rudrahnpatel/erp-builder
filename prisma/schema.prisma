@@ -158,3 +158,30 @@ model TenantUser {
 
   @@unique([workspaceId, username])
 }
+
+model EmployeeToken {
+  id         String   @id @default(cuid())
+  employeeId String   @unique // References the generic Record ID for the employee
+  token      String   @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model AttendanceRecord {
+  id               String    @id @default(cuid())
+  employeeId       String    // References the generic Record ID for the employee
+  date             DateTime  @db.Date
+  checkInTime      DateTime?
+  checkOutTime     DateTime?
+  checkInLat       Float?
+  checkInLng       Float?
+  checkOutLat      Float?
+  checkOutLng      Float?
+  durationMinutes  Int?
+  status           String    @default("Working") // "Working", "Completed", "Absent"
+  remark           String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@unique([employeeId, date])
+}

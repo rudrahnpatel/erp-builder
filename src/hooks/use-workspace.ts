@@ -1,5 +1,4 @@
 import useSWR from "swr";
-import { Prisma } from "@prisma/client";
 
 export type WorkspaceData = {
   id: string;
@@ -11,6 +10,7 @@ export type WorkspaceData = {
     pages: number;
     installedPacks: number;
     installedPlugins: number;
+    tenantUsers: number;
   };
   hasTenantAdmin?: boolean;
   tables: Array<{

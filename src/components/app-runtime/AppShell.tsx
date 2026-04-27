@@ -11,8 +11,50 @@ import {
   Settings,
   Home,
   LogOut,
+  FileText,
+  Package,
+  Box,
+  Truck,
+  Warehouse,
+  ArrowLeftRight,
+  FilePlus,
+  List,
+  BellRing,
+  AlertTriangle,
+  Users,
+  Kanban,
+  User,
+  Handshake,
+  Briefcase,
+  Clock,
+  IndianRupee,
+  Receipt,
+  Layers,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+
+const IconMap: Record<string, any> = {
+  "file-text": FileText,
+  "layout-dashboard": LayoutDashboard,
+  "package": Package,
+  "box": Box,
+  "truck": Truck,
+  "warehouse": Warehouse,
+  "arrow-left-right": ArrowLeftRight,
+  "file-plus": FilePlus,
+  "list": List,
+  "bell-ring": BellRing,
+  "alert-triangle": AlertTriangle,
+  "users": Users,
+  "kanban": Kanban,
+  "user": User,
+  "handshake": Handshake,
+  "briefcase": Briefcase,
+  "clock": Clock,
+  "indian-rupee": IndianRupee,
+  "receipt": Receipt,
+  "layers": Layers,
+};
 
 /**
  * Clean end-user shell for a tenant's runtime ERP at /apps/<slug>/...
@@ -73,7 +115,7 @@ export function AppShell({
     ...nonSystemPages.map((p) => ({
       href: `${base}/pages/${p.id}`,
       label: p.title,
-      icon: LayoutDashboard,
+      icon: p.icon ? (IconMap[p.icon] || LayoutDashboard) : LayoutDashboard,
       exact: false,
     })),
   ];
@@ -96,15 +138,15 @@ export function AppShell({
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-40 lg:hidden"
-          style={{ background: "oklch(0 0 0 / 0.5)", backdropFilter: "blur(4px)" }}
+          style={{ background: "rgba(0, 0, 0, 0.4)", backdropFilter: "blur(8px)" }}
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-[248px] flex flex-col border-r transform transition-transform duration-300 lg:static lg:translate-x-0 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed inset-y-0 left-0 z-50 w-[260px] flex flex-col border-r transform transition-all duration-300 ease-spring lg:static lg:translate-x-0 ${
+          sidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"
         }`}
         style={{
           background: "var(--sidebar)",
@@ -113,30 +155,30 @@ export function AppShell({
       >
         {/* Brand */}
         <div
-          className="h-[60px] flex items-center px-4 border-b shrink-0"
+          className="h-[64px] flex items-center px-5 border-b shrink-0 bg-surface-1/50 backdrop-blur-sm"
           style={{ borderColor: "var(--sidebar-border)" }}
         >
           <div
-            className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0"
+            className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0 shadow-lg"
             style={{
               background: "linear-gradient(135deg, var(--primary), var(--primary-hover))",
-              boxShadow: "inset 0 1px 0 oklch(1 0 0 / 0.18), 0 2px 8px oklch(0.08 0.02 260 / 0.5)",
+              boxShadow: "0 4px 12px rgba(59, 130, 246, 0.2)",
             }}
           >
-            <Building2 className="h-4.5 w-4.5 text-white" />
+            <Building2 className="h-5 w-5 text-white" />
           </div>
-          <div className="ml-2.5 min-w-0">
+          <div className="ml-3 min-w-0">
             <span
-              className="font-semibold text-[13px] block truncate tracking-tight"
+              className="font-bold text-[14px] block truncate tracking-tight"
               style={{ color: "var(--sidebar-foreground)" }}
             >
               {workspace.name}
             </span>
             <span
-              className="text-[10px] tracking-[0.08em] mono"
+              className="text-[10px] tracking-[0.05em] font-medium opacity-60 uppercase"
               style={{ color: "var(--foreground-dimmed)" }}
             >
-              {workspace.slug}.erpbuilder.app
+              {workspace.slug}
             </span>
           </div>
           <button

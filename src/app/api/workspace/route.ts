@@ -8,7 +8,10 @@ export async function GET() {
     const workspace = await getWorkspace();
     if (!workspace) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const [tables, pages, installedPacks, installedPlugins, tenantAdmin] = await Promise.all([
+    // Check if tenantUser model is available (may be missing if Prisma client hasn't been regenerated yet)
+    const hasTenantUserModel = typeof (db as any).tenantUser !== "undefined";
+
+    const [tables, pages, installedPacks, installedPlugins] = await Promise.all([
       db.table.findMany({
         where: { workspaceId: workspace.id },
         include: { _count: { select: { records: true, fields: true } } },
@@ -24,11 +27,23 @@ export async function GET() {
       db.installedPlugin.findMany({
         where: { workspaceId: workspace.id },
       }),
-      db.tenantUser.findFirst({
-        where: { workspaceId: workspace.id, role: "admin" },
-        select: { id: true }
-      }),
     ]);
+
+    // Safely query tenantUsers — model may not exist in older generated client
+    let tenantUserCount = 0;
+    let hasTenantAdmin = false;
+    if (hasTenantUserModel) {
+      try {
+        const tenantUsers = await (db as any).tenantUser.findMany({
+          where: { workspaceId: workspace.id },
+          select: { id: true, role: true },
+        });
+        tenantUserCount = tenantUsers.length;
+        hasTenantAdmin = tenantUsers.some((u: any) => u.role === "admin");
+      } catch {
+        // Gracefully degrade if table doesn't exist yet
+      }
+    }
 
     return NextResponse.json({
       id: workspace.id,
@@ -40,8 +55,9 @@ export async function GET() {
         pages: pages.length,
         installedPacks: installedPacks.length,
         installedPlugins: installedPlugins.length,
+        tenantUsers: tenantUserCount,
       },
-      hasTenantAdmin: !!tenantAdmin,
+      hasTenantAdmin,
       tables: tables.map((t) => ({
         id: t.id,
         name: t.name,
@@ -72,4 +88,3 @@ export async function GET() {
     return NextResponse.json({ error: "Database unavailable." }, { status: 503 });
   }
 }
-

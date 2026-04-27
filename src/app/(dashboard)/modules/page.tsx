@@ -6,11 +6,12 @@ import { PackCard } from "@/components/marketplace/PackCard";
 import {
   inventoryPack,
   financePack,
+  hrPack
 } from "@/lib/packs/registry";
 import { Search, ArrowRight, PackageSearch, Sparkles, ShoppingCart, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const allPacks = [inventoryPack, financePack];
+const allPacks = [inventoryPack, financePack, hrPack];
 
 const categories = [
   "All Modules",

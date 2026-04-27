@@ -180,7 +180,7 @@ export default function TenantLoginPage() {
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
           style={{
-            background: "oklch(0 0 0 / 0.5)",
+            background: "rgba(0, 0, 0, 0.5)",
             backdropFilter: "blur(8px)",
           }}
           onClick={(e) => {

@@ -39,45 +39,57 @@ export function PluginCard({
   onViewDetails?: (pluginId: string) => void;
 }) {
   return (
-    <div className="group relative bg-white rounded-xl border border-[#e2e8f0] p-6 hover:shadow-lg hover:border-primary/20 transition-all duration-300 flex flex-col">
+    <div 
+      className="group relative rounded-xl border p-6 hover:shadow-lg transition-all duration-300 flex flex-col"
+      style={{ 
+        background: "var(--card)", 
+        borderColor: "var(--border-subtle)" 
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = "var(--primary)";
+        e.currentTarget.style.boxShadow = "var(--shadow-lg)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = "var(--border-subtle)";
+        e.currentTarget.style.boxShadow = "none";
+      }}
+    >
       {/* Icon + Badge */}
       <div className="flex items-start justify-between mb-4">
         <div
-          className={`h-12 w-12 rounded-xl flex items-center justify-center ${
-            colorMap[plugin.icon] || "bg-gray-100 text-gray-600"
-          }`}
+          className={`h-12 w-12 rounded-xl flex items-center justify-center`}
+          style={{
+            background: "var(--surface-sunken)",
+            color: "var(--primary)"
+          }}
         >
           {iconMap[plugin.icon] || <MessageCircle className="h-6 w-6" />}
         </div>
         <Badge
           variant={plugin.badge === "Free" ? "secondary" : "default"}
-          className={
-            plugin.badge === "Pro"
-              ? "bg-primary/10 text-primary border-0 font-medium"
-              : "bg-emerald-50 text-emerald-700 border-0 font-medium"
-          }
+          className="font-medium"
         >
           {plugin.badge}
         </Badge>
       </div>
 
       {/* Title + Description */}
-      <h3 className="text-base font-semibold text-[#2b3437] mb-1.5">
+      <h3 className="text-base font-bold mb-1.5" style={{ color: "var(--foreground)" }}>
         {plugin.name}
       </h3>
-      <p className="text-sm text-[#64748b] leading-relaxed mb-5 flex-1">
+      <p className="text-sm leading-relaxed mb-5 flex-1" style={{ color: "var(--foreground-muted)" }}>
         {plugin.description}
       </p>
 
       {/* Footer */}
-      <div className="flex items-center justify-between pt-3 border-t border-[#f1f4f6]">
-        <div className="flex items-center gap-1.5 text-xs text-[#64748b]">
+      <div className="flex items-center justify-between pt-3 border-t" style={{ borderColor: "var(--border-subtle)" }}>
+        <div className="flex items-center gap-1.5 text-xs" style={{ color: "var(--foreground-dimmed)" }}>
           <Download className="h-3.5 w-3.5" />
           <span>{plugin.installs.toLocaleString()} installs</span>
         </div>
         <button
           onClick={() => onViewDetails?.(plugin.id)}
-          className="text-sm font-medium text-primary hover:text-primary/80 flex items-center gap-1 transition-colors"
+          className="text-sm font-semibold text-primary hover:opacity-80 flex items-center gap-1 transition-all pressable"
         >
           <Eye className="h-3.5 w-3.5" />
           View Details

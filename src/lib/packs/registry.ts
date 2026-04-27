@@ -941,7 +941,7 @@ export const hrPack: PackDefinition = {
   icon: "briefcase",
   category: "HR & Payroll",
   badge: "Free",
-  version: "1.0.0",
+  version: "1.0.1",
   tables: [
     {
       name: "Employees",
@@ -993,6 +993,22 @@ export const hrPack: PackDefinition = {
           },
         },
         { type: "TABLE_VIEW", config: { tableRef: "Employees", visibleFields: ["Employee Name", "Employee ID", "Department", "Designation"] } },
+      ],
+    },
+    {
+      key: "attendance_dashboard",
+      title: "Attendance Dashboard",
+      icon: "calendar",
+      blocks: [
+        {
+          type: "TEXT",
+          config: {
+            content: "Attendance Log",
+            level: "h1",
+            description: "Monitor employee check-ins, calculate duration, and export monthly reports.",
+          },
+        },
+        { type: "ATTENDANCE_LOG", config: {} },
       ],
     },
   ],

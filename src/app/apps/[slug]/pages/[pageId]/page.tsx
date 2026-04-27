@@ -20,6 +20,7 @@ import { MetricCard } from "@/components/blocks/MetricCard";
 import { ExportButton } from "@/components/blocks/ExportButton";
 import { ImageBlock } from "@/components/blocks/ImageBlock";
 import { GstCalculator } from "@/components/blocks/GstCalculator";
+import { AttendanceLogBlock } from "@/components/blocks/AttendanceLogBlock";
 import { SettingsPage } from "@/components/app-runtime/SettingsPage";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
@@ -120,31 +121,29 @@ export default function TenantCustomPage({
           ) : (
             blocks.map((block: any, index: number) => {
               const displayLabel = block.label || (block.config?.content) || block.type.replace("_", " ");
-              return (
-              <div
-                key={block.id || `block-${index}`}
-                className="rounded-xl overflow-hidden shadow-sm"
-                style={{
-                  background: "var(--card)",
-                  border: "1px solid var(--border-subtle)",
-                  ...blockSizeStyle(block.config),
-                }}
-              >
-                <div className="p-5">
+              const isHeaderBlock = block.type === "TEXT";
+              const isFullWidthBlock = ["TABLE_VIEW", "ATTENDANCE_LOG", "KANBAN_VIEW"].includes(block.type);
+              
+              const blockContent = (
+                <div className={isHeaderBlock ? "mb-10 mt-2" : isFullWidthBlock ? "" : "p-5"}>
                   {block.type === "TEXT" && (
-                    <div className="space-y-1">
+                    <div className="space-y-1.5">
                       <h1
-                        className="text-3xl font-bold tracking-tight"
+                        className="text-4xl font-bold tracking-tight"
                         style={{ color: "var(--foreground)" }}
                       >
                         {displayLabel}
                       </h1>
                       {block.config?.description && (
-                        <p className="text-base mt-1 whitespace-pre-wrap" style={{ color: "var(--foreground-muted)" }}>
+                        <p className="text-lg mt-2 max-w-3xl whitespace-pre-wrap opacity-70" style={{ color: "var(--foreground-muted)" }}>
                           {block.config.description}
                         </p>
                       )}
                     </div>
+                  )}
+
+                  {block.type === "ATTENDANCE_LOG" && (
+                    <AttendanceLogBlock config={block.config || {}} />
                   )}
 
                   {block.type === "FILTER_BAR" && (
@@ -252,19 +251,36 @@ export default function TenantCustomPage({
                           </div>
                         ))}
                       </div>
-                      
-                      <div className="pt-2 flex justify-end gap-2 border-t border-border/40 mt-6 pt-4">
-                        <Button variant="ghost" className="h-9 rounded-lg">Cancel</Button>
-                        <Button className="h-9 rounded-lg px-6 font-medium shadow-sm transition-transform">
-                          Submit Record
-                        </Button>
-                      </div>
+                      <Button className="w-full sm:w-auto h-11 px-8 rounded-xl font-bold bg-primary text-primary-foreground shadow-lg shadow-primary/20 pressable">
+                        Submit Entry
+                      </Button>
                     </div>
                   )}
                 </div>
-              </div>
-            );
-          })
+              );
+
+              if (isHeaderBlock) {
+                return (
+                  <div key={block.id || `block-${index}`} className="w-full">
+                    {blockContent}
+                  </div>
+                );
+              }
+
+              return (
+                <div
+                  key={block.id || `block-${index}`}
+                  className={isFullWidthBlock ? "w-full mb-6" : "rounded-xl overflow-hidden shadow-sm mb-6"}
+                  style={isFullWidthBlock ? blockSizeStyle(block.config) : {
+                    background: "var(--card)",
+                    border: "1px solid var(--border-subtle)",
+                    ...blockSizeStyle(block.config),
+                  }}
+                >
+                  {blockContent}
+                </div>
+              );
+            })
           )}
         </div>
       </div>
