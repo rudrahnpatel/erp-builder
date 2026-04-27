@@ -1,9 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { Pool, neonConfig } from "@neondatabase/serverless";
 import { PrismaNeon } from "@prisma/adapter-neon";
-import ws from "ws";
-
-neonConfig.webSocketConstructor = ws;
+// Use native WebSocket in Node 22+ (user is on Node 24)
+neonConfig.webSocketConstructor = globalThis.WebSocket;
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
