@@ -6,6 +6,7 @@ import useSWR from "swr";
 import { useWorkspace } from "@/hooks/use-workspace";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { DevModeGate } from "@/components/layout/DevModeGate";
 import {
   DndContext,
   DragEndEvent,
@@ -347,6 +348,7 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
   }
 
   return (
+    <DevModeGate>
     <div className="h-[calc(100vh-3.5rem)] flex flex-col -m-4 sm:-m-6 bg-background text-foreground">
       {/* Top bar */}
       <div
@@ -1423,6 +1425,7 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
         )}
       </div>
     </div>
+    </DevModeGate>
   );
 }
 

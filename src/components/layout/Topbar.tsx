@@ -1,11 +1,12 @@
 "use client";
 
-import { Bell, Search, Menu, Command, LogOut, Settings, ChevronDown, Languages } from "lucide-react";
+import { Bell, Search, Menu, Command, LogOut, Settings, ChevronDown, Languages, Code2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useSession, signOut } from "next-auth/react";
 import { useLanguage } from "@/lib/i18n";
+import { useDevMode } from "@/hooks/use-dev-mode";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +22,7 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
   const router = useRouter();
   const [isMac, setIsMac] = useState(false);
   const { lang, setLang, t } = useLanguage();
+  const { isDevMode } = useDevMode();
 
   useEffect(() => {
     const platform =
@@ -39,10 +41,10 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
       }}
     >
       <div className="flex items-center gap-3 flex-1">
-        {/* Mobile hamburger */}
+        {/* Hamburger menu */}
         <button
           onClick={onMenuToggle}
-          className="md:hidden p-1.5 rounded-md hover-bg-subtle focus-ring"
+          className="p-1.5 rounded-md hover-bg-subtle focus-ring"
           style={{ color: "var(--foreground-muted)" }}
         >
           <Menu className="h-5 w-5" />
@@ -73,6 +75,21 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
             {isMac ? "K" : "+K"}
           </kbd>
         </button>
+
+        {/* Dev mode indicator */}
+        {isDevMode && (
+          <span
+            className="hidden sm:inline-flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold px-2 py-1 rounded-full"
+            style={{
+              background: "linear-gradient(135deg, var(--accent-emerald), color-mix(in oklch, var(--accent-emerald), var(--primary) 40%))",
+              color: "#fff",
+              boxShadow: "0 1px 6px color-mix(in oklch, var(--accent-emerald), transparent 55%)",
+            }}
+          >
+            <Code2 className="h-2.5 w-2.5" />
+            DEV
+          </span>
+        )}
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
@@ -226,6 +243,19 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
                 <Settings className="h-4 w-4" style={{ color: "var(--foreground-muted)" }} />
                 <span>{t("common.settings")}</span>
               </DropdownMenuItem>
+              {isDevMode && (
+                <DropdownMenuItem
+                  onClick={() => router.push("/settings")}
+                  className="gap-2.5 px-2.5 py-2 text-sm cursor-pointer"
+                >
+                  <Code2 className="h-4 w-4" style={{ color: "var(--accent-emerald)" }} />
+                  <span>Developer Mode</span>
+                  <span
+                    className="ml-auto h-1.5 w-1.5 rounded-full"
+                    style={{ background: "var(--accent-emerald)", boxShadow: "0 0 6px var(--accent-emerald)" }}
+                  />
+                </DropdownMenuItem>
+              )}
               <DropdownMenuSeparator className="my-1" />
               <DropdownMenuItem
                 onClick={() => signOut({ callbackUrl: "/login" })}

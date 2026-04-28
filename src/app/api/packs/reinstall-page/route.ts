@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getWorkspace } from "@/lib/get-workspace";
-import { getPackById } from "@/lib/packs";
+import { getPackByIdAsync } from "@/lib/packs";
 import { Prisma } from "@prisma/client";
 
 // POST /api/packs/reinstall-page — re-add a single missing page from a pack
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     }
 
     // Find the page definition in the pack
-    const pack = getPackById(packId);
+    const pack = await getPackByIdAsync(packId);
     if (!pack) return NextResponse.json({ error: "Pack not found" }, { status: 404 });
 
     const pageDef = pack.pageDefinitions.find((p) => p.key === pageKey);

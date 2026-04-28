@@ -3,15 +3,11 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { PackCard } from "@/components/marketplace/PackCard";
-import {
-  inventoryPack,
-  financePack,
-  hrPack
-} from "@/lib/packs/registry";
 import { Search, ArrowRight, PackageSearch, Sparkles, ShoppingCart, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import useSWR from "swr";
 
-const allPacks = [inventoryPack, financePack, hrPack];
+const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 const categories = [
   "All Modules",
@@ -45,6 +41,9 @@ export default function ModulesPage() {
   const [activeCategory, setActiveCategory] = useState("All Modules");
   const [waitlisted, setWaitlisted] = useState<Record<string, boolean>>({});
   const { workspace, refetch } = useWorkspace();
+  
+  const { data: packsData, isLoading } = useSWR("/api/packs", fetcher);
+  const allPacks: any[] = packsData || [];
 
   // Show installed packs visually if workspace is loaded, else empty fallback
   const installedPacks = workspace?.installedPacks || [];

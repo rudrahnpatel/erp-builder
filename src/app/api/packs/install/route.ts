@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getWorkspace } from "@/lib/get-workspace";
-import { getPackById } from "@/lib/packs";
+import { getPackByIdAsync } from "@/lib/packs";
 import { FieldType, Prisma } from "@prisma/client";
 
 // POST /api/packs/install — install a module pack into the workspace
@@ -21,7 +21,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Pack already installed" }, { status: 409 });
     }
 
-    const pack = getPackById(packId);
+    const pack = await getPackByIdAsync(packId);
     if (!pack) return NextResponse.json({ error: "Pack not found" }, { status: 404 });
 
     // Install in a transaction: create tables, fields, seed data, pages

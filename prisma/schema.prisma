@@ -9,26 +9,51 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(cuid())
-  email     String     @unique
-  password  String
-  name      String
-  workspace Workspace?
-  createdAt DateTime   @default(now())
+  id                String             @id @default(cuid())
+  email             String             @unique
+  password          String
+  name              String
+  workspace         Workspace?
+  authoredModules   ModuleDefinition[]
+  createdAt         DateTime           @default(now())
 }
 
 model Workspace {
-  id               String            @id @default(cuid())
+  id               String             @id @default(cuid())
   name             String
-  slug             String            @unique
-  userId           String            @unique
-  user             User              @relation(fields: [userId], references: [id])
+  slug             String             @unique
+  userId           String             @unique
+  user             User               @relation(fields: [userId], references: [id])
   tables           Table[]
   pages            Page[]
   installedPacks   InstalledPack[]
   installedPlugins InstalledPlugin[]
   tenantUsers      TenantUser[]
-  createdAt        DateTime          @default(now())
+  modules          ModuleDefinition[]
+  createdAt        DateTime           @default(now())
+}
+
+// Developer-authored module definitions — the DB counterpart of registry.ts.
+// When a dev designs pages/tables in the GUI and publishes them, the result
+// lands here as a full PackDefinition-shaped JSON that the install/update
+// APIs can read exactly like they read built-in packs from registry.ts.
+model ModuleDefinition {
+  id          String    @id @default(cuid())
+  packId      String    @unique  // matches PackDefinition.id, e.g. "my-crm"
+  name        String
+  description String    @default("")
+  icon        String    @default("package")
+  category    String    @default("Custom")
+  version     String    @default("0.1.0")
+  tables      Json      @default("[]")  // PackTableDefinition[]
+  pages       Json      @default("[]")  // PackPageDefinition[]
+  published   Boolean   @default(false) // only published modules appear in marketplace
+  authorId    String
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 // Materialized copy of a pack table — tagged with packSource/packTableKey for provenance.

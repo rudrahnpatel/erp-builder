@@ -17,6 +17,17 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     }
   }, [workspace, isLoading, router]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        setSidebarOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   return (
     <div
       className="flex h-[100dvh] w-full overflow-hidden"
@@ -25,10 +36,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       {/* Noise overlay — breaks digital flatness */}
       <div className="noise-overlay" aria-hidden="true" />
 
-      {/* Mobile overlay */}
+      {/* Overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 md:hidden transition-opacity duration-300"
+          className="fixed inset-0 z-40 transition-opacity duration-300"
           style={{
             background: "oklch(0.08 0.020 260 / 0.55)",
             backdropFilter: "blur(6px)",
@@ -38,13 +49,13 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         />
       )}
 
-      {/* Sidebar — hidden on mobile, slide-in on toggle */}
+      {/* Sidebar — hidden by default, slide-in on toggle */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 md:static md:z-auto transform transition-transform duration-300 ease-[var(--ease-out-expo)] ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        className={`fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-[var(--ease-out-expo)] ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <Sidebar />
+        <Sidebar onClose={() => setSidebarOpen(false)} />
       </div>
 
       <div className="flex flex-col flex-1 overflow-hidden">

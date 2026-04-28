@@ -12,39 +12,57 @@ import {
   LogOut,
   HelpCircle,
   ChevronLeft,
-  ChevronRight,
   Zap,
   FileText,
   ExternalLink,
   Database,
+  Code2,
+  Package,
 } from "lucide-react";
 import { useWorkspace } from "@/hooks/use-workspace";
 import { useLanguage } from "@/lib/i18n";
+import { useDevMode } from "@/hooks/use-dev-mode";
 
-export function Sidebar() {
+export function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
   const { workspace, isLoading } = useWorkspace();
   const { t } = useLanguage();
+  const { isDevMode } = useDevMode();
+
+  // Core nav — always visible
+  const coreItems = [
+    { href: "/workspace", label: t("common.dashboard"), icon: LayoutDashboard },
+    { href: "/modules", label: t("common.marketplace"), icon: Blocks },
+    { href: "/plugins", label: t("common.plugins"), icon: Puzzle },
+  ];
+
+  // Dev-only items — shown only in developer mode
+  const devItems = [
+    { href: "/dev/modules", label: "My Modules", icon: Package },
+    { href: "/pages", label: t("common.managePages"), icon: FileText },
+    { href: "/tables", label: t("common.manageTables"), icon: Database },
+  ];
 
   const navSections = [
     {
       label: t("common.builder"),
-      items: [
-        { href: "/workspace", label: t("common.dashboard"), icon: LayoutDashboard },
-        { href: "/modules", label: t("common.marketplace"), icon: Blocks },
-        { href: "/pages", label: t("common.managePages"), icon: FileText },
-        { href: "/tables", label: t("common.manageTables"), icon: Database },
-        { href: "/plugins", label: t("common.plugins"), icon: Puzzle },
-      ],
+      items: coreItems,
     },
+    // Conditionally add dev section
+    ...(isDevMode
+      ? [
+          {
+            label: "Developer Tools",
+            isDev: true,
+            items: devItems,
+          },
+        ]
+      : []),
   ];
 
   return (
     <div
-      className={`h-full flex flex-col border-r transition-all duration-300 ease-[var(--ease-out-expo)] ${
-        collapsed ? "w-[68px]" : "w-[248px]"
-      }`}
+      className="h-full flex flex-col border-r w-[248px]"
       style={{
         background: "var(--sidebar)",
         borderColor: "var(--sidebar-border)",
@@ -76,57 +94,52 @@ export function Sidebar() {
             aria-hidden="true"
           />
         </div>
-        {!collapsed && (
-          <div className="ml-2.5 min-w-0 flex-1 animate-fade-in-up">
-            {isLoading && !workspace ? (
-              <>
-                <span
-                  className="block h-3 rounded-md w-24 animate-pulse"
-                  style={{ background: "var(--surface-2)" }}
-                  aria-hidden="true"
-                />
-                <span
-                  className="block h-2 rounded-md w-32 mt-1.5 animate-pulse"
-                  style={{ background: "var(--surface-2)" }}
-                  aria-hidden="true"
-                />
-                <span className="sr-only">Loading workspace…</span>
-              </>
-            ) : (
-              <>
-                <span
-                  className="font-semibold text-[13px] block leading-tight truncate tracking-tight"
-                  style={{ color: "var(--sidebar-foreground)" }}
-                >
-                  {workspace?.name || "Workspace"}
-                </span>
-                <span
-                  className="text-[10px] tracking-[0.08em] mono block mt-0.5"
-                  style={{ color: "var(--foreground-dimmed)" }}
-                >
-                  {workspace?.slug
-                    ? `${workspace.slug}.erpbuilder.app`
-                    : ""}
-                </span>
-              </>
-            )}
-          </div>
-        )}
-        {/* Collapse toggle — always visible in header */}
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className={`h-7 w-7 rounded-lg flex items-center justify-center hover-bg-subtle focus-ring ${
-            collapsed ? "mx-auto" : "ml-auto"
-          }`}
-          style={{ color: "var(--foreground-dimmed)" }}
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        >
-          {collapsed ? (
-            <ChevronRight className="h-3.5 w-3.5" />
+        <div className="ml-2.5 min-w-0 flex-1 animate-fade-in-up">
+          {isLoading && !workspace ? (
+            <>
+              <span
+                className="block h-3 rounded-md w-24 animate-pulse"
+                style={{ background: "var(--surface-2)" }}
+                aria-hidden="true"
+              />
+              <span
+                className="block h-2 rounded-md w-32 mt-1.5 animate-pulse"
+                style={{ background: "var(--surface-2)" }}
+                aria-hidden="true"
+              />
+              <span className="sr-only">Loading workspace…</span>
+            </>
           ) : (
-            <ChevronLeft className="h-3.5 w-3.5" />
+            <>
+              <span
+                className="font-semibold text-[13px] block leading-tight truncate tracking-tight"
+                style={{ color: "var(--sidebar-foreground)" }}
+              >
+                {workspace?.name || "Workspace"}
+              </span>
+              <span
+                className="text-[10px] tracking-[0.08em] mono block mt-0.5"
+                style={{ color: "var(--foreground-dimmed)" }}
+              >
+                {workspace?.slug
+                  ? `${workspace.slug}.erpbuilder.app`
+                  : ""}
+              </span>
+            </>
           )}
-        </button>
+        </div>
+        
+        {/* Close toggle */}
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="h-7 w-7 rounded-lg flex items-center justify-center hover-bg-subtle focus-ring ml-auto"
+            style={{ color: "var(--foreground-dimmed)", background: "var(--surface-2)" }}
+            aria-label="Close sidebar"
+          >
+            <ChevronLeft className="h-3.5 w-3.5" />
+          </button>
+        )}
       </div>
 
       {/* ── Navigation ── */}
@@ -134,19 +147,28 @@ export function Sidebar() {
         {navSections.map((section, si) => (
           <div key={si} className={si > 0 ? "mt-4" : ""}>
             {/* Section label */}
-            {section.label && !collapsed && (
-              <p
-                className="px-4 text-[10px] font-semibold uppercase tracking-wider mb-2"
-                style={{ color: "var(--foreground-dimmed)" }}
-              >
-                {section.label}
-              </p>
-            )}
-            {section.label && collapsed && (
-              <div
-                className="mx-3 my-2 border-t"
-                style={{ borderColor: "var(--sidebar-border)" }}
-              />
+            {section.label && (
+              <div className="px-4 flex items-center gap-2 mb-2">
+                <p
+                  className="text-[10px] font-semibold uppercase tracking-wider"
+                  style={{ color: "var(--foreground-dimmed)" }}
+                >
+                  {section.label}
+                </p>
+                {(section as any).isDev && (
+                  <span
+                    className="inline-flex items-center gap-0.5 text-[8px] uppercase tracking-wider font-bold px-1.5 py-[1px] rounded-full"
+                    style={{
+                      background: "linear-gradient(135deg, var(--accent-emerald), color-mix(in oklch, var(--accent-emerald), var(--primary) 40%))",
+                      color: "#fff",
+                      boxShadow: "0 1px 4px color-mix(in oklch, var(--accent-emerald), transparent 65%)",
+                    }}
+                  >
+                    <Code2 className="h-2 w-2" />
+                    DEV
+                  </span>
+                )}
+              </div>
             )}
 
             <nav className="space-y-1 px-2">
@@ -158,10 +180,8 @@ export function Sidebar() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    title={collapsed ? item.label : undefined}
+                    onClick={() => onClose?.()}
                     className={`relative flex items-center gap-2.5 px-3 py-2.5 text-[13px] rounded-lg group focus-ring ${
-                      collapsed ? "justify-center" : ""
-                    } ${
                       isActive
                         ? "sidebar-nav-item active"
                         : "sidebar-nav-item"
@@ -175,12 +195,12 @@ export function Sidebar() {
                     {/* Active indicator bar */}
                     {isActive && (
                       <span
-                        className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full animate-nav-indicator"
+                        className="absolute -left-2 top-1/2 -translate-y-1/2 w-[3px] h-6 rounded-r-full animate-nav-indicator"
                         style={{ background: "var(--primary)" }}
                       />
                     )}
                     <item.icon className="h-[18px] w-[18px] shrink-0" />
-                    {!collapsed && <span>{item.label}</span>}
+                    <span>{item.label}</span>
                   </Link>
                 );
               })}
@@ -192,30 +212,24 @@ export function Sidebar() {
       {/* ── Open My ERP (runtime) ── */}
       {workspace?.slug && (
         <div className="px-2.5 py-2">
-          <Link
-            href={`/apps/${workspace.slug}`}
-            target="_blank"
-            rel="noopener"
-            title={collapsed ? t("common.openMyErp") : undefined}
-            className={`w-full flex items-center gap-2 text-[13px] font-semibold rounded-xl px-3 py-2.5 transition-all duration-200 pressable ${
-              collapsed ? "justify-center px-0" : ""
-            }`}
-            style={{
-              background:
-                "linear-gradient(135deg, var(--primary), var(--primary-hover))",
-              color: "var(--primary-foreground)",
-              boxShadow:
-                "0 2px 8px color-mix(in oklch, var(--primary), transparent 60%), inset 0 1px 0 oklch(1 0 0 / 0.12)",
-            }}
-          >
-            <Zap className="h-4 w-4" />
-            {!collapsed && (
-              <>
-                {t("common.openMyErp")}
-                <ExternalLink className="h-3 w-3 ml-auto opacity-60" />
-              </>
-            )}
-          </Link>
+            <Link
+              href={`/apps/${workspace.slug}`}
+              target="_blank"
+              rel="noopener"
+              onClick={() => onClose?.()}
+              className="w-full flex items-center gap-2 text-[13px] font-semibold rounded-xl px-3 py-2.5 transition-all duration-200 pressable"
+              style={{
+                background:
+                  "linear-gradient(135deg, var(--primary), var(--primary-hover))",
+                color: "var(--primary-foreground)",
+                boxShadow:
+                  "0 2px 8px color-mix(in oklch, var(--primary), transparent 60%), inset 0 1px 0 oklch(1 0 0 / 0.12)",
+              }}
+            >
+              <Zap className="h-4 w-4" />
+              {t("common.openMyErp")}
+              <ExternalLink className="h-3 w-3 ml-auto opacity-60" />
+            </Link>
         </div>
       )}
 
@@ -232,20 +246,20 @@ export function Sidebar() {
               "_blank",
               "noopener,noreferrer"
             );
+            onClose?.();
           }}
-          className={`flex w-full items-center gap-2.5 px-3 py-2 text-[13px] rounded-lg hover-bg-subtle focus-ring ${
-            collapsed ? "justify-center" : ""
-          }`}
+          className="flex w-full items-center gap-2.5 px-3 py-2 text-[13px] rounded-lg hover-bg-subtle focus-ring"
           style={{ color: "var(--foreground-muted)" }}
         >
           <HelpCircle className="h-4 w-4" />
-          {!collapsed && t("common.helpDocs")}
+          {t("common.helpDocs")}
         </button>
         <button
-          onClick={() => signOut({ callbackUrl: "/login" })}
-          className={`flex w-full items-center gap-2.5 px-3 py-2 text-[13px] rounded-lg transition-colors duration-150 focus-ring ${
-            collapsed ? "justify-center" : ""
-          }`}
+          onClick={() => {
+            onClose?.();
+            signOut({ callbackUrl: "/login" });
+          }}
+          className="flex w-full items-center gap-2.5 px-3 py-2 text-[13px] rounded-lg transition-colors duration-150 focus-ring"
           style={{ color: "var(--danger)" }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = "var(--danger-subtle)";
@@ -255,7 +269,7 @@ export function Sidebar() {
           }}
         >
           <LogOut className="h-4 w-4" />
-          {!collapsed && t("common.logout")}
+          {t("common.logout")}
         </button>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { useState, use, useEffect } from "react";
 import useSWR from "swr";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { DevModeGate } from "@/components/layout/DevModeGate";
 import {
   Plus,
   GripVertical,
@@ -133,6 +134,7 @@ export default function SchemaDesignerPage({ params }: { params: Promise<{ table
   const hasUnsavedChanges = draftDiff.total > 0;
 
   return (
+    <DevModeGate>
     <div className="h-[calc(100vh-3.5rem)] flex flex-col -m-4 sm:-m-6">
       {/* Top bar */}
       <div
@@ -520,6 +522,7 @@ export default function SchemaDesignerPage({ params }: { params: Promise<{ table
         </div>
       </div>
     </div>
+    </DevModeGate>
   );
 }
 

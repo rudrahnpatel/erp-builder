@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getWorkspace } from "@/lib/get-workspace";
-import { getPackById } from "@/lib/packs";
+import { getPackByIdAsync } from "@/lib/packs";
 import { FieldType, Prisma } from "@prisma/client";
 
 // POST /api/packs/update — sync an installed pack to the latest registry version.
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Pack not installed" }, { status: 404 });
     }
 
-    const pack = getPackById(packId);
+    const pack = await getPackByIdAsync(packId);
     if (!pack) return NextResponse.json({ error: "Pack not found" }, { status: 404 });
 
     if (installed.packVersion === pack.version) {

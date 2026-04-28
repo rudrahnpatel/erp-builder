@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { toast } from "sonner";
-import { AlertTriangle, Loader2, Trash2 } from "lucide-react";
+import { AlertTriangle, Loader2, Trash2, Code2, ShieldCheck, Eye, EyeOff, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { SubdomainEditor } from "@/components/workspace/SubdomainEditor";
 import { useWorkspace } from "@/hooks/use-workspace";
+import { useDevMode, validateDevPassword } from "@/hooks/use-dev-mode";
 
 export default function SettingsPage() {
   const { data: session } = useSession();
@@ -25,6 +26,12 @@ export default function SettingsPage() {
   const [password, setPassword] = useState("");
   const [confirmText, setConfirmText] = useState("");
   const [deleting, setDeleting] = useState(false);
+
+  // Developer mode
+  const { isDevMode, activate, deactivate } = useDevMode();
+  const [devPassword, setDevPassword] = useState("");
+  const [showDevPassword, setShowDevPassword] = useState(false);
+  const [devActivating, setDevActivating] = useState(false);
 
   const canDelete = confirmText === "DELETE" && password.length > 0 && !deleting;
 
@@ -182,6 +189,185 @@ export default function SettingsPage() {
           </form>
         </section>
       )}
+
+      {/* ── Developer Account ── */}
+      <section
+        className="rounded-xl border p-5 relative overflow-hidden"
+        style={{
+          background: isDevMode
+            ? "linear-gradient(135deg, color-mix(in oklch, var(--accent-emerald), transparent 94%), color-mix(in oklch, var(--primary), transparent 96%))"
+            : "var(--surface-1)",
+          borderColor: isDevMode
+            ? "color-mix(in oklch, var(--accent-emerald), transparent 55%)"
+            : "var(--border-subtle)",
+          transition: "all 0.4s ease",
+        }}
+      >
+        {/* Subtle noise texture for premium feel */}
+        {isDevMode && (
+          <div
+            className="absolute inset-0 opacity-[0.03] pointer-events-none"
+            style={{
+              backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")",
+            }}
+            aria-hidden="true"
+          />
+        )}
+
+        <div className="flex items-start gap-3 relative">
+          <div
+            className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300"
+            style={{
+              background: isDevMode
+                ? "linear-gradient(135deg, var(--accent-emerald), var(--primary))"
+                : "var(--surface-2)",
+              color: isDevMode ? "#fff" : "var(--foreground-muted)",
+              boxShadow: isDevMode
+                ? "0 4px 14px color-mix(in oklch, var(--accent-emerald), transparent 55%), inset 0 1px 0 oklch(1 0 0 / 0.18)"
+                : "none",
+            }}
+          >
+            {isDevMode ? <ShieldCheck className="h-5 w-5" /> : <Terminal className="h-5 w-5" />}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <h2 className="text-sm font-medium">Developer Account</h2>
+              {isDevMode && (
+                <span
+                  className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full animate-fade-in-up"
+                  style={{
+                    background: "linear-gradient(135deg, var(--accent-emerald), color-mix(in oklch, var(--accent-emerald), var(--primary) 40%))",
+                    color: "#fff",
+                    boxShadow: "0 2px 8px color-mix(in oklch, var(--accent-emerald), transparent 60%)",
+                  }}
+                >
+                  <Code2 className="h-2.5 w-2.5" />
+                  Active
+                </span>
+              )}
+            </div>
+            <p
+              className="text-xs leading-relaxed"
+              style={{ color: "var(--foreground-dimmed)" }}
+            >
+              {isDevMode
+                ? "You have developer access. The page builder and table designer are unlocked for creating and editing module content."
+                : "Activate developer mode to access the visual page builder and table schema designer. Build custom pages and tables for your modules."}
+            </p>
+          </div>
+        </div>
+
+        {isDevMode ? (
+          /* ── Active state — show features + deactivate ── */
+          <div className="mt-4 space-y-3 relative">
+            <div
+              className="grid grid-cols-1 sm:grid-cols-2 gap-2"
+            >
+              {[
+                { icon: "📄", label: "Page Builder", desc: "Drag-and-drop page composer" },
+                { icon: "🗄️", label: "Table Designer", desc: "Schema editor with fields & records" },
+              ].map((f) => (
+                <div
+                  key={f.label}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg"
+                  style={{
+                    background: "color-mix(in oklch, var(--background), transparent 40%)",
+                    border: "1px solid color-mix(in oklch, var(--border-subtle), transparent 40%)",
+                  }}
+                >
+                  <span className="text-lg">{f.icon}</span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-semibold" style={{ color: "var(--foreground)" }}>{f.label}</p>
+                    <p className="text-[10px]" style={{ color: "var(--foreground-dimmed)" }}>{f.desc}</p>
+                  </div>
+                  <span
+                    className="h-1.5 w-1.5 rounded-full shrink-0"
+                    style={{
+                      background: "var(--accent-emerald)",
+                      boxShadow: "0 0 6px var(--accent-emerald)",
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                deactivate();
+                toast.success("Developer mode deactivated");
+              }}
+              className="text-xs"
+            >
+              Deactivate Developer Mode
+            </Button>
+          </div>
+        ) : (
+          /* ── Inactive state — password input to activate ── */
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              setDevActivating(true);
+              // Small delay for visual feedback
+              setTimeout(() => {
+                if (validateDevPassword(devPassword)) {
+                  activate();
+                  setDevPassword("");
+                  setShowDevPassword(false);
+                  toast.success("🚀 Developer mode activated! Page builder and table designer are now accessible.");
+                } else {
+                  toast.error("Incorrect developer password");
+                }
+                setDevActivating(false);
+              }, 400);
+            }}
+            className="mt-4 max-w-sm space-y-3"
+          >
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium" style={{ color: "var(--foreground-muted)" }}>
+                Developer Password
+              </label>
+              <div className="relative">
+                <Input
+                  value={devPassword}
+                  onChange={(e) => setDevPassword(e.target.value)}
+                  type={showDevPassword ? "text" : "password"}
+                  placeholder="Enter developer password"
+                  required
+                  className="h-9 pr-9"
+                  autoComplete="off"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowDevPassword(!showDevPassword)}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded"
+                  style={{ color: "var(--foreground-dimmed)" }}
+                  tabIndex={-1}
+                >
+                  {showDevPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                </button>
+              </div>
+            </div>
+            <Button
+              type="submit"
+              size="sm"
+              disabled={devActivating || devPassword.length === 0}
+              className="gap-2 font-semibold rounded-lg pressable"
+              style={{
+                background: "linear-gradient(135deg, var(--primary), var(--primary-hover))",
+                color: "var(--primary-foreground)",
+                boxShadow: "0 2px 8px color-mix(in oklch, var(--primary), transparent 65%)",
+              }}
+            >
+              {devActivating ? (
+                <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Activating…</>
+              ) : (
+                <><Code2 className="h-3.5 w-3.5" /> Activate Developer Mode</>
+              )}
+            </Button>
+          </form>
+        )}
+      </section>
 
       {/* Danger zone */}
       <section

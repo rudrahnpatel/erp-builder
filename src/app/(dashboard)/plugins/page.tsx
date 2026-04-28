@@ -122,7 +122,7 @@ export default function PluginsPage() {
       </div>
 
       {/* Plugin list */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 stagger-children">
+      <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4 stagger-children">
         {isLoading && (
           <div className="col-span-full py-12 flex flex-col items-center justify-center text-muted-foreground">
             <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4" />
@@ -149,7 +149,7 @@ export default function PluginsPage() {
           return (
             <div
               key={plugin.id}
-              className="group flex flex-col sm:flex-row p-5 gap-5 rounded-2xl transition-all duration-300 bg-card border border-border/40 hover:border-border/80 shadow-sm hover:shadow-md relative overflow-hidden"
+              className="group flex flex-col p-6 gap-5 rounded-2xl transition-all duration-300 bg-card border border-border/40 hover:border-border/80 shadow-sm hover:shadow-md relative overflow-hidden"
             >
               {/* Subtle background glow effect on hover */}
               <div 
@@ -157,39 +157,39 @@ export default function PluginsPage() {
                 style={{ background: accentColor }}
               />
 
-              {/* Icon */}
-              <div
-                className="h-14 w-14 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-105 shadow-sm border border-black/5 dark:border-white/5"
-                style={{
-                  background: `color-mix(in oklch, ${accentColor}, transparent 88%)`,
-                  color: accentColor,
-                }}
-              >
-                {iconMap[plugin.icon] || <Settings2 className="h-6 w-6" />}
-              </div>
-
-              {/* Content */}
-              <div className="flex-1 min-w-0 flex flex-col justify-center">
-                <div className="flex items-center gap-2.5 mb-1.5">
-                  <h3 className="text-base font-semibold text-foreground tracking-tight">
+              {/* Header: Icon + Title + Badge */}
+              <div className="flex items-start gap-4">
+                <div
+                  className="h-12 w-12 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-105 shadow-sm border border-black/5 dark:border-white/5"
+                  style={{
+                    background: `color-mix(in oklch, ${accentColor}, transparent 88%)`,
+                    color: accentColor,
+                  }}
+                >
+                  {iconMap[plugin.icon] || <Settings2 className="h-5 w-5" />}
+                </div>
+                <div className="flex-1 min-w-0 pt-0.5 flex flex-col gap-1.5">
+                  <h3 className="text-base font-semibold text-foreground tracking-tight truncate">
                     {plugin.name}
                   </h3>
                   <Badge
                     variant={plugin.badge === "Pro" ? "default" : "secondary"}
-                    className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border-0 ${
+                    className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border-0 w-fit ${
                       plugin.badge === "Pro" ? "bg-primary/10 text-primary" : "bg-success/10 text-success"
                     }`}
                   >
                     {plugin.badge}
                   </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground leading-snug mb-3 pr-2">
+              </div>
+
+              {/* Body: Description + Triggers */}
+              <div className="flex-1 flex flex-col min-w-0">
+                <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                   {plugin.description}
                 </p>
 
-                {/* Connected to — surfaces which tables this plugin reads or
-                    writes against, plus a one-click hint to install the
-                    supporting module if it isn't there yet. */}
+                {/* Connected to */}
                 {plugin.triggers && plugin.triggers.length > 0 && (() => {
                   const tableNames = Array.from(
                     new Set(plugin.triggers.map((t: any) => t.table).filter(Boolean))
@@ -199,8 +199,8 @@ export default function PluginsPage() {
                   const missingPack =
                     requiredPack && !installedPackIds.has(requiredPack.packId);
                   return (
-                    <div className="flex flex-wrap items-center gap-1.5 mb-3">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                    <div className="flex flex-wrap items-center gap-1.5 mt-auto">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mr-1">
                         <Link2 className="h-3 w-3 inline mr-1 -mt-0.5" />
                         Connected to
                       </span>
@@ -237,7 +237,7 @@ export default function PluginsPage() {
                       {missingPack && (
                         <Link
                           href="/modules"
-                          className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md transition-colors hover:underline"
+                          className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md transition-colors hover:underline mt-1 w-fit"
                           style={{
                             background: "color-mix(in oklch, var(--accent-amber), transparent 88%)",
                             color: "var(--accent-amber)",
@@ -252,46 +252,48 @@ export default function PluginsPage() {
                     </div>
                   );
                 })()}
-                
-                <div className="flex items-center gap-4 text-[11px] font-medium text-muted-foreground/80 lowercase mt-auto">
-                  <span className="flex items-center gap-1.5 bg-secondary/40 px-2 py-1 rounded-md">
-                    <Users className="h-3 w-3" /> {plugin.installs.toLocaleString()} users
-                  </span>
-                  <span className="flex items-center gap-1.5 bg-secondary/40 px-2 py-1 rounded-md">
-                    <Settings2 className="h-3 w-3" /> {plugin.configFields.length} options
-                  </span>
-                </div>
               </div>
 
-              {/* Actions */}
-              <div className="flex sm:flex-col items-center justify-center gap-3 shrink-0 sm:border-l sm:border-border/40 sm:pl-5">
-                {isInstalled ? (
-                  <>
-                    <button
-                      onClick={() => togglePlugin(plugin.id)}
-                      className="transition-transform duration-200 hover:scale-110 active:scale-95"
-                      style={{ color: isEnabled ? accentColor : "var(--muted-foreground)" }}
-                      title={isEnabled ? "Disable Plugin" : "Enable Plugin"}
-                    >
-                      {isEnabled ? <ToggleRight className="h-8 w-8" /> : <ToggleLeft className="h-8 w-8" />}
-                    </button>
+              {/* Footer: Meta + Actions */}
+              <div className="flex items-center justify-between gap-4 pt-5 border-t border-border/40 mt-auto">
+                <div className="flex items-center gap-3 text-[11px] font-medium text-muted-foreground/80 lowercase">
+                  <span className="flex items-center gap-1.5" title={`${plugin.installs.toLocaleString()} users`}>
+                    <Users className="h-3.5 w-3.5" /> {plugin.installs >= 1000 ? `${(plugin.installs/1000).toFixed(1)}k` : plugin.installs}
+                  </span>
+                  <span className="flex items-center gap-1.5" title={`${plugin.configFields.length} options`}>
+                    <Settings2 className="h-3.5 w-3.5" /> {plugin.configFields.length}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  {isInstalled ? (
+                    <>
+                      <button
+                        onClick={() => togglePlugin(plugin.id)}
+                        className="transition-transform duration-200 hover:scale-110 active:scale-95 mr-1"
+                        style={{ color: isEnabled ? accentColor : "var(--muted-foreground)" }}
+                        title={isEnabled ? "Disable Plugin" : "Enable Plugin"}
+                      >
+                        {isEnabled ? <ToggleRight className="h-8 w-8" /> : <ToggleLeft className="h-8 w-8" />}
+                      </button>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        className="h-8 text-xs font-medium px-4"
+                      >
+                        Configure
+                      </Button>
+                    </>
+                  ) : (
                     <Button
-                      variant="ghost"
                       size="sm"
-                      className="h-8 text-xs font-medium w-full text-muted-foreground hover:text-foreground hover:bg-secondary/60"
+                      className="h-8 rounded-lg font-medium shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5 px-4"
+                      onClick={() => installPlugin(plugin.id)}
                     >
-                      Configure
+                      <Download className="h-3.5 w-3.5 mr-1.5" /> Install
                     </Button>
-                  </>
-                ) : (
-                  <Button
-                    size="sm"
-                    className="w-full h-9 rounded-lg font-semibold shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5"
-                    onClick={() => installPlugin(plugin.id)}
-                  >
-                    <Download className="h-4 w-4 mr-1.5" /> Install
-                  </Button>
-                )}
+                  )}
+                </div>
               </div>
             </div>
           );

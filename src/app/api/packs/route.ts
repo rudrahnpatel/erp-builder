@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getWorkspace } from "@/lib/get-workspace";
-import { getAllPacks } from "@/lib/packs";
+import { getAllPacksAsync } from "@/lib/packs";
 
 // GET /api/packs — list all available packs + installed status
 export async function GET() {
@@ -14,7 +14,8 @@ export async function GET() {
 
   const installedIds = new Set(installed.map((p) => p.packId));
 
-  const packs = getAllPacks().map((pack) => ({
+  const allPacks = await getAllPacksAsync();
+  const packs = allPacks.map((pack) => ({
     ...pack,
     installed: installedIds.has(pack.id),
   }));

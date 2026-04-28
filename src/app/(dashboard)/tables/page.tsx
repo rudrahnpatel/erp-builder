@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useWorkspace } from "@/hooks/use-workspace";
+import { DevModeGate } from "@/components/layout/DevModeGate";
 import {
   Database,
   Plus,
@@ -138,6 +139,7 @@ export default function TablesPage() {
   if (!workspace) return null;
 
   return (
+    <DevModeGate>
     <div className="space-y-8 max-w-6xl mx-auto animate-fade-in-up">
       {/* Header */}
       <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
@@ -497,5 +499,6 @@ export default function TablesPage() {
         </div>
       )}
     </div>
+    </DevModeGate>
   );
 }
