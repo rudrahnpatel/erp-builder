@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
+import { CommandPalette } from "@/components/layout/CommandPalette";
 
 export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
   const { data: session } = useSession();
@@ -52,6 +53,7 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
 
         {/* Command palette trigger */}
         <button
+          onClick={() => window.dispatchEvent(new Event("open-command-palette"))}
           className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm transition-all duration-200 max-w-xs w-full hover-bg-subtle focus-ring"
           style={{
             background: "var(--surface-sunken)",
@@ -269,6 +271,8 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
+      <CommandPalette />
     </div>
   );
 }
