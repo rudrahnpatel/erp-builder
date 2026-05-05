@@ -1,0 +1,513 @@
+m<!DOCTYPE html><html><head>
+      <title>SYSTEM-DESIGN</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="file:///c:\Users\Rudra\.vscode\extensions\shd101wyy.markdown-preview-enhanced-0.8.24\crossnote\dependencies\katex\katex.min.css">
+      
+      
+      
+      <script type="text/javascript" src="file:///c:\Users\Rudra\.vscode\extensions\shd101wyy.markdown-preview-enhanced-0.8.24\crossnote\dependencies\mermaid\mermaid.min.js" charset="UTF-8"></script>
+      
+      
+      
+      <style>
+      code[class*=language-],pre[class*=language-]{color:#333;background:0 0;font-family:Consolas,"Liberation Mono",Menlo,Courier,monospace;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.4;-moz-tab-size:8;-o-tab-size:8;tab-size:8;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:.8em;overflow:auto;border-radius:3px;background:#f5f5f5}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal;background:#f5f5f5}.token.blockquote,.token.comment{color:#969896}.token.cdata{color:#183691}.token.doctype,.token.macro.property,.token.punctuation,.token.variable{color:#333}.token.builtin,.token.important,.token.keyword,.token.operator,.token.rule{color:#a71d5d}.token.attr-value,.token.regex,.token.string,.token.url{color:#183691}.token.atrule,.token.boolean,.token.code,.token.command,.token.constant,.token.entity,.token.number,.token.property,.token.symbol{color:#0086b3}.token.prolog,.token.selector,.token.tag{color:#63a35c}.token.attr-name,.token.class,.token.class-name,.token.function,.token.id,.token.namespace,.token.pseudo-class,.token.pseudo-element,.token.url-reference .token.variable{color:#795da3}.token.entity{cursor:help}.token.title,.token.title .token.punctuation{font-weight:700;color:#1d3e81}.token.list{color:#ed6a43}.token.inserted{background-color:#eaffea;color:#55a532}.token.deleted{background-color:#ffecec;color:#bd2c00}.token.bold{font-weight:700}.token.italic{font-style:italic}.language-json .token.property{color:#183691}.language-markup .token.tag .token.punctuation{color:#333}.language-css .token.function,code.language-css{color:#0086b3}.language-yaml .token.atrule{color:#63a35c}code.language-yaml{color:#183691}.language-ruby .token.function{color:#333}.language-markdown .token.url{color:#795da3}.language-makefile .token.symbol{color:#795da3}.language-makefile .token.variable{color:#183691}.language-makefile .token.builtin{color:#0086b3}.language-bash .token.keyword{color:#0086b3}pre[data-line]{position:relative;padding:1em 0 1em 3em}pre[data-line] .line-highlight-wrapper{position:absolute;top:0;left:0;background-color:transparent;display:block;width:100%}pre[data-line] .line-highlight{position:absolute;left:0;right:0;padding:inherit 0;margin-top:1em;background:hsla(24,20%,50%,.08);background:linear-gradient(to right,hsla(24,20%,50%,.1) 70%,hsla(24,20%,50%,0));pointer-events:none;line-height:inherit;white-space:pre}pre[data-line] .line-highlight:before,pre[data-line] .line-highlight[data-end]:after{content:attr(data-start);position:absolute;top:.4em;left:.6em;min-width:1em;padding:0 .5em;background-color:hsla(24,20%,50%,.4);color:#f4f1ef;font:bold 65%/1.5 sans-serif;text-align:center;vertical-align:.3em;border-radius:999px;text-shadow:none;box-shadow:0 1px #fff}pre[data-line] .line-highlight[data-end]:after{content:attr(data-end);top:auto;bottom:.4em}html body{font-family:'Helvetica Neue',Helvetica,'Segoe UI',Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ol,html body>ul{margin-bottom:16px}html body ol,html body ul{padding-left:2em}html body ol.no-list,html body ul.no-list{padding:0;list-style-type:none}html body ol ol,html body ol ul,html body ul ol,html body ul ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:700;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:700}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::after,html body code::before{letter-spacing:-.2em;content:'\00a0'}html body pre>code{padding:0;margin:0;word-break:normal;white-space:pre;background:0 0;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:after,html body pre code:before,html body pre tt:after,html body pre tt:before{content:normal}html body blockquote,html body dl,html body ol,html body p,html body pre,html body ul{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body code,html body pre{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview ul{list-style:disc}.markdown-preview ul ul{list-style:circle}.markdown-preview ul ul ul{list-style:square}.markdown-preview ol{list-style:decimal}.markdown-preview ol ol,.markdown-preview ul ol{list-style-type:lower-roman}.markdown-preview ol ol ol,.markdown-preview ol ul ol,.markdown-preview ul ol ol,.markdown-preview ul ul ol{list-style-type:lower-alpha}.markdown-preview .newpage,.markdown-preview .pagebreak{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center!important}.markdown-preview:not([data-for=preview]) .code-chunk .code-chunk-btn-group{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .status{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .output-div{margin-bottom:16px}.markdown-preview .md-toc{padding:0}.markdown-preview .md-toc .md-toc-details{margin:0;padding:0;border:none}.markdown-preview .md-toc summary.md-toc-link-wrapper{cursor:pointer;list-style-position:outside}.markdown-preview .md-toc summary.md-toc-link-wrapper::marker{font-size:.85em}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link div,.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}.markdown-preview .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='0']{margin-left:12px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='1']{margin-left:28px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='2']{margin-left:44px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='3']{margin-left:60px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='4']{margin-left:76px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='5']{margin-left:80px}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0;min-height:100vh}@media screen and (min-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{font-size:14px!important;padding:1em}}@media print{html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc{padding:0 16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-details{margin:0;padding:0;border:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link div,html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='0']{padding-left:0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='1']{padding-left:16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='2']{padding-left:32px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='3']{padding-left:48px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='4']{padding-left:64px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='5']{padding-left:80px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% - 300px);padding:2em calc(50% - 457px - 300px / 2);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+      <script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function () {
+    // your code here
+  });
+</script>
+    </head>
+    <body for="html-export">
+      <div class="crossnote markdown-preview  ">
+      
+<h1 id="erp-builder--system-design">ERP Builder — System Design </h1>
+<blockquote>
+<p>All diagrams are in Mermaid format — GitHub renders them automatically.<br>
+Use <a href="https://mermaid.live">mermaid.live</a> to open any individual block interactively.</p>
+</blockquote>
+<hr>
+<h2 id="1-er-diagram-database-schema">1. ER Diagram (Database Schema) </h2>
+<p>Every workspace gets its own isolated copy of tables, records, pages, and pack installs. The only shared data is the <code>PackDefinition</code> which lives in code (<code>registry.ts</code>), not the DB.</p>
+<div class="mermaid">erDiagram
+    User {
+        string id PK
+        string email UK
+        string password
+        string name
+        datetime createdAt
+    }
+    Workspace {
+        string id PK
+        string name
+        string slug UK
+        string userId FK
+        datetime createdAt
+    }
+    Table {
+        string id PK
+        string name
+        string icon
+        string workspaceId FK
+        string packSource
+        string packTableKey
+        boolean isCustom
+        datetime createdAt
+    }
+    Field {
+        string id PK
+        string name
+        enum type
+        json config
+        boolean required
+        int order
+        string tableId FK
+        string packFieldKey
+        boolean isCustom
+        boolean isHidden
+    }
+    Record {
+        string id PK
+        json data
+        string tableId FK
+        datetime createdAt
+        datetime updatedAt
+    }
+    Page {
+        string id PK
+        string title
+        json blocks
+        string workspaceId FK
+        string packSource
+        string packPageKey
+        int order
+        datetime createdAt
+    }
+    InstalledPack {
+        string id PK
+        string packId
+        string packVersion
+        string workspaceId FK
+        datetime installedAt
+    }
+    WorkspaceSchemaOverride {
+        string id PK
+        string installedPackId FK
+        enum overrideType
+        string targetKey
+        json payload
+        datetime createdAt
+    }
+    InstalledPlugin {
+        string id PK
+        string pluginId
+        json config
+        boolean enabled
+        string workspaceId FK
+        datetime installedAt
+    }
+    TenantUser {
+        string id PK
+        string workspaceId FK
+        string username
+        string password
+        string role
+        datetime createdAt
+    }
+
+    User          ||--o|  Workspace              : "owns (1-to-1)"
+    Workspace     ||--o{  Table                  : "has"
+    Workspace     ||--o{  Page                   : "has"
+    Workspace     ||--o{  InstalledPack           : "has"
+    Workspace     ||--o{  InstalledPlugin         : "has"
+    Workspace     ||--o{  TenantUser              : "has"
+    Table         ||--o{  Field                  : "has"
+    Table         ||--o{  Record                 : "stores"
+    InstalledPack ||--o{  WorkspaceSchemaOverride : "tracks deltas"
+</div><p><strong>Key design decisions:</strong></p>
+<ul>
+<li><code>packSource</code> + <code>packTableKey</code> / <code>packFieldKey</code> — provenance tags so the update engine can find canonical fields even after the user renames them.</li>
+<li><code>Record.data</code> is a flat JSON blob keyed by <strong>field IDs</strong> (not names), so renames never corrupt data.</li>
+<li><code>WorkspaceSchemaOverride</code> stores only the user's <em>delta</em> on top of the canonical pack — never duplicates the full schema.</li>
+</ul>
+<hr>
+<h2 id="2-high-level-system-architecture">2. High-Level System Architecture </h2>
+<p>Two distinct user types hit the same Next.js app but through completely different route groups.</p>
+<div class="mermaid">flowchart TD
+    subgraph Users["👥 Users"]
+        BUILDER["🏗️ Builder\n(Business Owner)\nCreates the ERP"]
+        TENANT["👷 Tenant User\n(Staff)\nUses the ERP"]
+    end
+
+    subgraph NextJS["⚛️ Next.js 16 — App Router"]
+        subgraph BuilderUI["Builder Routes  /(dashboard)"]
+            WS["/workspace — Dashboard"]
+            MOD["/modules — Marketplace"]
+            PG["/pages — Page Composer"]
+            SCH["/schema — Table Designer"]
+            PLG["/plugins — Plugins"]
+        end
+
+        subgraph TenantUI["Tenant Runtime  /apps/[slug]"]
+            HOME["/apps/[slug] — ERP Home"]
+            TBL["/apps/[slug]/[tableId] — Table"]
+            CPAG["/apps/[slug]/pages/[pageId] — Custom Page"]
+            SETT["/apps/[slug]/settings — Settings"]
+        end
+
+        subgraph APIRoutes["🔌 API Routes"]
+            AAUTH["/api/auth — NextAuth"]
+            ATAUTH["/api/tenant/login|logout"]
+            AWORK["/api/workspace"]
+            ATBL["/api/tables/:id/records"]
+            APAG["/api/pages"]
+            APACK["/api/packs — install|update|uninstall"]
+            APLG["/api/plugins"]
+            ATU["/api/workspace/tenant-users"]
+        end
+    end
+
+    subgraph Data["🗄️ Data"]
+        PRISMA["Prisma ORM"]
+        NEON["PostgreSQL\n(Neon Serverless)"]
+        REGISTRY["Pack Registry\nregistry.ts — in-code\nNOT in DB"]
+    end
+
+    BUILDER --&gt; BuilderUI
+    TENANT  --&gt; TenantUI
+    BuilderUI --&gt; APIRoutes
+    TenantUI  --&gt; APIRoutes
+    APIRoutes --&gt; PRISMA
+    PRISMA    --&gt; NEON
+    APACK     -.-&gt;|reads| REGISTRY
+</div><hr>
+<h2 id="3-authentication-flow">3. Authentication Flow </h2>
+<p>The app runs <strong>two independent auth systems</strong> in parallel — one for builders, one for their staff.</p>
+<div class="mermaid">flowchart TD
+    subgraph BuilderAuth["🔐 Builder Auth — NextAuth JWT"]
+        B1["Visit /login"] --&gt; B2{"Provider?"}
+        B2 --&gt;|Email + Password| B3["POST /api/auth/callback/credentials\nbcrypt.compare()"]
+        B2 --&gt;|Google SSO| B4["OAuth Redirect\nGOOGLE_CLIENT_ID required"]
+        B3 --&gt; B5{"Password valid?"}
+        B5 --&gt;|No| B6["401 — back to /login"]
+        B5 --&gt;|Yes| B7["NextAuth writes JWT\nhttpOnly cookie\nPayload: id, email, workspaceId"]
+        B4 --&gt; B8["Auto-create workspace\nif first Google login"]
+        B8 --&gt; B7
+        B7 --&gt; B9["Redirect → /workspace"]
+    end
+
+    subgraph TenantAuth["🔐 Tenant Auth — Custom JWT"]
+        T1["Visit /apps/slug/login"] --&gt; T2["POST /api/tenant/login\nbody: username + password"]
+        T2 --&gt; T3["Lookup TenantUser WHERE\nworkspaceId + username"]
+        T3 --&gt; T4{"bcrypt.compare?"}
+        T4 --&gt;|No| T5["401 Unauthorized"]
+        T4 --&gt;|Yes| T6["sign JWT with NEXTAUTH_SECRET\nSet 'tenant-token' httpOnly cookie\nPayload: userId, workspaceId, role"]
+        T6 --&gt; T7["Redirect → /apps/slug"]
+    end
+
+    subgraph Logout["🚪 Logout"]
+        BL["Builder: signOut()\nClears NextAuth cookie"] 
+        TL["Tenant: POST /api/tenant/logout\nClears tenant-token cookie"]
+    end
+</div><hr>
+<h2 id="4-pack-module-lifecycle">4. Pack (Module) Lifecycle </h2>
+<p>A <strong>Pack</strong> is a pre-built ERP module (e.g. Inventory). It lives as a <code>PackDefinition</code> object in <code>registry.ts</code> (code). Installing it <em>materialises</em> a copy into the workspace's DB tables.</p>
+<div class="mermaid">sequenceDiagram
+    actor Builder
+    participant UI   as Marketplace UI
+    participant API  as /api/packs/install
+    participant UPD  as /api/packs/update
+    participant REG  as registry.ts (code)
+    participant DB   as PostgreSQL
+
+    Note over Builder,DB: ── INSTALL ──
+
+    Builder-&gt;&gt;UI: Click "Install Inventory"
+    UI-&gt;&gt;API: POST { packId: "inventory" }
+    API-&gt;&gt;REG: getPackById("inventory")
+    REG--&gt;&gt;API: PackDefinition v1.2.0
+
+    API-&gt;&gt;DB: BEGIN TRANSACTION
+    loop For each Table (order matters — deps first)
+        API-&gt;&gt;DB: Table.create (packSource, packTableKey)
+        loop For each Field
+            API-&gt;&gt;DB: Field.create (resolve RELATION → real tableId)
+        end
+        loop Seed Rows
+            API-&gt;&gt;DB: Record.create (data keyed by fieldId)
+        end
+    end
+    loop For each Page
+        API-&gt;&gt;DB: Page.create (resolve tableRef → tableId in blocks JSON)
+    end
+    API-&gt;&gt;DB: InstalledPack.create { packId, packVersion: "1.2.0" }
+    API-&gt;&gt;DB: COMMIT
+    API--&gt;&gt;UI: { tables:[...], pages:[...] }
+    UI--&gt;&gt;Builder: Toast "Inventory installed ✓"
+
+    Note over Builder,DB: ── UPDATE (registry bumped to v1.3.0) ──
+
+    Builder-&gt;&gt;UI: "Update to v1.3.0" badge appears
+    UI-&gt;&gt;UPD: POST { packId: "inventory" }
+    UPD-&gt;&gt;DB: BEGIN TRANSACTION
+    UPD-&gt;&gt;DB: Find existing tables by packTableKey
+    UPD-&gt;&gt;DB: ADD missing tables + seed data
+    UPD-&gt;&gt;DB: ADD missing fields only (by packFieldKey, never delete/rename)
+    UPD-&gt;&gt;DB: ADD missing pages (by packPageKey)
+    UPD-&gt;&gt;DB: InstalledPack.packVersion = "1.3.0"
+    UPD-&gt;&gt;DB: COMMIT
+    UPD--&gt;&gt;UI: { added: { tables:[], fields:["Products→GST Rate"], pages:[] } }
+    UI--&gt;&gt;Builder: Toast lists what was added
+
+    Note over Builder,DB: ── UNINSTALL ──
+
+    Builder-&gt;&gt;UI: Uninstall
+    UI-&gt;&gt;API: POST /api/packs/uninstall { packId }
+    API-&gt;&gt;DB: DELETE InstalledPack (CASCADE → Tables, Fields, Records, Pages)
+    API--&gt;&gt;UI: 200 OK
+</div><hr>
+<h2 id="5-page-composer--builder-to-runtime">5. Page Composer — Builder to Runtime </h2>
+<p>The <strong>Page Composer</strong> lets builders visually assemble pages from blocks. The page is stored as a JSON array of blocks in <code>Page.blocks</code>. The <strong>ERP Runtime</strong> reads that JSON and renders the actual UI.</p>
+<div class="mermaid">flowchart LR
+    subgraph Composer["📝 Builder — Page Composer"]
+        direction TB
+        PAL["Block Palette\n(right panel)"]
+        CANVAS["Canvas\nflex-wrap grid\nblocks side-by-side"]
+        INSP["Inspector\n— Display Title\n— Block Size\n  drag dots to resize\n  width snaps to ¼ ⅓ ½ ⅔ ¾ 1\n— Block-specific config"]
+        SAVE["Publish Page\nPATCH /api/pages/:id\n{ title, blocks: [...] }"]
+
+        PAL --&gt;|drag / click| CANVAS
+        CANVAS &lt;--&gt;|select block| INSP
+        CANVAS --&gt; SAVE
+    end
+
+    subgraph BlockJSON["🧩 Each Block stored as JSON"]
+        direction TB
+        B1["{ type: 'METRIC',\n  config: {\n    widthPct: 50,\n    heightPx: 200,\n    metricLabel: 'Revenue',\n    tableRef: 'Products',\n    metricAccent: 'emerald' }}"]
+        B2["{ type: 'TABLE_VIEW',\n  config: {\n    widthPct: 100,\n    tableRef: 'Products',\n    visibleFields: [...] }}"]
+        B3["{ type: 'GST_CALCULATOR',\n  config: {\n    gstDefaultRate: '18%',\n    gstSplit: 'intrastate' }}"]
+    end
+
+    subgraph Runtime["🚀 Tenant — ERP Runtime"]
+        direction TB
+        READ["GET /api/pages/:id\nFetch blocks JSON"]
+        RENDER["Render each block\nby type"]
+        LAY["flex-wrap container\nblockSizeStyle(widthPct, heightPx)\nblocks sit side-by-side"]
+
+        READ --&gt; RENDER --&gt; LAY
+    end
+
+    SAVE --&gt;|stored in DB| READ
+    B1 &amp; B2 &amp; B3 -.-&gt;|example payloads| RENDER
+</div><p><strong>Supported block types:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>What it renders</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TEXT</code></td>
+<td>Page heading + description</td>
+</tr>
+<tr>
+<td><code>METRIC</code></td>
+<td>KPI card — static value or live record count</td>
+</tr>
+<tr>
+<td><code>TABLE_VIEW</code></td>
+<td>Full data grid (sortable, editable inline)</td>
+</tr>
+<tr>
+<td><code>KANBAN_VIEW</code></td>
+<td>Drag-and-drop kanban board</td>
+</tr>
+<tr>
+<td><code>FILTER_BAR</code></td>
+<td>Search input + optional date range</td>
+</tr>
+<tr>
+<td><code>FORM</code></td>
+<td>Add-record form auto-generated from schema</td>
+</tr>
+<tr>
+<td><code>EXPORT_BUTTON</code></td>
+<td>CSV download (BOM-prefixed for Excel)</td>
+</tr>
+<tr>
+<td><code>IMAGE</code></td>
+<td>Logo / banner with alignment</td>
+</tr>
+<tr>
+<td><code>GST_CALCULATOR</code></td>
+<td>CGST+SGST or IGST calculation</td>
+</tr>
+<tr>
+<td><code>CHART</code></td>
+<td>Placeholder (data source WIP)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="6-record-crud--data-flow">6. Record CRUD — Data Flow </h2>
+<p>Records are the actual business data (rows in a table). The data is a JSON blob keyed by <strong>field IDs</strong> so renames never break anything.</p>
+<div class="mermaid">sequenceDiagram
+    actor Tenant
+    participant UI  as Table View UI
+    participant API as /api/tables/:id/records
+    participant DB  as PostgreSQL
+
+    Note over Tenant,DB: ── READ ──
+    Tenant-&gt;&gt;UI: Opens "Products" table
+    UI-&gt;&gt;API: GET /api/tables/:tableId/records
+    API-&gt;&gt;DB: SELECT fields + records WHERE tableId
+    DB--&gt;&gt;API: fields:[{id,name,type}]\nrecords:[{data:{fieldId:value}}]
+    API--&gt;&gt;UI: Normalised rows (fieldId → column)
+    UI--&gt;&gt;Tenant: Renders grid
+
+    Note over Tenant,DB: ── CREATE ──
+    Tenant-&gt;&gt;UI: Click "Add Record"
+    UI--&gt;&gt;Tenant: RecordFormModal (fields from schema)
+    Tenant-&gt;&gt;UI: Fill form → Submit
+    UI-&gt;&gt;API: POST { data: { fieldId: value, ... } }
+    API-&gt;&gt;DB: Record.create
+    DB--&gt;&gt;API: new Record
+    API--&gt;&gt;UI: 201 Created
+    UI--&gt;&gt;Tenant: New row appears
+
+    Note over Tenant,DB: ── UPDATE ──
+    Tenant-&gt;&gt;UI: Edit inline / submit form
+    UI-&gt;&gt;API: PATCH /records/:recordId { data: { fieldId: newVal } }
+    API-&gt;&gt;DB: Record.update (merge data JSON)
+    DB--&gt;&gt;API: updated Record
+    API--&gt;&gt;UI: 200 OK
+
+    Note over Tenant,DB: ── DELETE ──
+    Tenant-&gt;&gt;UI: Delete row
+    UI-&gt;&gt;API: DELETE /records/:recordId
+    API-&gt;&gt;DB: Record.delete
+    DB--&gt;&gt;API: 204
+    API--&gt;&gt;UI: Row removed
+</div><hr>
+<h2 id="7-full-api-route-map">7. Full API Route Map </h2>
+<div class="mermaid">flowchart LR
+    subgraph Auth["Auth"]
+        A1["POST /api/auth/register"]
+        A2["POST /api/auth/callback/credentials"]
+        A3["POST /api/tenant/login"]
+        A4["POST /api/tenant/logout"]
+    end
+
+    subgraph WorkspaceAPI["Workspace"]
+        W1["GET /api/workspace"]
+        W2["GET /api/workspace/check-slug"]
+        W3["GET|POST /api/workspace/tenant-users"]
+        W4["PATCH|DELETE /api/workspace/tenant-users/:id"]
+        W5["GET|PATCH /api/workspace/admin"]
+    end
+
+    subgraph TableAPI["Tables &amp; Records"]
+        T1["GET|POST /api/tables"]
+        T2["GET|PATCH|DELETE /api/tables/:id"]
+        T3["GET|POST /api/tables/:id/records"]
+        T4["PATCH|DELETE /api/tables/:id/records/:recordId"]
+        T5["GET|POST /api/tables/:id/fields"]
+        T6["POST /api/tables/:id/fields/sync"]
+    end
+
+    subgraph PageAPI["Pages"]
+        P1["GET|POST /api/pages"]
+        P2["GET|PATCH|DELETE /api/pages/:id"]
+        P3["PATCH /api/pages/reorder"]
+    end
+
+    subgraph PackAPI["Packs (Modules)"]
+        PK1["GET /api/packs"]
+        PK2["POST /api/packs/install"]
+        PK3["POST /api/packs/update"]
+        PK4["POST /api/packs/uninstall"]
+        PK5["POST /api/packs/reinstall-page"]
+    end
+
+    subgraph PluginAPI["Plugins"]
+        PL1["GET /api/plugins"]
+        PL2["POST /api/plugins/install"]
+        PL3["POST /api/plugins/uninstall"]
+        PL4["POST /api/plugins/toggle"]
+        PL5["GET|PATCH /api/plugins/:id/config"]
+    end
+
+    subgraph MiscAPI["Misc"]
+        M1["DELETE /api/account"]
+        M2["POST /api/onboarding/launch"]
+    end
+</div><hr>
+<h2 id="summary--how-everything-connects">Summary — How Everything Connects </h2>
+<div class="mermaid">flowchart TD
+    REG["📦 Pack Registry\nregistry.ts\nSource of truth for\nmodule schemas"] --&gt;|install materialises| DB
+
+    DB[("🗄️ PostgreSQL\nTables · Fields · Records\nPages · Packs · Plugins\nTenantUsers")] 
+
+    DB --&gt;|builder reads/writes via| BUILDER_UI["🏗️ Builder UI\nDesign schemas\nCompose pages\nInstall modules"]
+    DB --&gt;|tenant reads/writes via| TENANT_UI["👷 Tenant ERP\nView tables\nAdd records\nUse custom pages"]
+
+    BUILDER_UI --&gt;|publishes Page JSON| TENANT_UI
+    BUILDER_UI --&gt;|creates TenantUsers| TENANT_UI
+
+    NEXTAUTH["🔐 NextAuth JWT\nBuilder sessions"] --&gt; BUILDER_UI
+    TAUTH["🔐 Custom JWT\nTenant sessions"] --&gt; TENANT_UI
+</div>
+      </div>
+      
+      
+    
+    
+    <script type="module">
+// TODO: If ZenUML gets integrated into mermaid in the future,
+//      we can remove the following lines.
+
+
+var MERMAID_CONFIG = ({"startOnLoad":false});
+if (typeof MERMAID_CONFIG !== 'undefined') {
+  MERMAID_CONFIG.startOnLoad = false
+  MERMAID_CONFIG.cloneCssStyles = false
+  MERMAID_CONFIG.theme = "default"
+}
+
+mermaid.initialize(MERMAID_CONFIG || {})
+if (typeof(window['Reveal']) !== 'undefined') {
+  function mermaidRevealHelper(event) {
+    var currentSlide = event.currentSlide
+    var diagrams = currentSlide.querySelectorAll('div.mermaid')
+    for (var i = 0; i < diagrams.length; i++) {
+      var diagram = diagrams[i]
+      if (!diagram.hasAttribute('data-processed')) {
+        mermaid.init(null, diagram, ()=> {
+          Reveal.slide(event.indexh, event.indexv)
+        })
+      }
+    }
+  }
+  Reveal.addEventListener('slidetransitionend', mermaidRevealHelper)
+  Reveal.addEventListener('ready', mermaidRevealHelper)
+  await mermaid.run({
+    nodes: document.querySelectorAll('div.mermaid')
+  })
+} else {
+  await mermaid.run({
+    nodes: document.querySelectorAll('div.mermaid')
+  })
+}
+</script>
+    
+    
+    
+  
+    </body></html>
