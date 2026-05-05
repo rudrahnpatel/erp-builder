@@ -98,12 +98,13 @@ const quickActions = [
 ];
 
 import { useWorkspace } from "@/hooks/use-workspace";
+import { WorkspaceSkeleton } from "@/components/workspace/WorkspaceSkeleton";
 
 export default function WorkspacePage() {
   const { workspace, isLoading, isError } = useWorkspace();
 
   if (isLoading) {
-    return <div className="p-8 text-center" style={{ color: "var(--foreground-muted)" }}>Loading workspace...</div>;
+    return <WorkspaceSkeleton />;
   }
 
   if (isError || !workspace) {

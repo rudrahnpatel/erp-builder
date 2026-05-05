@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import useSWR from "swr";
 import { toast } from "sonner";
-import { useWorkspace } from "@/hooks/use-workspace";
-
 import {
   DndContext,
   DragEndEvent,
@@ -24,12 +23,13 @@ import {
 import {
   FileText,
   LayoutDashboard,
-  Activity,
-  Trash2,
-  PenLine,
   Plus,
   Loader2,
   Package,
+  Trash2,
+  PenLine,
+  Layers,
+  GripVertical,
   Box,
   Truck,
   Warehouse,
@@ -46,9 +46,9 @@ import {
   Clock,
   IndianRupee,
   Receipt,
-  Layers,
-  GripVertical,
+  Activity,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const IconMap: Record<string, any> = {
   "file-text": FileText,
@@ -71,35 +71,44 @@ const IconMap: Record<string, any> = {
   "indian-rupee": IndianRupee,
   "receipt": Receipt,
 };
-import { Button } from "@/components/ui/button";
 
-// System pages are rendered with a hardcoded UI at runtime (Settings has its
-// own tabs component; user_management is merged into Settings → Users). Both
-// are hidden from this builder grid since there's nothing meaningful to edit
-// via the block composer.
-const SYSTEM_PAGE_KEYS = new Set(["settings", "user_management"]);
+const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
-type PageItem = NonNullable<ReturnType<typeof useWorkspace>["workspace"]>["pages"][number];
+type PageItem = {
+  id: string;
+  title: string;
+  icon: string | null;
+  packSource: string | null;
+  packPageKey: string | null;
+  order: number;
+};
 
-export default function PagesPage() {
+export default function ModulePagesPage({
+  params,
+}: {
+  params: Promise<{ moduleId: string }>;
+}) {
+  const { moduleId } = use(params);
   const router = useRouter();
-  const { workspace, refetch } = useWorkspace();
+
+  const { data, mutate, isLoading } = useSWR(
+    `/api/dev/modules/${moduleId}/pages`,
+    fetcher
+  );
+  const allPages: PageItem[] = data?.pages || [];
 
   const [creatingPage, setCreatingPage] = useState(false);
-  // Local copy so we can reorder optimistically during DnD without waiting
-  // for SWR to round-trip back to this component.
   const [pages, setPages] = useState<PageItem[]>([]);
 
   useEffect(() => {
-    const visible = (workspace?.pages || []).filter(
-      (p) => !p.packPageKey || !SYSTEM_PAGE_KEYS.has(p.packPageKey)
-    );
-    setPages(visible);
-  }, [workspace?.pages]);
+    setPages(allPages);
+  }, [allPages]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
   );
 
   const handleDragEnd = async (event: DragEndEvent) => {
@@ -120,15 +129,10 @@ export default function PagesPage() {
         body: JSON.stringify({ pageIds: next.map((p) => p.id) }),
       });
       if (!res.ok) throw new Error("reorder failed");
-      // Keep SWR cache in sync so sidebars elsewhere pick up the new order.
-      refetch();
+      mutate();
     } catch {
       toast.error("Failed to save new page order");
-      // Roll back to the server's current ordering.
-      const visible = (workspace?.pages || []).filter(
-        (p) => !p.packPageKey || !SYSTEM_PAGE_KEYS.has(p.packPageKey)
-      );
-      setPages(visible);
+      setPages(allPages);
     }
   };
 
@@ -136,7 +140,7 @@ export default function PagesPage() {
     setCreatingPage(true);
     const pending = toast.loading("Creating page...");
     try {
-      const res = await fetch("/api/pages", {
+      const res = await fetch(`/api/dev/modules/${moduleId}/pages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -148,12 +152,12 @@ export default function PagesPage() {
       if (res.ok) {
         const page = await res.json();
         toast.success("Page created", { id: pending });
-        await refetch();
-        router.push(`/pages/${page.id}/edit`);
+        await mutate();
+        router.push(`/dev/modules/${moduleId}/pages/${page.id}/edit`);
       } else {
         toast.error("Failed to create page", { id: pending });
       }
-    } catch (e) {
+    } catch {
       toast.error("Network error", { id: pending });
     } finally {
       setCreatingPage(false);
@@ -162,7 +166,7 @@ export default function PagesPage() {
 
   const handleDeletePage = async (id: string, title: string) => {
     if (!confirm(`Are you sure you want to delete "${title}"?`)) return;
-    
+
     const pending = toast.loading("Deleting page...");
     try {
       const res = await fetch(`/api/pages/${id}`, {
@@ -171,57 +175,66 @@ export default function PagesPage() {
 
       if (res.ok) {
         toast.success("Page deleted", { id: pending });
-        await refetch();
+        await mutate();
       } else {
         toast.error("Failed to delete page", { id: pending });
       }
-    } catch (e) {
+    } catch {
       toast.error("Network error", { id: pending });
     }
   };
 
-  if (!workspace) return null;
-
   return (
-    <>
-    <div className="space-y-8 max-w-6xl mx-auto animate-fade-in-up">
-      {/* Header */}
-      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-        <div>
-          <h1
-            className="text-3xl sm:text-4xl font-bold tracking-tight"
-            style={{ color: "var(--foreground)" }}
-          >
-            Manage Pages
-          </h1>
-          <p
-            className="mt-2 max-w-2xl text-sm sm:text-base leading-relaxed"
-            style={{ color: "var(--foreground-muted)" }}
-          >
-            Create and edit custom dashboard pages for your workers. Drag and drop
-            blocks to build views for data entry, reporting, and management.
-          </p>
-        </div>
+    <div className="space-y-6 pt-2">
+      {/* Sub-header with create button */}
+      <div className="flex items-center justify-between">
+        <p
+          className="text-sm leading-relaxed"
+          style={{ color: "var(--foreground-muted)" }}
+        >
+          Design pages for this module. They'll be included in the next
+          snapshot.
+        </p>
         <Button
           onClick={handleCreatePage}
           disabled={creatingPage}
           className="gap-2 font-semibold shrink-0 rounded-xl pressable"
           style={{
-            background: "linear-gradient(135deg, var(--primary), var(--primary-hover))",
+            background:
+              "linear-gradient(135deg, var(--primary), var(--primary-hover))",
             color: "var(--primary-foreground)",
-            boxShadow: "0 2px 8px color-mix(in oklch, var(--primary), transparent 65%)",
+            boxShadow:
+              "0 2px 8px color-mix(in oklch, var(--primary), transparent 65%)",
           }}
         >
           {creatingPage ? (
-            <><Loader2 className="h-4 w-4 animate-spin" /> Creating…</>
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" /> Creating…
+            </>
           ) : (
-            <><Plus className="h-4 w-4" /> New Page</>
+            <>
+              <Plus className="h-4 w-4" /> New Page
+            </>
           )}
         </Button>
-      </header>
+      </div>
 
       {/* Pages Grid */}
-      {pages.length > 0 ? (
+      {isLoading ? (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="rounded-xl p-5 animate-pulse"
+              style={{
+                background: "var(--surface-1)",
+                border: "1px solid var(--border-subtle)",
+                height: "160px",
+              }}
+            />
+          ))}
+        </div>
+      ) : pages.length > 0 ? (
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -231,12 +244,16 @@ export default function PagesPage() {
             items={pages.map((p) => p.id)}
             strategy={rectSortingStrategy}
           >
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 stagger-children">
               {pages.map((page) => (
                 <SortablePageCard
                   key={page.id}
                   page={page}
-                  onOpen={() => router.push(`/pages/${page.id}/edit`)}
+                  onOpen={() =>
+                    router.push(
+                      `/dev/modules/${moduleId}/pages/${page.id}/edit`
+                    )
+                  }
                   onDelete={() => handleDeletePage(page.id, page.title)}
                 />
               ))}
@@ -264,46 +281,44 @@ export default function PagesPage() {
             className="text-lg font-semibold mb-2"
             style={{ color: "var(--foreground)" }}
           >
-            No pages built yet
+            No pages in this module
           </h3>
           <p
             className="text-sm mb-6 max-w-sm mx-auto leading-relaxed"
             style={{ color: "var(--foreground-muted)" }}
           >
-            Create a custom page from scratch or install modules from the marketplace
-            to get pre-built operational dashboards.
+            Create pages to build operational dashboards, data-entry forms, and
+            report views for this module.
           </p>
-          <div className="flex items-center gap-3 justify-center">
-            <Button
-              onClick={handleCreatePage}
-              disabled={creatingPage}
-              className="gap-2 font-semibold rounded-xl pressable"
-              style={{
-                background: "linear-gradient(135deg, var(--primary), var(--primary-hover))",
-                color: "var(--primary-foreground)",
-                boxShadow: "0 2px 8px color-mix(in oklch, var(--primary), transparent 65%)",
-              }}
-            >
-              {creatingPage ? (
-                <><Loader2 className="h-4 w-4 animate-spin" /> Creating…</>
-              ) : (
-                <><Plus className="h-4 w-4" /> Create Page</>
-              )}
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => router.push('/modules')}
-              className="text-sm rounded-xl"
-            >
-              Browse Marketplace
-            </Button>
-          </div>
+          <Button
+            onClick={handleCreatePage}
+            disabled={creatingPage}
+            className="gap-2 font-semibold rounded-xl pressable"
+            style={{
+              background:
+                "linear-gradient(135deg, var(--primary), var(--primary-hover))",
+              color: "var(--primary-foreground)",
+              boxShadow:
+                "0 2px 8px color-mix(in oklch, var(--primary), transparent 65%)",
+            }}
+          >
+            {creatingPage ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" /> Creating…
+              </>
+            ) : (
+              <>
+                <Plus className="h-4 w-4" /> Create First Page
+              </>
+            )}
+          </Button>
         </div>
       )}
     </div>
-    </>
   );
 }
+
+// ─── Sortable Page Card ───────────────────────────────────────────────────────
 
 function SortablePageCard({
   page,
@@ -314,8 +329,14 @@ function SortablePageCard({
   onOpen: () => void;
   onDelete: () => void;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: page.id });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: page.id });
 
   const style: React.CSSProperties = {
     transform: transform
@@ -339,16 +360,17 @@ function SortablePageCard({
     >
       <div
         className="h-[3px] w-full"
-        style={{
-          background: page.packSource ? "var(--primary)" : "var(--accent-amber)",
-        }}
+        style={{ background: "var(--primary)" }}
       />
 
       <div className="p-5">
         <div className="flex items-start justify-between mb-4">
           <div
             className="h-11 w-11 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
-            style={{ background: "var(--surface-3)", color: "var(--foreground)" }}
+            style={{
+              background: "var(--surface-3)",
+              color: "var(--foreground)",
+            }}
           >
             {IconComponent ? (
               <IconComponent className="h-5 w-5" />
@@ -414,20 +436,6 @@ function SortablePageCard({
             />
             Active
           </span>
-
-          {page.packSource && (
-            <span
-              className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full"
-              style={{
-                background: "color-mix(in oklch, var(--primary), transparent 88%)",
-                color: "var(--primary)",
-                border: "1px solid color-mix(in oklch, var(--primary), transparent 75%)",
-              }}
-            >
-              <Package className="h-2.5 w-2.5" />
-              Installed
-            </span>
-          )}
         </div>
       </div>
     </div>

@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { use, useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import useSWR from "swr";
 import { toast } from "sonner";
-import { useWorkspace } from "@/hooks/use-workspace";
-
 import {
   Database,
   Plus,
@@ -22,11 +21,31 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function TablesPage() {
-  const router = useRouter();
-  const { workspace, refetch } = useWorkspace();
+const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
-  const tables = workspace?.tables || [];
+type TableItem = {
+  id: string;
+  name: string;
+  icon: string | null;
+  packSource: string | null;
+  packTableKey: string | null;
+  fieldCount: number;
+  recordCount: number;
+};
+
+export default function ModuleTablesPage({
+  params,
+}: {
+  params: Promise<{ moduleId: string }>;
+}) {
+  const { moduleId } = use(params);
+  const router = useRouter();
+
+  const { data, mutate, isLoading } = useSWR(
+    `/api/dev/modules/${moduleId}/tables`,
+    fetcher
+  );
+  const tables: TableItem[] = data?.tables || [];
 
   const [creatingTable, setCreatingTable] = useState(false);
   const [showCreateInput, setShowCreateInput] = useState(false);
@@ -67,7 +86,7 @@ export default function TablesPage() {
     setCreatingTable(true);
     const pending = toast.loading("Creating table...");
     try {
-      const res = await fetch("/api/tables", {
+      const res = await fetch(`/api/dev/modules/${moduleId}/tables`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name }),
@@ -78,7 +97,7 @@ export default function TablesPage() {
         toast.success(`"${name}" created`, { id: pending });
         setNewTableName("");
         setShowCreateInput(false);
-        await refetch();
+        await mutate();
         router.push(`/schema/${table.id}`);
       } else {
         toast.error("Failed to create table", { id: pending });
@@ -106,7 +125,7 @@ export default function TablesPage() {
 
       if (res.ok) {
         toast.success("Table renamed", { id: pending });
-        await refetch();
+        await mutate();
       } else {
         toast.error("Failed to rename", { id: pending });
       }
@@ -118,7 +137,11 @@ export default function TablesPage() {
   };
 
   const handleDeleteTable = async (id: string, name: string) => {
-    if (!confirm(`Are you sure you want to delete "${name}"? All records will be permanently lost.`))
+    if (
+      !confirm(
+        `Are you sure you want to delete "${name}"? All records will be permanently lost.`
+      )
+    )
       return;
 
     const pending = toast.loading("Deleting table...");
@@ -127,7 +150,7 @@ export default function TablesPage() {
 
       if (res.ok) {
         toast.success("Table deleted", { id: pending });
-        await refetch();
+        await mutate();
       } else {
         toast.error("Failed to delete table", { id: pending });
       }
@@ -136,28 +159,17 @@ export default function TablesPage() {
     }
   };
 
-  if (!workspace) return null;
-
   return (
-    <>
-    <div className="space-y-8 max-w-6xl mx-auto animate-fade-in-up">
-      {/* Header */}
-      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-        <div>
-          <h1
-            className="text-3xl sm:text-4xl font-bold tracking-tight"
-            style={{ color: "var(--foreground)" }}
-          >
-            Manage Tables
-          </h1>
-          <p
-            className="mt-2 max-w-2xl text-sm sm:text-base leading-relaxed"
-            style={{ color: "var(--foreground-muted)" }}
-          >
-            Create, edit, and organise your data tables. Each table stores structured
-            records that power your pages and dashboards.
-          </p>
-        </div>
+    <div className="space-y-6 pt-2">
+      {/* Sub-header with create button */}
+      <div className="flex items-center justify-between">
+        <p
+          className="text-sm leading-relaxed"
+          style={{ color: "var(--foreground-muted)" }}
+        >
+          Design data tables for this module. They'll be included in the next
+          snapshot.
+        </p>
         <Button
           onClick={() => {
             if (showCreateInput) {
@@ -169,20 +181,26 @@ export default function TablesPage() {
           disabled={creatingTable}
           className="gap-2 font-semibold shrink-0 rounded-xl pressable"
           style={{
-            background: "linear-gradient(135deg, var(--primary), var(--primary-hover))",
+            background:
+              "linear-gradient(135deg, var(--primary), var(--primary-hover))",
             color: "var(--primary-foreground)",
-            boxShadow: "0 2px 8px color-mix(in oklch, var(--primary), transparent 65%)",
+            boxShadow:
+              "0 2px 8px color-mix(in oklch, var(--primary), transparent 65%)",
           }}
         >
           {creatingTable ? (
-            <><Loader2 className="h-4 w-4 animate-spin" /> Creating…</>
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" /> Creating…
+            </>
           ) : (
-            <><Plus className="h-4 w-4" /> New Table</>
+            <>
+              <Plus className="h-4 w-4" /> New Table
+            </>
           )}
         </Button>
-      </header>
+      </div>
 
-      {/* ── Inline Create Row ── */}
+      {/* Inline Create Row */}
       {showCreateInput && (
         <div
           className="flex items-center gap-3 px-5 py-3.5 rounded-xl animate-fade-in-up"
@@ -192,7 +210,10 @@ export default function TablesPage() {
             boxShadow: "0 0 0 3px var(--primary-glow)",
           }}
         >
-          <Database className="h-5 w-5 shrink-0" style={{ color: "var(--primary)" }} />
+          <Database
+            className="h-5 w-5 shrink-0"
+            style={{ color: "var(--primary)" }}
+          />
           <input
             ref={createInputRef}
             value={newTableName}
@@ -217,7 +238,11 @@ export default function TablesPage() {
               color: "var(--primary-foreground)",
             }}
           >
-            {creatingTable ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
+            {creatingTable ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Check className="h-3.5 w-3.5" />
+            )}
           </button>
           <button
             onClick={() => {
@@ -232,7 +257,7 @@ export default function TablesPage() {
         </div>
       )}
 
-      {/* ── Search (shown when tables exist) ── */}
+      {/* Search (shown when tables exist) */}
       {tables.length > 0 && (
         <div
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all"
@@ -241,7 +266,10 @@ export default function TablesPage() {
             border: "1px solid var(--border-subtle)",
           }}
         >
-          <Search className="h-4 w-4" style={{ color: "var(--foreground-dimmed)" }} />
+          <Search
+            className="h-4 w-4"
+            style={{ color: "var(--foreground-dimmed)" }}
+          />
           <input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -261,8 +289,22 @@ export default function TablesPage() {
         </div>
       )}
 
-      {/* ── Tables Grid ── */}
-      {filteredTables.length > 0 ? (
+      {/* Tables Grid */}
+      {isLoading ? (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="rounded-xl p-5 animate-pulse"
+              style={{
+                background: "var(--surface-1)",
+                border: "1px solid var(--border-subtle)",
+                height: "160px",
+              }}
+            />
+          ))}
+        </div>
+      ) : filteredTables.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 stagger-children">
           {filteredTables.map((table) => (
             <div
@@ -277,11 +319,7 @@ export default function TablesPage() {
               {/* Top accent bar */}
               <div
                 className="h-[3px] w-full"
-                style={{
-                  background: table.packSource
-                    ? "var(--accent-emerald)"
-                    : "var(--accent-blue)",
-                }}
+                style={{ background: "var(--accent-emerald)" }}
               />
 
               <div className="p-5">
@@ -289,12 +327,9 @@ export default function TablesPage() {
                   <div
                     className="h-11 w-11 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
                     style={{
-                      background: table.packSource
-                        ? "color-mix(in oklch, var(--accent-emerald), transparent 85%)"
-                        : "color-mix(in oklch, var(--accent-blue), transparent 85%)",
-                      color: table.packSource
-                        ? "var(--accent-emerald)"
-                        : "var(--accent-blue)",
+                      background:
+                        "color-mix(in oklch, var(--accent-emerald), transparent 85%)",
+                      color: "var(--accent-emerald)",
                     }}
                   >
                     <Database className="h-5 w-5" />
@@ -324,22 +359,21 @@ export default function TablesPage() {
                     >
                       <ArrowUpRight className="h-4 w-4" />
                     </button>
-                    {!table.packSource && (
-                      <button
-                        className="p-1.5 rounded-lg transition-colors focus-ring"
-                        style={{ color: "var(--danger)" }}
-                        onClick={() => handleDeleteTable(table.id, table.name)}
-                        title="Delete Table"
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = "var(--danger-subtle)";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = "transparent";
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    )}
+                    <button
+                      className="p-1.5 rounded-lg transition-colors focus-ring"
+                      style={{ color: "var(--danger)" }}
+                      onClick={() => handleDeleteTable(table.id, table.name)}
+                      title="Delete Table"
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background =
+                          "var(--danger-subtle)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "transparent";
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
                 </div>
 
@@ -390,22 +424,6 @@ export default function TablesPage() {
                     <Rows3 className="h-3 w-3" />
                     {table.recordCount} records
                   </span>
-
-                  {table.packSource && (
-                    <span
-                      className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full ml-auto"
-                      style={{
-                        background:
-                          "color-mix(in oklch, var(--accent-emerald), transparent 88%)",
-                        color: "var(--accent-emerald)",
-                        border:
-                          "1px solid color-mix(in oklch, var(--accent-emerald), transparent 75%)",
-                      }}
-                    >
-                      <Package className="h-2.5 w-2.5" />
-                      Module
-                    </span>
-                  )}
                 </div>
               </div>
             </div>
@@ -439,7 +457,8 @@ export default function TablesPage() {
             className="text-sm max-w-sm mx-auto leading-relaxed"
             style={{ color: "var(--foreground-muted)" }}
           >
-            No tables match &quot;{searchQuery}&quot;. Try a different search term.
+            No tables match &quot;{searchQuery}&quot;. Try a different search
+            term.
           </p>
         </div>
       ) : (
@@ -464,41 +483,31 @@ export default function TablesPage() {
             className="text-lg font-semibold mb-2"
             style={{ color: "var(--foreground)" }}
           >
-            No tables yet
+            No tables in this module
           </h3>
           <p
             className="text-sm mb-6 max-w-sm mx-auto leading-relaxed"
             style={{ color: "var(--foreground-muted)" }}
           >
-            Create a custom data table from scratch or install modules from the
-            marketplace to get pre-built tables with fields and sample data.
+            Create data tables to define the schema for this module. Tables
+            store structured records that power your pages.
           </p>
-          <div className="flex items-center gap-3 justify-center">
-            <Button
-              onClick={() => setShowCreateInput(true)}
-              disabled={creatingTable}
-              className="gap-2 font-semibold rounded-xl pressable"
-              style={{
-                background:
-                  "linear-gradient(135deg, var(--primary), var(--primary-hover))",
-                color: "var(--primary-foreground)",
-                boxShadow:
-                  "0 2px 8px color-mix(in oklch, var(--primary), transparent 65%)",
-              }}
-            >
-              <Plus className="h-4 w-4" /> Create Table
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => router.push("/modules")}
-              className="text-sm rounded-xl"
-            >
-              Browse Marketplace
-            </Button>
-          </div>
+          <Button
+            onClick={() => setShowCreateInput(true)}
+            disabled={creatingTable}
+            className="gap-2 font-semibold rounded-xl pressable"
+            style={{
+              background:
+                "linear-gradient(135deg, var(--primary), var(--primary-hover))",
+              color: "var(--primary-foreground)",
+              boxShadow:
+                "0 2px 8px color-mix(in oklch, var(--primary), transparent 65%)",
+            }}
+          >
+            <Plus className="h-4 w-4" /> Create First Table
+          </Button>
         </div>
       )}
     </div>
-    </>
   );
 }

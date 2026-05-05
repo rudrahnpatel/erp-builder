@@ -35,13 +35,15 @@ export default function TenantTableView({
 
   const { data: table, error: tableError } = useSWR(
     `/api/tables/${tableId}`,
-    fetcher
+    fetcher,
+    { keepPreviousData: true }
   );
   const { data: recordsData, mutate: refreshRecords } = useSWR(
     table
       ? `/api/tables/${tableId}/records?search=${encodeURIComponent(search)}`
       : null,
-    fetcher
+    fetcher,
+    { keepPreviousData: true }
   );
 
   const fields: FieldItem[] = table?.fields || [];
@@ -63,8 +65,47 @@ export default function TenantTableView({
 
   if (!table && !tableError) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="h-full flex flex-col animate-fade-in-up">
+        {/* Top Bar Skeleton */}
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b shrink-0" style={{ borderColor: "var(--border-subtle)" }}>
+          <div className="flex items-center gap-3">
+            <div className="skeleton h-8 w-8 rounded-lg" />
+            <div>
+              <div className="skeleton h-4 w-32 mb-1" />
+              <div className="skeleton h-3 w-16" />
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <div className="skeleton h-8 w-[200px] rounded-md" />
+            <div className="skeleton h-8 w-[100px] rounded-md" />
+          </div>
+        </div>
+        
+        {/* Main View Skeleton */}
+        <div className="flex-1 p-4 sm:p-6" style={{ background: "var(--background)" }}>
+          <div className="rounded-xl overflow-hidden border shadow-sm" style={{ background: "var(--card)", borderColor: "var(--border-subtle)" }}>
+            <div className="overflow-x-auto min-h-[300px]">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr style={{ borderBottom: "1px solid var(--border-subtle)", background: "var(--surface-1)" }}>
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <th key={i} className="px-4 py-3"><div className="skeleton h-4 w-24 rounded" /></th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="stagger-children">
+                  {[1, 2, 3, 4, 5, 6].map((row) => (
+                    <tr key={row} style={{ borderBottom: "1px solid var(--border-subtle)" }}>
+                      {[1, 2, 3, 4, 5].map((col) => (
+                        <td key={col} className="px-4 py-4"><div className="skeleton h-4 w-full max-w-[120px] rounded" /></td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

@@ -30,6 +30,7 @@ model Workspace {
   installedPlugins InstalledPlugin[]
   tenantUsers      TenantUser[]
   modules          ModuleDefinition[]
+  globalSearchIndices GlobalSearchIndex[]
   createdAt        DateTime           @default(now())
 }
 
@@ -209,4 +210,19 @@ model AttendanceRecord {
   updatedAt        DateTime  @updatedAt
 
   @@unique([employeeId, date])
+}
+
+model GlobalSearchIndex {
+  id          String   @id @default(cuid())
+  title       String
+  type        String   // "page", "table", "record", "module", "custom"
+  url         String
+  keywords    String   // comma-separated or space-separated keywords for fuzzy matching
+  category    String   @default("General")
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([workspaceId])
 }

@@ -16,7 +16,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
-import { CommandPalette } from "@/components/layout/CommandPalette";
 
 export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
   const { data: session } = useSession();
@@ -51,32 +50,6 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
           <Menu className="h-5 w-5" />
         </button>
 
-        {/* Command palette trigger */}
-        <button
-          onClick={() => window.dispatchEvent(new Event("open-command-palette"))}
-          className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm transition-all duration-200 max-w-xs w-full hover-bg-subtle focus-ring"
-          style={{
-            background: "var(--surface-sunken)",
-            color: "var(--foreground-dimmed)",
-            border: "1px solid var(--border-subtle)",
-          }}
-        >
-          <Search className="h-3.5 w-3.5 shrink-0" />
-          <span className="flex-1 text-left truncate text-[13px]">
-            {t("common.search")}
-          </span>
-          <kbd
-            className="hidden md:flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[10px] font-medium"
-            style={{
-              background: "var(--surface-2)",
-              color: "var(--foreground-dimmed)",
-              border: "1px solid var(--border)",
-            }}
-          >
-            {isMac ? <Command className="h-2.5 w-2.5" /> : <span>Ctrl</span>}
-            {isMac ? "K" : "+K"}
-          </kbd>
-        </button>
 
         {/* Dev mode indicator */}
         {isDevMode && (
@@ -271,8 +244,6 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-
-      <CommandPalette />
     </div>
   );
 }

@@ -11,39 +11,38 @@ export async function GET() {
     // Check if tenantUser model is available (may be missing if Prisma client hasn't been regenerated yet)
     const hasTenantUserModel = typeof (db as any).tenantUser !== "undefined";
 
-    const [tables, pages, installedPacks, installedPlugins] = await Promise.all([
+    const [tables, pages, installedPacks, installedPlugins, tenantUsers] = await Promise.all([
       db.table.findMany({
         where: { workspaceId: workspace.id },
-        include: { _count: { select: { records: true, fields: true } } },
+        select: {
+          id: true, name: true, icon: true, packSource: true, createdAt: true,
+          _count: { select: { records: true, fields: true } },
+        },
         orderBy: { createdAt: "desc" },
       }),
       db.page.findMany({
         where: { workspaceId: workspace.id },
+        select: { id: true, title: true, icon: true, packSource: true, packPageKey: true, order: true },
         orderBy: { order: "asc" },
       }),
       db.installedPack.findMany({
         where: { workspaceId: workspace.id },
+        select: { packId: true, packVersion: true },
       }),
       db.installedPlugin.findMany({
         where: { workspaceId: workspace.id },
+        select: { pluginId: true, enabled: true },
       }),
+      hasTenantUserModel
+        ? (db as any).tenantUser.findMany({
+            where: { workspaceId: workspace.id },
+            select: { id: true, role: true },
+          }).catch(() => [])
+        : Promise.resolve([]),
     ]);
 
-    // Safely query tenantUsers — model may not exist in older generated client
-    let tenantUserCount = 0;
-    let hasTenantAdmin = false;
-    if (hasTenantUserModel) {
-      try {
-        const tenantUsers = await (db as any).tenantUser.findMany({
-          where: { workspaceId: workspace.id },
-          select: { id: true, role: true },
-        });
-        tenantUserCount = tenantUsers.length;
-        hasTenantAdmin = tenantUsers.some((u: any) => u.role === "admin");
-      } catch {
-        // Gracefully degrade if table doesn't exist yet
-      }
-    }
+    const tenantUserCount = tenantUsers.length;
+    const hasTenantAdmin = tenantUsers.some((u: any) => u.role === "admin");
 
     return NextResponse.json({
       id: workspace.id,
