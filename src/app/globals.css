@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -11,6 +12,8 @@
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
   --font-heading: var(--font-sans);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
 
   /* Sidebar */
   --color-sidebar-ring: var(--sidebar-ring);
@@ -118,6 +121,10 @@
 
   --radius: 0.75rem;
 
+  --font-display: 'Instrument Serif', serif;
+  --font-body: 'Inter', var(--font-sans), sans-serif;
+  --shadow-dashboard: 0 25px 80px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.06);
+
   --chart-1: #3b82f6;
   --chart-2: #10b981;
   --chart-3: #f59e0b;
@@ -147,73 +154,103 @@
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out-sine: cubic-bezier(0.37, 0, 0.63, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Hero overlay for dark mode */
+  --hero-overlay-top: rgba(13, 15, 20, 0.4);
+  --hero-overlay-mid: rgba(13, 15, 20, 0.7);
+  --hero-video-brightness: 0.15;
+  --hero-video-saturate: 0.7;
+  --hero-glass-bg: rgba(255, 255, 255, 0.05);
+  --hero-glass-border: rgba(255, 255, 255, 0.08);
+  --hero-badge-bg: rgba(255, 255, 255, 0.06);
+  --hero-badge-border: rgba(255, 255, 255, 0.1);
 }
 
 /* ═══════════════════════════════════════════════════════
-   LIGHT MODE
+   LIGHT MODE — Blue-tinted palette
    ═══════════════════════════════════════════════════════ */
 .light {
   color-scheme: light;
 
-  --background: #f8fafc;
+  --background: #f0f4fb;
   --surface-1: #ffffff;
-  --surface-2: #f1f5f9;
-  --surface-3: #e2e8f0;
-  --surface-raised: #ffffff;
-  --surface-sunken: #e2e8f0;
-  --surface-overlay: rgba(255, 255, 255, 0.9);
+  --surface-2: #e8eef8;
+  --surface-3: #d5dded;
+  --surface-raised: #f5f8ff;
+  --surface-sunken: #e4eaf5;
+  --surface-overlay: rgba(240, 244, 251, 0.92);
 
-  --foreground: #0f172a;
-  --foreground-muted: #475569;
-  --foreground-dimmed: #94a3b8;
+  --foreground: #0c1a3a;
+  --foreground-muted: #3d5278;
+  --foreground-dimmed: #8094b8;
 
-  --primary: #3b82f6;
+  --primary: #2563eb;
   --primary-foreground: #ffffff;
-  --primary-hover: #2563eb;
-  --primary-glow: rgba(59, 130, 246, 0.1);
-  --primary-subtle: #eff6ff;
+  --primary-hover: #1d4ed8;
+  --primary-glow: rgba(37, 99, 235, 0.12);
+  --primary-subtle: #e8f0ff;
 
-  --success: #10b981;
+  --success: #059669;
   --success-subtle: #d1fae5;
-  --warning: #f59e0b;
+  --warning: #d97706;
   --warning-subtle: #fef3c7;
-  --danger: #ef4444;
+  --danger: #dc2626;
   --danger-subtle: #fee2e2;
-  --info: #6366f1;
+  --info: #4f46e5;
   --info-subtle: #e0e7ff;
 
+  --accent-blue: #2563eb;
+  --accent-emerald: #059669;
+  --accent-amber: #d97706;
+  --accent-violet: #7c3aed;
+  --accent-rose: #e11d48;
+  --accent-cyan: #0891b2;
+
   --card: #ffffff;
-  --card-foreground: #0f172a;
+  --card-foreground: #0c1a3a;
   --popover: #ffffff;
-  --popover-foreground: #0f172a;
+  --popover-foreground: #0c1a3a;
 
-  --border: #e2e8f0;
-  --border-subtle: #f1f5f9;
-  --input: #e2e8f0;
+  --border: #d0daea;
+  --border-subtle: #e4ecf5;
+  --input: #d0daea;
 
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --accent: #f1f5f9;
-  --accent-foreground: #0f172a;
+  --secondary: #e8eef8;
+  --secondary-foreground: #0c1a3a;
+  --muted: #e8eef8;
+  --muted-foreground: #5a7199;
+  --accent: #e8eef8;
+  --accent-foreground: #0c1a3a;
 
-  --destructive: #ef4444;
-  --ring: #3b82f6;
+  --destructive: #dc2626;
+  --ring: #2563eb;
 
-  --sidebar: #ffffff;
-  --sidebar-foreground: #0f172a;
-  --sidebar-primary: #3b82f6;
+  --shadow-dashboard: 0 25px 80px -12px rgba(37, 99, 235, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.06);
+
+  --sidebar: #f5f8ff;
+  --sidebar-foreground: #0c1a3a;
+  --sidebar-primary: #2563eb;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f1f5f9;
-  --sidebar-accent-foreground: #0f172a;
-  --sidebar-border: #e2e8f0;
-  --sidebar-ring: #3b82f6;
+  --sidebar-accent: #e8eef8;
+  --sidebar-accent-foreground: #0c1a3a;
+  --sidebar-border: #d0daea;
+  --sidebar-ring: #2563eb;
 
-  --shadow-color: 0 0% 50%;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.08);
-  --shadow-md: 0 4px 14px -2px rgba(0,0,0,0.1);
-  --shadow-lg: 0 16px 40px -8px rgba(0,0,0,0.14);
+  --shadow-color: 220 40% 50%;
+  --shadow-sm: 0 1px 3px rgba(37, 99, 235, 0.06);
+  --shadow-md: 0 4px 14px -2px rgba(37, 99, 235, 0.08);
+  --shadow-lg: 0 16px 40px -8px rgba(37, 99, 235, 0.12);
+  --shadow-glow: 0 0 32px var(--primary-glow);
+
+  /* Hero overlay for light mode */
+  --hero-overlay-top: rgba(240, 244, 251, 0.3);
+  --hero-overlay-mid: rgba(240, 244, 251, 0.6);
+  --hero-video-brightness: 0.4;
+  --hero-video-saturate: 0.8;
+  --hero-glass-bg: rgba(255, 255, 255, 0.5);
+  --hero-glass-border: rgba(255, 255, 255, 0.6);
+  --hero-badge-bg: rgba(37, 99, 235, 0.08);
+  --hero-badge-border: rgba(37, 99, 235, 0.15);
 }
 
 /* ═══════════════════════════════════════════════════════
