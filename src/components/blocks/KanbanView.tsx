@@ -63,7 +63,7 @@ export function KanbanView({ config, tableId }: { config: any; tableId?: string 
   });
 
   return (
-    <div>
+    <div className="w-full min-w-0 max-w-full h-full flex-1 flex flex-col min-h-0">
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
           <div
@@ -90,7 +90,7 @@ export function KanbanView({ config, tableId }: { config: any; tableId?: string 
         </div>
       </div>
 
-      <div className="flex gap-4 overflow-x-auto pb-4 snap-x relative min-h-[400px]">
+      <div className="flex gap-4 overflow-x-auto pb-4 snap-x relative flex-1 min-h-0">
         {Object.entries(grouped).map(([col, items]) => {
           const accent = COL_ACCENTS[col] || "var(--foreground-dimmed)";
           return (

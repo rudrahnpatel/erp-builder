@@ -18,6 +18,7 @@ import {
   Database,
   Code2,
   Package,
+  Network,
 } from "lucide-react";
 import { useWorkspace } from "@/hooks/use-workspace";
 import { useLanguage } from "@/lib/i18n";
@@ -32,6 +33,9 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
   // Core nav — always visible
   const coreItems = [
     { href: "/workspace", label: t("common.dashboard"), icon: LayoutDashboard },
+    { href: "/pages", label: "Manage Pages", icon: FileText },
+    { href: "/tables", label: "Manage Tables", icon: Database },
+    { href: "/schema", label: "Schema Designer", icon: Network },
     { href: "/modules", label: t("common.marketplace"), icon: Blocks },
     { href: "/plugins", label: t("common.plugins"), icon: Puzzle },
   ];
@@ -39,8 +43,6 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
   // Dev-only items — shown only in developer mode
   const devItems = [
     { href: "/dev/modules", label: "My Modules", icon: Package },
-    { href: "/pages", label: t("common.managePages"), icon: FileText },
-    { href: "/tables", label: t("common.manageTables"), icon: Database },
   ];
 
   const navSections = [
@@ -98,13 +100,11 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
           {isLoading && !workspace ? (
             <>
               <span
-                className="block h-3 rounded-md w-24 animate-pulse"
-                style={{ background: "var(--surface-2)" }}
+                className="skeleton block h-3 w-24 mb-1.5"
                 aria-hidden="true"
               />
               <span
-                className="block h-2 rounded-md w-32 mt-1.5 animate-pulse"
-                style={{ background: "var(--surface-2)" }}
+                className="skeleton block h-2 w-32"
                 aria-hidden="true"
               />
               <span className="sr-only">Loading workspace…</span>

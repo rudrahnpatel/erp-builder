@@ -47,12 +47,38 @@ export default function TenantCustomPage({
   params: Promise<{ slug: string; pageId: string }>;
 }) {
   const { slug, pageId } = use(params);
-  const { data: page, error } = useSWR(`/api/pages/${pageId}`, fetcher);
+  const { data: page, error } = useSWR(`/api/pages/${pageId}`, fetcher, {
+    keepPreviousData: true,
+  });
 
   if (!page && !error) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="h-full flex flex-col animate-fade-in-up">
+        {/* Top Bar Skeleton */}
+        <div className="flex items-center gap-3 px-4 sm:px-6 py-4 border-b shrink-0" style={{ borderColor: "var(--border-subtle)" }}>
+          <div className="skeleton h-8 w-8 rounded-lg" />
+          <div className="skeleton h-5 w-48 rounded-md" />
+        </div>
+        
+        {/* Blocks Skeleton */}
+        <div className="flex-1 p-4 sm:p-8" style={{ background: "var(--background)" }}>
+          <div className="max-w-4xl mx-auto flex flex-wrap items-start gap-6 stagger-children">
+            {[1, 2].map((i) => (
+              <div key={i} className="basis-full md:basis-[calc(50%-12px)] rounded-xl border p-5 h-64" style={{ background: "var(--card)", borderColor: "var(--border-subtle)" }}>
+                <div className="skeleton h-6 w-32 rounded-md mb-4" />
+                <div className="skeleton h-4 w-full rounded-md mb-2" />
+                <div className="skeleton h-4 w-3/4 rounded-md mb-6" />
+                <div className="skeleton h-20 w-full rounded-md" />
+              </div>
+            ))}
+            <div className="basis-full rounded-xl border p-5 h-80" style={{ background: "var(--card)", borderColor: "var(--border-subtle)" }}>
+              <div className="skeleton h-6 w-48 rounded-md mb-4" />
+              <div className="skeleton h-4 w-full rounded-md mb-2" />
+              <div className="skeleton h-4 w-full rounded-md mb-2" />
+              <div className="skeleton h-4 w-2/3 rounded-md" />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

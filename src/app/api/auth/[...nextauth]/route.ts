@@ -1,21 +1,20 @@
 import NextAuth from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { NextRequest } from "next/server";
 
-function getHandler(req: NextRequest) {
-  // Dynamically set NEXTAUTH_URL to match the request origin in development.
-  // This prevents CLIENT_FETCH_ERROR network errors when accessing the app
-  // via tenant subdomains (e.g. bon2vin.erpbuilder.app:3000) instead of localhost.
-  if (process.env.NODE_ENV !== "production") {
-    process.env.NEXTAUTH_URL = req.nextUrl.origin;
-  }
-  return NextAuth(authOptions);
-}
+/**
+ * NextAuth v4 route handler for Next.js 16 App Router.
+ *
+ * We export individual GET / POST functions so that Next.js can tree-shake
+ * and resolve this route file correctly under Turbopack.  The `handler`
+ * returned by `NextAuth(options)` already understands the App Router
+ * `(request, context)` signature — it awaits `context.params` internally
+ * to read the catch-all `[...nextauth]` segments.
+ */
+const handler = NextAuth(authOptions);
 
-export async function GET(req: NextRequest, ctx: any) {
-  return getHandler(req)(req, ctx);
-}
+export const GET = handler;
+export const POST = handler;
 
-export async function POST(req: NextRequest, ctx: any) {
-  return getHandler(req)(req, ctx);
-}
+// Force this route to be dynamic — NextAuth endpoints always depend on
+// cookies / headers, so static optimisation must be disabled.
+export const dynamic = "force-dynamic";

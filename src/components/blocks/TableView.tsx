@@ -64,7 +64,7 @@ export function TableView({ config, tableId }: { config: any; tableId?: string }
 
   return (
     <div 
-      className="flex flex-col rounded-2xl overflow-hidden border shadow-sm transition-all duration-300"
+      className="flex flex-col rounded-2xl overflow-hidden border shadow-sm transition-all duration-300 w-full min-w-0 max-w-full h-full flex-1 min-h-0"
       style={{ 
         background: "var(--card)", 
         borderColor: "var(--border-subtle)" 
@@ -113,7 +113,7 @@ export function TableView({ config, tableId }: { config: any; tableId?: string }
         </div>
       </div>
       
-      <div className="overflow-x-auto">
+      <div className="overflow-auto w-full min-w-0 max-w-full flex-1 min-h-0">
         <table className="w-full text-sm min-w-[700px]">
           <thead>
             <tr

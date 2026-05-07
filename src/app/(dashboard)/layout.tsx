@@ -3,6 +3,7 @@
 import { ReactNode, useState, useEffect } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Topbar } from "@/components/layout/Topbar";
+import { CommandPalette } from "@/components/layout/CommandPalette";
 import { useWorkspace } from "@/hooks/use-workspace";
 import { useRouter } from "next/navigation";
 
@@ -67,6 +68,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           {children}
         </main>
       </div>
+
+      <CommandPalette />
     </div>
   );
 }

@@ -45,7 +45,10 @@ interface ModuleItem {
   createdAt: string;
 }
 
+import { useRouter } from "next/navigation";
+
 export default function MyModulesPage() {
+  const router = useRouter();
   const { data, mutate, isLoading } = useSWR("/api/dev/modules", fetcher);
   const modules: ModuleItem[] = data?.modules || [];
 
@@ -300,47 +303,67 @@ export default function MyModulesPage() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-2 pt-1">
-                  <Button
-                    size="sm"
-                    className="flex-1 gap-1.5 text-xs font-medium"
-                    disabled={snapshotting === mod.id}
-                    onClick={() => handleSnapshot(mod, false)}
-                    variant="outline"
-                  >
-                    {snapshotting === mod.id ? (
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                    ) : (
-                      <Camera className="h-3 w-3" />
-                    )}
-                    Snapshot
-                  </Button>
-                  <Button
-                    size="sm"
-                    className="flex-1 gap-1.5 text-xs font-semibold pressable"
-                    disabled={snapshotting === mod.id}
-                    onClick={() => handleSnapshot(mod, true)}
-                    style={{
-                      background: "linear-gradient(135deg, var(--accent-emerald), color-mix(in oklch, var(--accent-emerald), var(--primary) 30%))",
-                      color: "#fff",
-                      boxShadow: "0 2px 8px color-mix(in oklch, var(--accent-emerald), transparent 60%)",
-                    }}
-                  >
-                    {snapshotting === mod.id ? (
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                    ) : (
-                      <Sparkles className="h-3 w-3" />
-                    )}
-                    {mod.published ? "Re-publish" : "Publish"}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="px-2"
-                    onClick={() => handleDelete(mod)}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" style={{ color: "var(--danger)" }} />
-                  </Button>
+                <div className="flex flex-col gap-2 pt-1">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="flex-1 gap-1.5 text-xs"
+                      onClick={() => router.push(`/dev/modules/${mod.id}/pages`)}
+                    >
+                      <FileText className="h-3 w-3" /> Pages ({mod.pageCount})
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="flex-1 gap-1.5 text-xs"
+                      onClick={() => router.push(`/dev/modules/${mod.id}/tables`)}
+                    >
+                      <Database className="h-3 w-3" /> Tables ({mod.tableCount})
+                    </Button>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      className="flex-1 gap-1.5 text-xs font-medium"
+                      disabled={snapshotting === mod.id}
+                      onClick={() => handleSnapshot(mod, false)}
+                      variant="outline"
+                    >
+                      {snapshotting === mod.id ? (
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                      ) : (
+                        <Camera className="h-3 w-3" />
+                      )}
+                      Snapshot
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="flex-1 gap-1.5 text-xs font-semibold pressable"
+                      disabled={snapshotting === mod.id}
+                      onClick={() => handleSnapshot(mod, true)}
+                      style={{
+                        background: "linear-gradient(135deg, var(--accent-emerald), color-mix(in oklch, var(--accent-emerald), var(--primary) 30%))",
+                        color: "#fff",
+                        boxShadow: "0 2px 8px color-mix(in oklch, var(--accent-emerald), transparent 60%)",
+                      }}
+                    >
+                      {snapshotting === mod.id ? (
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                      ) : (
+                        <Sparkles className="h-3 w-3" />
+                      )}
+                      {mod.published ? "Re-publish" : "Publish"}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="px-2"
+                      onClick={() => handleDelete(mod)}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" style={{ color: "var(--danger)" }} />
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}

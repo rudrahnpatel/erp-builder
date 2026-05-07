@@ -1,61 +1,31 @@
 "use client";
 
-import { useState, use, useEffect, useRef } from "react";
+import { useState, use, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { useWorkspace } from "@/hooks/use-workspace";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { DevModeGate } from "@/components/layout/DevModeGate";
+
 import {
-  DndContext,
-  DragEndEvent,
-  KeyboardSensor,
-  PointerSensor,
-  closestCenter,
-  useSensor,
-  useSensors,
+  DndContext, DragEndEvent, DragStartEvent, DragOverlay,
+  useDraggable, useDroppable, KeyboardSensor, PointerSensor,
+  closestCenter, useSensor, useSensors,
 } from "@dnd-kit/core";
 import {
-  SortableContext,
-  arrayMove,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
+  SortableContext, arrayMove, sortableKeyboardCoordinates,
+  useSortable, verticalListSortingStrategy, rectSortingStrategy,
 } from "@dnd-kit/sortable";
 import { toast } from "sonner";
 import {
-  Table2,
-  Kanban,
-  Type,
-  Filter,
-  BarChart3,
-  FileText,
-  Plus,
-  GripVertical,
-  Trash2,
-  Eye,
-  Save,
-  MoreHorizontal,
-  ChevronRight,
-  PenLine,
-  Settings2,
-  Code,
-  Search,
-  LayoutTemplate,
-  Layers,
-  Loader2,
-  Hash,
-  Download,
-  Image as ImageIcon,
-  Calendar,
-  Calculator,
-  PanelLeftClose,
-  PanelLeftOpen,
-  PanelRightClose,
-  PanelRightOpen,
+  Table2, Kanban, Type, Filter, BarChart3, FileText, Plus, GripVertical,
+  Trash2, Eye, Save, MoreHorizontal, ChevronRight, PenLine, Settings2,
+  Code, Search, LayoutTemplate, Layers, Loader2, Hash, Download,
+  Image as ImageIcon, Calendar, Calculator, PanelLeftClose, PanelLeftOpen,
+  PanelRightClose, PanelRightOpen,
 } from "lucide-react";
 import Link from "next/link";
+import { useModuleComposer } from "@/lib/module-composer-context";
 import { TableView } from "@/components/blocks/TableView";
 import { KanbanView } from "@/components/blocks/KanbanView";
 import { MetricCard } from "@/components/blocks/MetricCard";
@@ -82,23 +52,24 @@ const blockPalette = [
   { type: "FORM", label: "Form", icon: <FileText className="h-4 w-4" /> },
   { type: "EXPORT_BUTTON", label: "Export (CSV)", icon: <Download className="h-4 w-4" /> },
   { type: "GST_CALCULATOR", label: "GST Calculator", icon: <Calculator className="h-4 w-4" /> },
+  { type: "SPACE", label: "Empty Space", icon: <LayoutTemplate className="h-4 w-4 opacity-50" /> },
 ];
 
 const KANBAN_COLS = ["To Do", "In Progress", "Review", "Done"];
 
-const blockSizeStyle = (cfg: any): React.CSSProperties => {
-  const widthPct = typeof cfg?.widthPct === "number" ? cfg.widthPct : 100;
+/* ── 6-column grid system ── */
+const GRID_COLUMNS = 6;
+
+const blockGridStyle = (cfg: any): React.CSSProperties => {
+  const colSpan = typeof cfg?.colSpan === "number" ? Math.min(GRID_COLUMNS, Math.max(1, cfg.colSpan)) : GRID_COLUMNS;
   const heightPx = typeof cfg?.heightPx === "number" ? cfg.heightPx : undefined;
-  const isFull = widthPct >= 99.5;
   return {
-    flexBasis: isFull ? "100%" : `calc(${widthPct}% - 12px)`,
-    maxWidth: "100%",
-    minWidth: isFull ? undefined : "200px",
+    gridColumn: `span ${colSpan} / span ${colSpan}`,
     height: heightPx ? `${heightPx}px` : undefined,
   };
 };
 
-const SIZE_SNAP_POINTS = [25, 33.333, 50, 66.667, 75, 100] as const;
+const blockSizeStyle = blockGridStyle;
 
 type ResizeAxis = "left" | "right" | "top" | "bottom";
 
@@ -111,10 +82,16 @@ interface KanbanCard {
 
 export default function PageComposerPage({ params }: { params: Promise<{ pageId: string }> }) {
   const { pageId } = use(params);
+  const composerCtx = useModuleComposer();
+  const pagesApiUrl = composerCtx?.pagesApiUrl || "/api/pages";
+  const basePath = composerCtx?.basePath || "/pages";
 
   const router = useRouter();
   const { workspace } = useWorkspace();
-  const { data: allPages, mutate: refreshAllPages } = useSWR(`/api/pages`, (url: string) => fetch(url).then(r => r.json()));
+  const { data: allPagesResponse, mutate: refreshAllPages } = useSWR(pagesApiUrl, (url: string) => fetch(url).then(r => r.json()));
+  const allPages = useMemo(() => {
+    return Array.isArray(allPagesResponse) ? allPagesResponse : (allPagesResponse?.pages || []);
+  }, [allPagesResponse]);
 
   const pageFromCache = allPages?.find((p: any) => p.id === pageId);
   const { data: page, mutate: refreshPage, isLoading } = useSWR(
@@ -136,6 +113,49 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
   const [isResizing, setIsResizing] = useState(false);
   const canvasGridRef = useRef<HTMLDivElement | null>(null);
 
+  const [activeDragId, setActiveDragId] = useState<string | null>(null);
+  const [activeDragData, setActiveDragData] = useState<any>(null);
+
+  const handleCanvasDragStart = (event: DragStartEvent) => {
+    setActiveDragId(event.active.id as string);
+    setActiveDragData(event.active.data.current);
+  };
+
+  const handleCanvasDragEnd = (event: DragEndEvent) => {
+    setActiveDragId(null);
+    setActiveDragData(null);
+    const { active, over } = event;
+    if (!over) return;
+
+    if (active.data.current?.type === "canvas-block" && over.data.current?.type === "canvas-block") {
+      if (active.id !== over.id) {
+        setBlocks((prev) => {
+          const oldIdx = prev.findIndex((b) => b.id === active.id);
+          const newIdx = prev.findIndex((b) => b.id === over.id);
+          return arrayMove(prev, oldIdx, newIdx);
+        });
+      }
+    } else if (active.data.current?.type === "palette-item") {
+      const blockType = active.data.current.blockType;
+      const bDef = blockPalette.find((b) => b.type === blockType);
+      if (bDef) {
+        const newBlock = { id: `b${Date.now()}`, type: bDef.type, label: bDef.label, icon: bDef.icon, config: {} };
+        
+        if (over.id === "canvas-dropzone") {
+          setBlocks((prev) => [...prev, newBlock]);
+        } else if (over.data.current?.type === "canvas-block") {
+          setBlocks((prev) => {
+            const newIdx = prev.findIndex((b) => b.id === over.id);
+            const copy = [...prev];
+            copy.splice(newIdx, 0, newBlock);
+            return copy;
+          });
+        }
+        setSelectedBlock(newBlock.id);
+      }
+    }
+  };
+
   const startResize = (
     e: React.PointerEvent<HTMLDivElement>,
     blockId: string,
@@ -149,13 +169,14 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
 
     const startX = e.clientX;
     const startY = e.clientY;
-    const blockRect = blockEl.getBoundingClientRect();
-    const startWidthPx = blockRect.width;
-    const startHeightPx = blockRect.height;
+    const startHeightPx = blockEl.getBoundingClientRect().height;
     const gridWidth = grid.getBoundingClientRect().width;
+    const colWidth = gridWidth / GRID_COLUMNS;
+    const block = blocks.find(b => b.id === blockId);
+    const startColSpan = block?.config?.colSpan ?? GRID_COLUMNS;
 
     setIsResizing(true);
-    const cursor = axis === "left" || axis === "right" ? "ew-resize" : "ns-resize";
+    const cursor = (axis === "left" || axis === "right") ? "ew-resize" : "ns-resize";
     document.body.style.cursor = cursor;
     document.body.style.userSelect = "none";
 
@@ -167,15 +188,13 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
           if (b.id !== blockId) return b;
           const cfg = { ...(b.config || {}) };
           if (axis === "right") {
-            const newW = Math.max(180, Math.min(gridWidth, startWidthPx + dx));
-            cfg.widthPct = (newW / gridWidth) * 100;
+            cfg.colSpan = Math.max(1, Math.min(GRID_COLUMNS, startColSpan + Math.round(dx / colWidth)));
           } else if (axis === "left") {
-            const newW = Math.max(180, Math.min(gridWidth, startWidthPx - dx));
-            cfg.widthPct = (newW / gridWidth) * 100;
+            cfg.colSpan = Math.max(1, Math.min(GRID_COLUMNS, startColSpan + Math.round(-dx / colWidth)));
           } else if (axis === "bottom") {
-            cfg.heightPx = Math.max(80, startHeightPx + dy);
+            cfg.heightPx = Math.max(60, startHeightPx + dy);
           } else if (axis === "top") {
-            cfg.heightPx = Math.max(80, startHeightPx - dy);
+            cfg.heightPx = Math.max(60, startHeightPx - dy);
           }
           return { ...b, config: cfg };
         })
@@ -183,20 +202,6 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
     };
 
     const onUp = () => {
-      setBlocks((prev) =>
-        prev.map((b) => {
-          if (b.id !== blockId) return b;
-          const cfg = { ...(b.config || {}) };
-          if (typeof cfg.widthPct === "number") {
-            const closest = SIZE_SNAP_POINTS.reduce(
-              (a, c) => (Math.abs(c - cfg.widthPct) < Math.abs(a - cfg.widthPct) ? c : a),
-              100 as number
-            );
-            if (Math.abs(closest - cfg.widthPct) < 5) cfg.widthPct = closest;
-          }
-          return { ...b, config: cfg };
-        })
-      );
       setIsResizing(false);
       document.body.style.cursor = "";
       document.body.style.userSelect = "";
@@ -316,9 +321,9 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
     // Navigate to first remaining page or pages index
     const remaining = allPages?.filter((p: any) => p.id !== pageId);
     if (remaining?.length > 0) {
-      router.push(`/pages/${remaining[0].id}/edit`);
+      router.push(`${basePath}/${remaining[0].id}/edit`);
     } else {
-      router.push("/pages");
+      router.push(basePath);
     }
   };
 
@@ -348,7 +353,7 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
   }
 
   return (
-    <DevModeGate>
+    <>
     <div className="h-[calc(100vh-3.5rem)] flex flex-col -m-4 sm:-m-6 bg-background text-foreground">
       {/* Top bar */}
       <div
@@ -469,6 +474,7 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
                       page={p}
                       active={p.id === pageId}
                       onDelete={deletePage}
+                      basePath={basePath}
                     />
                   ))}
                 </SortableContext>
@@ -482,7 +488,7 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
               <button
                 onClick={async () => {
                   try {
-                    const res = await fetch("/api/pages", {
+                    const res = await fetch(pagesApiUrl, {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({ title: "Untitled Page", blocks: [] }),
@@ -490,7 +496,7 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
                     if (res.ok) {
                       const page = await res.json();
                       await refreshAllPages();
-                      router.push(`/pages/${page.id}/edit`);
+                      router.push(`${basePath}/${page.id}/edit`);
                     }
                   } catch {}
                 }}
@@ -502,415 +508,40 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
             </div>
           </div>
         )}
+        {/* Center & Right Area wrapped in DndContext */}
+        <DndContext
+          sensors={pageSensors}
+          collisionDetection={closestCenter}
+          onDragStart={handleCanvasDragStart}
+          onDragEnd={handleCanvasDragEnd}
+        >
         {/* Center: Canvas */}
         <div 
-          className="flex-1 overflow-y-auto p-4 sm:p-8 dotted-grid relative bg-background shadow-[0_0_40px_-10px_rgba(0,0,0,0.1)] z-0"
-          onDragOver={(e) => {
-            e.preventDefault();
-          }}
-          onDrop={(e) => {
-            e.preventDefault();
-            const type = e.dataTransfer.getData("application/erp-block-type");
-            if (type) {
-              const bDef = blockPalette.find((b) => b.type === type);
-              if (bDef) addBlock(bDef.type, bDef.label, bDef.icon);
-            }
-          }}
+          className="flex-1 overflow-y-auto p-4 sm:p-8 dotted-grid relative bg-background shadow-[0_0_40px_-10px_rgba(0,0,0,0.1)] z-0 min-w-0"
         >
-          <div ref={canvasGridRef} className="max-w-4xl mx-auto flex flex-wrap items-start gap-6 stagger-children pb-20">
+          <div ref={canvasGridRef} className="max-w-4xl mx-auto grid grid-cols-6 gap-4 stagger-children pb-20 items-start">
+            <SortableContext items={blocks.map(b => b.id)} strategy={rectSortingStrategy}>
             {blocks.map((block, index) => (
-              <div
+              <SortableCanvasBlock
                 key={block.id || `block-${index}`}
-                data-block-id={block.id}
-                onClick={() => !preview && setSelectedBlock(block.id)}
-                draggable={!preview && !isResizing}
-                onDragStart={(e) => {
-                  e.dataTransfer.effectAllowed = "move";
-                  setDraggedIdx(index);
-                }}
-                onDragOver={(e) => {
-                  e.preventDefault();
-                }}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation(); // prevent adding to the bottom canvas drop
-                  
-                  const newType = e.dataTransfer.getData("application/erp-block-type");
-                  if (newType) {
-                    const bDef = blockPalette.find((b) => b.type === newType);
-                    if (bDef) {
-                      const newBlock = { id: `b${Date.now()}`, type: bDef.type, label: bDef.label, icon: bDef.icon, config: {} };
-                      setBlocks(prev => {
-                        const copy = [...prev];
-                        copy.splice(index, 0, newBlock as PlacedBlock);
-                        return copy;
-                      });
-                      setSelectedBlock(newBlock.id);
-                    }
-                    return;
-                  }
-
-                  if (draggedIdx === null || draggedIdx === index) return;
-                  setBlocks((prev) => {
-                    const copy = [...prev];
-                    const [item] = copy.splice(draggedIdx, 1);
-                    copy.splice(index, 0, item);
-                    return copy;
-                  });
-                  setDraggedIdx(null);
-                }}
-                className={`group relative rounded-2xl transition-all duration-200 ${
-                  !preview ? "cursor-grab active:cursor-grabbing" : ""
-                } border ${
-                  selectedBlock === block.id && !preview
-                    ? "shadow-md"
-                    : "shadow-sm hover:shadow-md"
-                } ${draggedIdx === index ? "opacity-50" : ""}`}
-                style={{
-                  background: "var(--card)",
-                  borderColor: selectedBlock === block.id && !preview
-                    ? "var(--primary)"
-                    : "var(--border-subtle)",
-                  boxShadow: selectedBlock === block.id && !preview
-                    ? "0 0 0 3px color-mix(in oklch, var(--primary), transparent 85%)"
-                    : undefined,
-                  ...blockSizeStyle(block.config),
-                }}
-              >
-                {/* Resize handles — visible when block is selected */}
-                {!preview && selectedBlock === block.id && (
-                  <>
-                    {(["right", "left"] as const).map((side) => (
-                      <div
-                        key={side}
-                        onPointerDown={(e) => startResize(e, block.id, side)}
-                        onMouseDown={(e) => e.stopPropagation()}
-                        onClick={(e) => e.stopPropagation()}
-                        onDragStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                        title={`Drag to resize width`}
-                        className={`absolute top-1/2 -translate-y-1/2 ${side === "right" ? "-right-2" : "-left-2"} w-4 h-10 cursor-ew-resize z-30 flex items-center justify-center`}
-                      >
-                        <span
-                          className="block w-3 h-3 rounded-full"
-                          style={{
-                            background: "var(--primary)",
-                            border: "2px solid var(--background)",
-                            boxShadow: "0 1px 3px color-mix(in oklch, black, transparent 70%)",
-                          }}
-                        />
-                      </div>
-                    ))}
-                    {(["bottom", "top"] as const).map((side) => (
-                      <div
-                        key={side}
-                        onPointerDown={(e) => startResize(e, block.id, side)}
-                        onMouseDown={(e) => e.stopPropagation()}
-                        onClick={(e) => e.stopPropagation()}
-                        onDragStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                        title={`Drag to resize height`}
-                        className={`absolute left-1/2 -translate-x-1/2 ${side === "bottom" ? "-bottom-2" : "-top-2"} w-10 h-4 cursor-ns-resize z-30 flex items-center justify-center`}
-                      >
-                        <span
-                          className="block w-3 h-3 rounded-full"
-                          style={{
-                            background: "var(--primary)",
-                            border: "2px solid var(--background)",
-                            boxShadow: "0 1px 3px color-mix(in oklch, black, transparent 70%)",
-                          }}
-                        />
-                      </div>
-                    ))}
-                  </>
-                )}
-
-                {/* Block toolbar */}
-                {!preview && (
-                  <div className="absolute -top-3 left-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-2 border border-border shadow-md backdrop-blur-sm">
-                      <GripVertical className="h-3.5 w-3.5 cursor-grab text-muted-foreground hover:text-foreground" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground pr-2 border-r border-border/50">
-                        {block.type.replace("_", " ")}
-                      </span>
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeBlock(block.id);
-                        }}
-                        className="pl-1 text-muted-foreground hover:text-destructive transition-colors p-0.5 rounded-md"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Block content */}
-                <div className="p-6">
-                  {block.type === "TEXT" && (
-                    <div className="space-y-1">
-                      <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                        {block.label}
-                      </h1>
-                      <p className="text-base text-muted-foreground whitespace-pre-wrap">
-                        {block.config?.description || "Enter a description..."}
-                      </p>
-                    </div>
-                  )}
-
-                  {block.type === "FILTER_BAR" && (
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                      <div className="flex-1 relative group w-full">
-                        <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                        <input
-                          type="text"
-                          placeholder={`Search ${block.label}...`}
-                          className="w-full pl-10 pr-4 py-2 text-sm rounded-xl bg-secondary/30 border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground/60"
-                          readOnly={!preview}
-                        />
-                      </div>
-                      {block.config?.includeDateRange && (
-                        <div className="flex items-center gap-2 shrink-0">
-                          <div className="relative">
-                            <Calendar className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
-                            <input
-                              type="date"
-                              className="pl-8 pr-2 py-2 text-sm rounded-xl bg-secondary/30 border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20"
-                              readOnly={!preview}
-                            />
-                          </div>
-                          <span className="text-xs text-muted-foreground">to</span>
-                          <div className="relative">
-                            <Calendar className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
-                            <input
-                              type="date"
-                              className="pl-8 pr-2 py-2 text-sm rounded-xl bg-secondary/30 border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20"
-                              readOnly={!preview}
-                            />
-                          </div>
-                        </div>
-                      )}
-                      <Button variant="outline" className="gap-2 shrink-0 h-10 rounded-xl bg-background border-border/60 hover:bg-secondary/50">
-                        <Filter className="h-4 w-4" /> Filter
-                      </Button>
-                    </div>
-                  )}
-
-                  {block.type === "TABLE_VIEW" && (() => {
-                    const tableRef = block.config?.tableRef;
-                    const resolvedTable = workspace?.tables?.find((t: any) => t.name === tableRef);
-                    if (!resolvedTable) {
-                      return (
-                        <div className="p-10 border-2 border-dashed border-border/40 rounded-xl flex flex-col items-center justify-center text-muted-foreground bg-secondary/20">
-                          <Table2 className="h-8 w-8 mb-3 opacity-40" />
-                          <p className="text-sm font-medium">No table connected.</p>
-                          <p className="text-xs mt-1 opacity-70">Pick one in Configuration → Target Database Table.</p>
-                        </div>
-                      );
-                    }
-                    const visibleFields = block.config?.visibleFields ?? [];
-                    return (
-                      <TableView
-                        config={{ tableRef, visibleFields }}
-                        tableId={resolvedTable.id}
-                      />
-                    );
-                  })()}
-
-                  {block.type === "KANBAN_VIEW" && (() => {
-                    const tableRef = block.config?.tableRef;
-                    const resolvedTable = workspace?.tables?.find((t: any) => t.name === tableRef);
-                    if (resolvedTable) {
-                      return (
-                        <KanbanView
-                          config={{
-                            tableRef,
-                            groupByField: block.config?.groupByField,
-                          }}
-                          tableId={resolvedTable.id}
-                        />
-                      );
-                    }
-                    const cards = getKanbanCards(block.id);
-                    return (
-                      <div>
-                        <div className="flex items-center justify-between mb-4">
-                          <span className="text-base font-semibold text-foreground">{block.label}</span>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-7 text-xs gap-1 rounded-lg"
-                            onClick={(e) => { e.stopPropagation(); addKanbanCard(block.id, "To Do"); }}
-                          >
-                            <Plus className="h-3 w-3" /> Add Card
-                          </Button>
-                        </div>
-                        <div className="flex gap-3 overflow-x-auto pb-2">
-                          {KANBAN_COLS.map((col) => {
-                            const colCards = cards.filter(c => c.col === col);
-                            return (
-                              <div
-                                key={col}
-                                className="flex-1 min-w-[190px] rounded-xl p-3 bg-secondary/30 border border-border/30"
-                                onDragOver={(e) => e.preventDefault()}
-                                onDrop={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  if (!kanbanDragCard.current || kanbanDragCard.current.blockId !== block.id) return;
-                                  const cardId = kanbanDragCard.current.cardId;
-                                  setKanbanCards(prev => ({
-                                    ...prev,
-                                    [block.id]: (prev[block.id] || defaultKanbanCards(block.id)).map(c =>
-                                      c.id === cardId ? { ...c, col } : c
-                                    )
-                                  }));
-                                  kanbanDragCard.current = null;
-                                }}
-                              >
-                                <div className="flex items-center justify-between mb-3 px-1">
-                                  <h4 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{col}</h4>
-                                  <span className="text-[10px] font-medium bg-background px-1.5 py-0.5 rounded text-muted-foreground border border-border/50">
-                                    {colCards.length}
-                                  </span>
-                                </div>
-                                <div className="space-y-2 min-h-[60px]">
-                                  {colCards.map(card => (
-                                    <div
-                                      key={card.id}
-                                      draggable
-                                      onDragStart={(e) => {
-                                        e.stopPropagation();
-                                        kanbanDragCard.current = { blockId: block.id, cardId: card.id };
-                                      }}
-                                      className="rounded-lg p-3 text-sm bg-card border border-border/40 text-foreground shadow-sm hover:border-primary/30 hover:shadow-md transition-all cursor-grab active:cursor-grabbing active:opacity-60 group/card"
-                                    >
-                                      <p className="font-medium text-[13px] leading-snug">{card.title}</p>
-                                      <div className="flex items-center justify-between mt-2">
-                                        <Badge variant="secondary" className="text-[9px] h-4 px-1.5">{card.tag}</Badge>
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            setKanbanCards(prev => ({
-                                              ...prev,
-                                              [block.id]: (prev[block.id] || defaultKanbanCards(block.id)).filter(c => c.id !== card.id)
-                                            }));
-                                          }}
-                                          className="opacity-0 group-hover/card:opacity-100 text-muted-foreground hover:text-destructive transition-all p-0.5 rounded"
-                                        >
-                                          <Trash2 className="h-3 w-3" />
-                                        </button>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); addKanbanCard(block.id, col); }}
-                                  className="mt-2 w-full text-xs text-muted-foreground/60 hover:text-primary transition-colors py-1.5 rounded-lg hover:bg-primary/5 flex items-center justify-center gap-1"
-                                >
-                                  <Plus className="h-3 w-3" /> Add
-                                </button>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    );
-                  })()}
-
-                  {block.type === "CHART" && (
-                    <div className="h-64 rounded-xl flex flex-col items-center justify-center text-sm bg-secondary/20 border border-border/40 text-muted-foreground/80 relative overflow-hidden group/chart cursor-pointer">
-                      <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent opacity-0 group-hover/chart:opacity-100 transition-opacity" />
-                      <BarChart3 className="h-10 w-10 mb-3 opacity-50" /> 
-                      <span className="font-medium">{block.label}</span>
-                      <span className="text-xs mt-1 opacity-70">Requires data source connection</span>
-                    </div>
-                  )}
-
-                  {block.type === "METRIC" && (() => {
-                    const tableRef = block.config?.tableRef;
-                    const resolvedTable = workspace?.tables?.find((t: any) => t.name === tableRef);
-                    return (
-                      <MetricCard
-                        config={{ ...block.config, metricLabel: block.config?.metricLabel || block.label }}
-                        tableId={resolvedTable?.id}
-                      />
-                    );
-                  })()}
-
-                  {block.type === "EXPORT_BUTTON" && (() => {
-                    const tableRef = block.config?.tableRef;
-                    const resolvedTable = workspace?.tables?.find((t: any) => t.name === tableRef);
-                    return (
-                      <ExportButton
-                        config={block.config || {}}
-                        tableId={resolvedTable?.id}
-                      />
-                    );
-                  })()}
-
-                  {block.type === "IMAGE" && (
-                    <ImageBlock config={block.config || {}} />
-                  )}
-
-                  {block.type === "GST_CALCULATOR" && (
-                    <GstCalculator config={block.config || {}} />
-                  )}
-
-                  {block.type === "FORM" && (
-                    <div className="space-y-4 max-w-lg p-2">
-                      <div className="space-y-1.5 mb-2">
-                        <h3 className="text-lg font-bold text-foreground">{block.label || "New Entry Form"}</h3>
-                        <p className="text-xs text-muted-foreground">Automatically generated from the selected table schema.</p>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {["Product Name", "SKU Number"].map((label) => (
-                          <div key={label} className="space-y-1.5">
-                            <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">
-                              {label}
-                            </label>
-                            <input
-                              className="w-full text-sm px-3.5 py-2.5 rounded-xl bg-secondary/30 border border-border/60 text-foreground placeholder:text-muted-foreground/50 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                              readOnly={!preview}
-                              placeholder={`Enter ${label.toLowerCase()}...`}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                      
-                      <div className="pt-2 flex justify-end gap-2 border-t border-border/40 mt-6 pt-4">
-                        <Button variant="ghost" className="h-9 rounded-lg">Cancel</Button>
-                        <Button className="h-9 rounded-lg px-6 font-medium shadow-sm active:scale-95 transition-transform">
-                          Submit Record
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
+                block={block}
+                preview={preview}
+                isResizing={isResizing}
+                selectedBlock={selectedBlock}
+                setSelectedBlock={setSelectedBlock}
+                startResize={startResize}
+                removeBlock={removeBlock}
+                workspace={workspace}
+                getKanbanCards={getKanbanCards}
+                addKanbanCard={addKanbanCard}
+                setKanbanCards={setKanbanCards}
+                kanbanDragCard={kanbanDragCard}
+              />
             ))}
+            </SortableContext>
 
             {/* Drop zone */}
-            {!preview && (
-              <div
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  const type = e.dataTransfer.getData("application/erp-block-type");
-                  if (type) {
-                    const bDef = blockPalette.find((b) => b.type === type);
-                    if (bDef) addBlock(bDef.type, bDef.label, bDef.icon);
-                  }
-                }}
-                className="rounded-2xl p-10 text-center transition-all duration-300 border-2 border-dashed border-border/60 bg-transparent text-muted-foreground hover:border-primary/50 hover:bg-primary/5 hover:text-primary cursor-pointer group basis-full"
-              >
-                <div className="bg-secondary/80 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/10 transition-colors">
-                  <Plus className="h-5 w-5 opacity-70" />
-                </div>
-                <p className="text-sm font-medium">Drag components here or click to add a new block</p>
-                <p className="text-xs opacity-60 mt-1">Supports Tables, Kanban, Forms and visual elements</p>
-              </div>
-            )}
+            <CanvasDropZone preview={preview} />
           </div>
         </div>
 
@@ -952,27 +583,7 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
                     </p>
                   </div>
                   {blockPalette.map((block) => (
-                    <button
-                      key={block.type}
-                      draggable={!preview}
-                      onDragStart={(e) => {
-                        e.dataTransfer.setData("application/erp-block-type", block.type);
-                        e.dataTransfer.effectAllowed = "copy";
-                      }}
-                      onClick={() => addBlock(block.type, block.label, block.icon)}
-                      className="group flex items-center gap-3 px-3.5 py-3 text-[13px] rounded-xl transition-all duration-200 whitespace-nowrap w-full shrink-0 font-medium cursor-grab active:cursor-grabbing card-interactive"
-                      style={{
-                        background: "var(--card)",
-                        border: "1px solid var(--border-subtle)",
-                        color: "var(--foreground)",
-                      }}
-                    >
-                      <div className="p-1.5 rounded-md bg-secondary/80 group-hover:bg-primary/10 group-hover:text-primary transition-colors text-muted-foreground flex items-center justify-center">
-                        {block.icon}
-                      </div>
-                      {block.label}
-                      <Plus className="h-3.5 w-3.5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </button>
+                    <PaletteItem key={block.type} block={block} preview={preview} addBlock={addBlock} />
                   ))}
                 </div>
               )}
@@ -1016,18 +627,17 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
                         />
                       </div>
 
-                      {/* Block Size — quick presets + readout. Drag the handles on the canvas to fine-tune. */}
+                      {/* Block Size — 6-column grid */}
                       {(() => {
                         const b = blocks.find((x) => x.id === selectedBlock);
-                        const widthPct = typeof b?.config?.widthPct === "number" ? b!.config!.widthPct : 100;
+                        const colSpan = typeof b?.config?.colSpan === "number" ? b!.config!.colSpan : GRID_COLUMNS;
                         const heightPx = typeof b?.config?.heightPx === "number" ? b!.config!.heightPx : undefined;
-                        const widthLabel = widthPct >= 99.5 ? "Full" : `${Math.round(widthPct)}%`;
                         const heightLabel = heightPx ? `${Math.round(heightPx)}px` : "Auto";
-                        const setWidth = (pct: number) =>
+                        const setColSpan = (span: number) =>
                           setBlocks((prev) =>
                             prev.map((x) =>
                               x.id === selectedBlock
-                                ? { ...x, config: { ...(x.config || {}), widthPct: pct } }
+                                ? { ...x, config: { ...(x.config || {}), colSpan: span } }
                                 : x
                             )
                           );
@@ -1036,42 +646,38 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
                             prev.map((x) => {
                               if (x.id !== selectedBlock) return x;
                               const cfg = { ...(x.config || {}) };
-                              delete cfg.widthPct;
+                              delete cfg.colSpan;
                               delete cfg.heightPx;
                               return { ...x, config: cfg };
                             })
                           );
-                        const presets: { label: string; pct: number }[] = [
-                          { label: "Full", pct: 100 },
-                          { label: "1/2", pct: 50 },
-                          { label: "1/3", pct: 33.333 },
-                        ];
                         return (
                           <div className="space-y-2">
                             <div className="flex items-center justify-between">
                               <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                                Block Size
+                                Grid Columns
                               </label>
                               <span className="text-[10px] font-medium text-muted-foreground/70 tabular-nums">
-                                {widthLabel} × {heightLabel}
+                                {colSpan}/{GRID_COLUMNS} × {heightLabel}
                               </span>
                             </div>
-                            <div className="grid grid-cols-4 gap-1.5">
-                              {presets.map((opt) => {
-                                const active = Math.abs(widthPct - opt.pct) < 1;
+                            <div className="grid grid-cols-7 gap-1">
+                              {[1,2,3,4,5,6].map((n) => {
+                                const active = colSpan === n;
                                 return (
                                   <button
-                                    key={opt.label}
+                                    key={n}
                                     type="button"
-                                    onClick={() => setWidth(opt.pct)}
-                                    className="px-2 py-2 rounded-lg text-xs font-semibold transition-colors border"
+                                    onClick={() => setColSpan(n)}
+                                    className="px-1.5 py-2 rounded-lg text-xs font-semibold transition-all border"
                                     style={{
-                                      background: active ? "color-mix(in oklch, var(--primary), transparent 88%)" : "var(--card)",
+                                      background: active ? "color-mix(in oklch, var(--primary), transparent 85%)" : "var(--card)",
                                       borderColor: active ? "var(--primary)" : "var(--border-subtle)",
                                       color: active ? "var(--primary)" : "var(--foreground-muted)",
+                                      boxShadow: active ? "0 0 0 1px var(--primary)" : "none",
                                     }}
                                   >
-                                    {opt.label}
+                                    {n}
                                   </button>
                                 );
                               })}
@@ -1079,18 +685,18 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
                                 type="button"
                                 onClick={resetSize}
                                 title="Reset size"
-                                className="px-2 py-2 rounded-lg text-xs font-semibold transition-colors border"
+                                className="px-1.5 py-2 rounded-lg text-xs font-semibold transition-colors border"
                                 style={{
                                   background: "var(--card)",
                                   borderColor: "var(--border-subtle)",
                                   color: "var(--foreground-muted)",
                                 }}
                               >
-                                Reset
+                                ↺
                               </button>
                             </div>
                             <p className="text-[10px] text-muted-foreground/70 leading-relaxed">
-                              Or drag the dots around the selected block on the canvas.
+                              Drag handles or pick columns. Add Empty Space blocks for gaps.
                             </p>
                           </div>
                         );
@@ -1423,9 +1029,42 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
             </div>
           </div>
         )}
+        
+        {/* Drag Overlay for DnD */}
+        <DragOverlay dropAnimation={{ duration: 250, easing: "cubic-bezier(0.18, 0.67, 0.6, 1.22)" }}>
+          {activeDragId && activeDragData?.type === "palette-item" ? (
+            <div
+              className="flex items-center gap-3 px-3.5 py-3 text-[13px] rounded-xl font-medium shadow-2xl opacity-90 scale-105"
+              style={{ background: "var(--card)", border: "1px solid var(--primary)", color: "var(--foreground)", width: 220 }}
+            >
+              <div className="p-1.5 rounded-md bg-primary/10 text-primary flex items-center justify-center">
+                {blockPalette.find((b) => b.type === activeDragData.blockType)?.icon}
+              </div>
+              {activeDragData.label}
+            </div>
+          ) : activeDragId && activeDragData?.type === "canvas-block" ? (
+            <div
+              className="rounded-2xl border shadow-2xl opacity-90 scale-[1.02]"
+              style={{
+                background: "var(--card)",
+                borderColor: "var(--primary)",
+                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 3px color-mix(in oklch, var(--primary), transparent 80%)",
+                ...blockSizeStyle(activeDragData.block.config),
+                width: document.querySelector(`[data-block-id="${activeDragId}"]`)?.getBoundingClientRect().width,
+                height: document.querySelector(`[data-block-id="${activeDragId}"]`)?.getBoundingClientRect().height,
+              }}
+            >
+              <div className="p-6 opacity-60 pointer-events-none">
+                <div className="text-xl font-bold">{activeDragData.block.label}</div>
+                <div className="text-sm text-muted-foreground mt-2">Moving block...</div>
+              </div>
+            </div>
+          ) : null}
+        </DragOverlay>
+        </DndContext>
       </div>
     </div>
-    </DevModeGate>
+    </>
   );
 }
 
@@ -1433,10 +1072,12 @@ function SortablePageLink({
   page,
   active,
   onDelete,
+  basePath,
 }: {
   page: any;
   active: boolean;
   onDelete: () => void;
+  basePath: string;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: page.id });
@@ -1453,7 +1094,7 @@ function SortablePageLink({
   return (
     <div ref={setNodeRef} style={style}>
       <Link
-        href={`/pages/${page.id}/edit`}
+        href={`${basePath}/${page.id}/edit`}
         className={`group flex items-center gap-2 px-2 py-2.5 text-sm rounded-xl transition-colors ${
           active
             ? "bg-primary/10 text-primary font-medium"
@@ -1486,6 +1127,397 @@ function SortablePageLink({
           </button>
         )}
       </Link>
+    </div>
+  );
+}
+
+function PaletteItem({ block, preview, addBlock }: { block: any, preview: boolean, addBlock: any }) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: `palette-${block.type}`,
+    data: { type: "palette-item", blockType: block.type, label: block.label },
+    disabled: preview,
+  });
+
+  return (
+    <button
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      onClick={() => addBlock(block.type, block.label, block.icon)}
+      className={`group flex items-center gap-3 px-3.5 py-3 text-[13px] rounded-xl transition-all duration-200 whitespace-nowrap w-full shrink-0 font-medium ${!preview ? "cursor-grab active:cursor-grabbing" : ""} card-interactive ${isDragging ? "opacity-40" : ""}`}
+      style={{ background: "var(--card)", border: "1px solid var(--border-subtle)", color: "var(--foreground)" }}
+    >
+      <div className="p-1.5 rounded-md bg-secondary/80 group-hover:bg-primary/10 group-hover:text-primary transition-colors text-muted-foreground flex items-center justify-center">
+        {block.icon}
+      </div>
+      {block.label}
+      <Plus className="h-3.5 w-3.5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+    </button>
+  );
+}
+
+function SortableCanvasBlock({ 
+  block, preview, isResizing, selectedBlock, setSelectedBlock, 
+  startResize, removeBlock, workspace, getKanbanCards, addKanbanCard, setKanbanCards, kanbanDragCard
+}: any) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: block.id,
+    data: { type: "canvas-block", block },
+    disabled: preview || isResizing
+  });
+
+  const style = {
+    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    transition,
+    opacity: isDragging ? 0.3 : 1,
+    zIndex: isDragging ? 50 : 1,
+    background: "var(--card)",
+    borderColor: selectedBlock === block.id && !preview ? "var(--primary)" : "var(--border-subtle)",
+    boxShadow: selectedBlock === block.id && !preview ? "0 0 0 3px color-mix(in oklch, var(--primary), transparent 85%)" : undefined,
+    ...blockGridStyle(block.config),
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      data-block-id={block.id}
+      onClick={() => !preview && setSelectedBlock(block.id)}
+      className={`group relative rounded-2xl transition-all duration-200 border min-w-0 ${
+        selectedBlock === block.id && !preview
+          ? "shadow-md"
+          : "shadow-sm hover:shadow-md"
+      }`}
+      style={style}
+    >
+      {/* Full block drag handle area - behind content to allow interaction with inputs */}
+      {!preview && !isResizing && (
+        <div {...attributes} {...listeners} className="absolute inset-0 z-0 cursor-grab active:cursor-grabbing rounded-2xl" />
+      )}
+
+      {/* Resize handles */}
+      {!preview && selectedBlock === block.id && (
+        <>
+          {(["right", "left"] as const).map((side) => (
+            <div
+              key={side}
+              onPointerDown={(e) => startResize(e, block.id, side)}
+              onMouseDown={(e) => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
+              title={`Drag to resize width`}
+              className={`absolute top-1/2 -translate-y-1/2 ${side === "right" ? "-right-2" : "-left-2"} w-4 h-10 cursor-ew-resize z-30 flex items-center justify-center`}
+            >
+              <span
+                className="block w-3 h-3 rounded-full"
+                style={{
+                  background: "var(--primary)",
+                  border: "2px solid var(--background)",
+                  boxShadow: "0 1px 3px color-mix(in oklch, black, transparent 70%)",
+                }}
+              />
+            </div>
+          ))}
+          {(["bottom", "top"] as const).map((side) => (
+            <div
+              key={side}
+              onPointerDown={(e) => startResize(e, block.id, side)}
+              onMouseDown={(e) => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
+              title={`Drag to resize height`}
+              className={`absolute left-1/2 -translate-x-1/2 ${side === "bottom" ? "-bottom-2" : "-top-2"} w-10 h-4 cursor-ns-resize z-30 flex items-center justify-center`}
+            >
+              <span
+                className="block w-3 h-3 rounded-full"
+                style={{
+                  background: "var(--primary)",
+                  border: "2px solid var(--background)",
+                  boxShadow: "0 1px 3px color-mix(in oklch, black, transparent 70%)",
+                }}
+              />
+            </div>
+          ))}
+        </>
+      )}
+
+      {/* Block toolbar */}
+      {!preview && (
+        <div className="absolute -top-3 left-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20 pointer-events-auto">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-2 border border-border shadow-md backdrop-blur-sm">
+            <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing p-0.5 -ml-1 rounded hover:bg-secondary">
+              <GripVertical className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground" />
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground pr-2 border-r border-border/50">
+              {block.type.replace("_", " ")}
+            </span>
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                removeBlock(block.id);
+              }}
+              className="pl-1 text-muted-foreground hover:text-destructive transition-colors p-0.5 rounded-md"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Block content - z-10 so it sits above drag listener */}
+      <div className="p-6 relative z-10 pointer-events-auto w-full h-full max-w-full overflow-hidden flex flex-col min-w-0">
+        {block.type === "SPACE" && (
+          <div className={`w-full h-full min-h-[60px] ${!preview ? "border-2 border-dashed rounded-xl flex items-center justify-center bg-secondary/5" : ""}`}
+            style={{ borderColor: !preview ? "var(--border)" : "transparent" }}
+          >
+            {!preview && <span className="text-xs font-medium uppercase tracking-widest flex items-center gap-2" style={{ color: "var(--foreground-muted)" }}><LayoutTemplate className="h-3 w-3" /> Spacer</span>}
+          </div>
+        )}
+
+        {block.type === "TEXT" && (
+          <div className="space-y-1">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">
+              {block.label}
+            </h1>
+            <p className="text-base text-muted-foreground whitespace-pre-wrap">
+              {block.config?.description || "Enter a description..."}
+            </p>
+          </div>
+        )}
+
+        {block.type === "FILTER_BAR" && (
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex-1 relative group w-full">
+              <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+              <input
+                type="text"
+                placeholder={`Search ${block.label}...`}
+                className="w-full pl-10 pr-4 py-2 text-sm rounded-xl bg-secondary/30 border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground/60"
+                readOnly={!preview}
+              />
+            </div>
+            {block.config?.includeDateRange && (
+              <div className="flex items-center gap-2 shrink-0">
+                <div className="relative">
+                  <Calendar className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                  <input
+                    type="date"
+                    className="pl-8 pr-2 py-2 text-sm rounded-xl bg-secondary/30 border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20"
+                    readOnly={!preview}
+                  />
+                </div>
+                <span className="text-xs text-muted-foreground">to</span>
+                <div className="relative">
+                  <Calendar className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                  <input
+                    type="date"
+                    className="pl-8 pr-2 py-2 text-sm rounded-xl bg-secondary/30 border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20"
+                    readOnly={!preview}
+                  />
+                </div>
+              </div>
+            )}
+            <Button variant="outline" className="gap-2 shrink-0 h-10 rounded-xl bg-background border-border/60 hover:bg-secondary/50">
+              <Filter className="h-4 w-4" /> Filter
+            </Button>
+          </div>
+        )}
+
+        {block.type === "TABLE_VIEW" && (() => {
+          const tableRef = block.config?.tableRef;
+          const resolvedTable = workspace?.tables?.find((t: any) => t.name === tableRef);
+          if (!resolvedTable) {
+            return (
+              <div className="p-10 border-2 border-dashed border-border/40 rounded-xl flex flex-col items-center justify-center text-muted-foreground bg-secondary/20">
+                <Table2 className="h-8 w-8 mb-3 opacity-40" />
+                <p className="text-sm font-medium">No table connected.</p>
+                <p className="text-xs mt-1 opacity-70">Pick one in Configuration → Target Database Table.</p>
+              </div>
+            );
+          }
+          const visibleFields = block.config?.visibleFields ?? [];
+          return (
+            <TableView
+              config={{ tableRef, visibleFields }}
+              tableId={resolvedTable.id}
+            />
+          );
+        })()}
+
+        {block.type === "KANBAN_VIEW" && (() => {
+          const tableRef = block.config?.tableRef;
+          const resolvedTable = workspace?.tables?.find((t: any) => t.name === tableRef);
+          if (resolvedTable) {
+            return (
+              <KanbanView
+                config={{
+                  tableRef,
+                  groupByField: block.config?.groupByField,
+                }}
+                tableId={resolvedTable.id}
+              />
+            );
+          }
+          const cards = getKanbanCards(block.id);
+          return (
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-base font-semibold text-foreground">{block.label}</span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 text-xs gap-1 rounded-lg"
+                  onClick={(e) => { e.stopPropagation(); addKanbanCard(block.id, "To Do"); }}
+                >
+                  <Plus className="h-3 w-3" /> Add Card
+                </Button>
+              </div>
+              <div className="flex gap-3 overflow-x-auto pb-2">
+                {KANBAN_COLS.map((col) => {
+                  const colCards = cards.filter((c: any) => c.col === col);
+                  return (
+                    <div
+                      key={col}
+                      className="flex-1 min-w-[190px] rounded-xl p-3 bg-secondary/30 border border-border/30"
+                    >
+                      <div className="flex items-center justify-between mb-3 px-1">
+                        <h4 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{col}</h4>
+                        <span className="text-[10px] font-medium bg-background px-1.5 py-0.5 rounded text-muted-foreground border border-border/50">
+                          {colCards.length}
+                        </span>
+                      </div>
+                      <div className="space-y-2 min-h-[60px]">
+                        {colCards.map((card: any) => (
+                          <div
+                            key={card.id}
+                            className="rounded-lg p-3 text-sm bg-card border border-border/40 text-foreground shadow-sm hover:border-primary/30 hover:shadow-md transition-all group/card"
+                          >
+                            <p className="font-medium text-[13px] leading-snug">{card.title}</p>
+                            <div className="flex items-center justify-between mt-2">
+                              <Badge variant="secondary" className="text-[9px] h-4 px-1.5">{card.tag}</Badge>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setKanbanCards((prev: any) => ({
+                                    ...prev,
+                                    [block.id]: (prev[block.id] || []).filter((c: any) => c.id !== card.id)
+                                  }));
+                                }}
+                                className="opacity-0 group-hover/card:opacity-100 text-muted-foreground hover:text-destructive transition-all p-0.5 rounded"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); addKanbanCard(block.id, col); }}
+                        className="mt-2 w-full text-xs text-muted-foreground/60 hover:text-primary transition-colors py-1.5 rounded-lg hover:bg-primary/5 flex items-center justify-center gap-1"
+                      >
+                        <Plus className="h-3 w-3" /> Add
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
+
+        {block.type === "CHART" && (
+          <div className="h-64 rounded-xl flex flex-col items-center justify-center text-sm bg-secondary/20 border border-border/40 text-muted-foreground/80 relative overflow-hidden group/chart cursor-pointer">
+            <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent opacity-0 group-hover/chart:opacity-100 transition-opacity" />
+            <BarChart3 className="h-10 w-10 mb-3 opacity-50" /> 
+            <span className="font-medium">{block.label}</span>
+            <span className="text-xs mt-1 opacity-70">Requires data source connection</span>
+          </div>
+        )}
+
+        {block.type === "METRIC" && (() => {
+          const tableRef = block.config?.tableRef;
+          const resolvedTable = workspace?.tables?.find((t: any) => t.name === tableRef);
+          return (
+            <MetricCard
+              config={{ ...block.config, metricLabel: block.config?.metricLabel || block.label }}
+              tableId={resolvedTable?.id}
+            />
+          );
+        })()}
+
+        {block.type === "EXPORT_BUTTON" && (() => {
+          const tableRef = block.config?.tableRef;
+          const resolvedTable = workspace?.tables?.find((t: any) => t.name === tableRef);
+          return (
+            <ExportButton
+              config={block.config || {}}
+              tableId={resolvedTable?.id}
+            />
+          );
+        })()}
+
+        {block.type === "IMAGE" && (
+          <ImageBlock config={block.config || {}} />
+        )}
+
+        {block.type === "GST_CALCULATOR" && (
+          <GstCalculator config={block.config || {}} />
+        )}
+
+        {block.type === "FORM" && (
+          <div className="space-y-4 max-w-lg p-2">
+            <div className="space-y-1.5 mb-2">
+              <h3 className="text-lg font-bold text-foreground">{block.label || "New Entry Form"}</h3>
+              <p className="text-xs text-muted-foreground">Automatically generated from the selected table schema.</p>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {["Product Name", "SKU Number"].map((label) => (
+                <div key={label} className="space-y-1.5">
+                  <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">
+                    {label}
+                  </label>
+                  <input
+                    className="w-full text-sm px-3.5 py-2.5 rounded-xl bg-secondary/30 border border-border/60 text-foreground placeholder:text-muted-foreground/50 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                    readOnly={!preview}
+                    placeholder={`Enter ${label.toLowerCase()}...`}
+                  />
+                </div>
+              ))}
+            </div>
+            
+            <div className="pt-2 flex justify-end gap-2 border-t border-border/40 mt-6 pt-4">
+              <Button variant="ghost" className="h-9 rounded-lg">Cancel</Button>
+              <Button className="h-9 rounded-lg px-6 font-medium shadow-sm active:scale-95 transition-transform">
+                Submit Record
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function CanvasDropZone({ preview }: { preview: boolean }) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: "canvas-dropzone",
+    data: { type: "canvas-dropzone" }
+  });
+  
+  if (preview) return null;
+  
+  return (
+    <div
+      ref={setNodeRef}
+      className={`rounded-2xl p-10 text-center transition-all duration-300 border-2 border-dashed ${
+        isOver ? "border-primary bg-primary/10 text-primary scale-[1.02]" : "border-border/60 bg-transparent text-muted-foreground hover:border-primary/50 hover:bg-primary/5 hover:text-primary"
+      } cursor-pointer group col-span-full`}
+    >
+      <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 transition-colors ${
+        isOver ? "bg-primary/20" : "bg-secondary/80 group-hover:bg-primary/10"
+      }`}>
+        <Plus className="h-5 w-5 opacity-70" />
+      </div>
+      <p className="text-sm font-medium">Drag components here to add a new block</p>
+      <p className="text-xs opacity-60 mt-1">Supports Tables, Kanban, Forms and visual elements</p>
     </div>
   );
 }
