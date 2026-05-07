@@ -226,3 +226,28 @@ model GlobalSearchIndex {
 
   @@index([workspaceId])
 }
+
+model Quotation {
+  id          String   @id @default(cuid())
+  publicId    String   @unique @default(uuid())
+  quotationNo String
+  date        DateTime @default(now())
+  clientName  String?
+  totalAmount Int?
+  status      String   @default("pending") // pass, failed, pending, Active, Converted, Lost
+  data        Json
+  createdAt   DateTime @default(now())
+}
+
+model Estimate {
+  id          String   @id @default(cuid())
+  publicId    String   @unique @default(uuid())
+  billNo      String
+  billDate    DateTime @default(now())
+  clientName  String?
+  totalAmount Int?
+  paidAmount  Int      @default(0)
+  status      String   @default("pending")
+  data        Json
+  createdAt   DateTime @default(now())
+}

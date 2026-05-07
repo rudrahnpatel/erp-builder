@@ -40,6 +40,13 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
     { href: "/plugins", label: t("common.plugins"), icon: Puzzle },
   ];
 
+  if (workspace?.installedPacks?.includes("quotation")) {
+    coreItems.push(
+      { href: "/quotation", label: "Quotations", icon: FileText },
+      { href: "/estimated", label: "Estimates", icon: FileText }
+    );
+  }
+
   // Dev-only items — shown only in developer mode
   const devItems = [
     { href: "/dev/modules", label: "My Modules", icon: Package },

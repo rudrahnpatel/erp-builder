@@ -329,6 +329,111 @@ export default function WorkspacePage() {
         </div>
       </div>
 
+      {/* ── Installed Module Quick Access ── */}
+      {workspace.installedPacks?.includes("quotation") && (
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>
+              Quotations &amp; Invoicing
+            </h2>
+            <span
+              className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full"
+              style={{
+                background: "color-mix(in oklch, var(--success), transparent 85%)",
+                color: "var(--success)",
+                border: "1px solid color-mix(in oklch, var(--success), transparent 70%)",
+              }}
+            >
+              <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: "var(--success)" }} />
+              Installed
+            </span>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Link href="/quotation">
+              <div
+                className="group relative overflow-hidden rounded-xl p-6 transition-all duration-300 card-interactive cursor-pointer"
+                style={{ background: "var(--card)", border: "1px solid var(--border-subtle)" }}
+              >
+                <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: "var(--accent-blue)" }} />
+                <div className="flex items-start justify-between mb-4">
+                  <div
+                    className="h-12 w-12 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+                    style={{
+                      background: "color-mix(in oklch, var(--accent-blue), transparent 85%)",
+                      color: "var(--accent-blue)",
+                    }}
+                  >
+                    <FileText className="h-6 w-6" />
+                  </div>
+                  <ArrowUpRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-all duration-200" style={{ color: "var(--accent-blue)" }} />
+                </div>
+                <h3 className="text-base font-bold mb-1" style={{ color: "var(--foreground)" }}>Quotations</h3>
+                <p className="text-xs leading-relaxed" style={{ color: "var(--foreground-dimmed)" }}>
+                  Create and manage professional quotations &amp; proforma invoices with PDF export.
+                </p>
+                <div className="mt-4 flex gap-2" onClick={(e) => e.stopPropagation()}>
+                  <Link
+                    href="/quotation/create"
+                    className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all pressable"
+                    style={{ background: "linear-gradient(135deg, var(--primary), var(--primary-hover))", color: "var(--primary-foreground)" }}
+                  >
+                    + New Quotation
+                  </Link>
+                  <Link
+                    href="/quotation"
+                    className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all hover-bg-subtle"
+                    style={{ color: "var(--foreground-muted)", border: "1px solid var(--border-subtle)" }}
+                  >
+                    View All
+                  </Link>
+                </div>
+              </div>
+            </Link>
+
+            <Link href="/estimated">
+              <div
+                className="group relative overflow-hidden rounded-xl p-6 transition-all duration-300 card-interactive cursor-pointer"
+                style={{ background: "var(--card)", border: "1px solid var(--border-subtle)" }}
+              >
+                <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: "var(--accent-amber)" }} />
+                <div className="flex items-start justify-between mb-4">
+                  <div
+                    className="h-12 w-12 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+                    style={{
+                      background: "color-mix(in oklch, var(--accent-amber), transparent 85%)",
+                      color: "var(--accent-amber)",
+                    }}
+                  >
+                    <FileText className="h-6 w-6" />
+                  </div>
+                  <ArrowUpRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-all duration-200" style={{ color: "var(--accent-amber)" }} />
+                </div>
+                <h3 className="text-base font-bold mb-1" style={{ color: "var(--foreground)" }}>Estimates</h3>
+                <p className="text-xs leading-relaxed" style={{ color: "var(--foreground-dimmed)" }}>
+                  Generate detailed cost estimates and service bills with GST calculation support.
+                </p>
+                <div className="mt-4 flex gap-2" onClick={(e) => e.stopPropagation()}>
+                  <Link
+                    href="/estimated/create"
+                    className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all pressable"
+                    style={{ background: "linear-gradient(135deg, var(--accent-amber), color-mix(in oklch, var(--accent-amber), var(--primary) 30%))", color: "#fff" }}
+                  >
+                    + New Estimate
+                  </Link>
+                  <Link
+                    href="/estimated"
+                    className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all hover-bg-subtle"
+                    style={{ color: "var(--foreground-muted)", border: "1px solid var(--border-subtle)" }}
+                  >
+                    View All
+                  </Link>
+                </div>
+              </div>
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* ── Bottom Section: Activity + Module Topology ── */}
       <div className="grid gap-5 lg:grid-cols-5">
         {/* Activity Timeline */}

@@ -282,6 +282,23 @@ export default function TenantCustomPage({
                       </Button>
                     </div>
                   )}
+
+                  {block.type === "custom-route" && (
+                    <div className="p-10 border border-border/40 rounded-xl flex flex-col items-center justify-center bg-card text-center shadow-sm">
+                      <div className="h-16 w-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: "color-mix(in oklch, var(--primary), transparent 85%)", color: "var(--primary)" }}>
+                        <ArrowLeft className="h-8 w-8 rotate-135" />
+                      </div>
+                      <h3 className="text-xl font-bold text-foreground mb-2">{displayLabel}</h3>
+                      <p className="text-sm mb-6 max-w-sm text-muted-foreground">
+                        This is a fully custom module. Click below to open the dedicated interface.
+                      </p>
+                      <Link href={(block.config?.route as string) || "#"}>
+                        <Button className="h-11 px-8 rounded-xl font-bold pressable" style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
+                          Open {displayLabel}
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
                 </div>
               );
 

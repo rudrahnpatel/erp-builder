@@ -10,16 +10,23 @@ import { Input } from "@/components/ui/input";
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export function AttendanceLogBlock({ config }: { config?: any }) {
+  const [mounted, setMounted] = useState(false);
   const [employeeFilter, setEmployeeFilter] = useState("all");
   
-  const now = new Date();
-  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
-  
-  const [startDate, setStartDate] = useState(firstDay);
-  const [endDate, setEndDate] = useState(lastDay);
+  // Initialize with empty strings to match server, then set in useEffect
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const [mapModal, setMapModal] = useState<{ isOpen: boolean; lat?: number; lng?: number; type?: string } | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+    setStartDate(firstDay);
+    setEndDate(lastDay);
+  }, []);
 
   const { data, error, isLoading } = useSWR(
     `/api/attendance/records?startDate=${startDate}&endDate=${endDate}&employeeId=${employeeFilter}`,
@@ -134,15 +141,15 @@ export function AttendanceLogBlock({ config }: { config?: any }) {
               ) : (
                 data?.records?.map((record: any) => (
                   <tr key={record.id} className="hover:bg-muted/10 transition-colors group">
-                    <td className="px-6 py-4 font-semibold text-foreground">{new Date(record.date).toLocaleDateString("en-IN", { day: '2-digit', month: 'short' })}</td>
+                    <td className="px-6 py-4 font-semibold text-foreground" suppressHydrationWarning>{mounted ? new Date(record.date).toLocaleDateString("en-IN", { day: '2-digit', month: 'short' }) : "—"}</td>
                     <td className="px-6 py-4 font-medium text-foreground">{record.employeeName}</td>
                     <td className="px-6 py-4 text-center">
                       <Badge variant={record.status === "Working" ? "secondary" : record.status === "Completed" ? "default" : "destructive"} className="rounded-md font-bold text-[10px] px-2 py-0.5 shadow-sm">
                         {record.status}
                       </Badge>
                     </td>
-                    <td className="px-6 py-4 text-foreground/80 font-medium">{record.checkInTime ? new Date(record.checkInTime).toLocaleTimeString("en-IN", {hour: '2-digit', minute:'2-digit', hour12: true}) : "—"}</td>
-                    <td className="px-6 py-4 text-foreground/80 font-medium">{record.checkOutTime ? new Date(record.checkOutTime).toLocaleTimeString("en-IN", {hour: '2-digit', minute:'2-digit', hour12: true}) : "—"}</td>
+                    <td className="px-6 py-4 text-foreground/80 font-medium" suppressHydrationWarning>{mounted && record.checkInTime ? new Date(record.checkInTime).toLocaleTimeString("en-IN", {hour: '2-digit', minute:'2-digit', hour12: true}) : "—"}</td>
+                    <td className="px-6 py-4 text-foreground/80 font-medium" suppressHydrationWarning>{mounted && record.checkOutTime ? new Date(record.checkOutTime).toLocaleTimeString("en-IN", {hour: '2-digit', minute:'2-digit', hour12: true}) : "—"}</td>
                     <td className="px-6 py-4 font-bold text-foreground/70">{record.durationMinutes ? `${Math.floor(record.durationMinutes / 60)}h ${record.durationMinutes % 60}m` : "—"}</td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex gap-1 justify-end">

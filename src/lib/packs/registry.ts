@@ -1068,3 +1068,78 @@ export const financePack: PackDefinition = {
     },
   ],
 };
+
+export const quotationPack: PackDefinition = {
+  id: "quotation",
+  name: "Quotations & Invoicing",
+  description:
+    "Create, manage, and share professional quotations and estimates. Features drag-and-drop item reordering and PDF generation.",
+  icon: "briefcase",
+  category: "Finance",
+  badge: "Free",
+  version: "1.0.1",
+  tables: [
+    {
+      name: "Quotations",
+      icon: "file-text",
+      fields: [
+        { name: "Quotation No",   type: "TEXT",   required: true  },
+        { name: "Client Name",    type: "TEXT",   required: true  },
+        { name: "Date",           type: "DATE",   required: true  },
+        { name: "Valid Till",     type: "DATE",   required: false },
+        { name: "Total Amount",   type: "NUMBER", required: true  },
+        { name: "Status",         type: "SINGLE_SELECT", required: false, config: { options: ["draft","sent","accepted","rejected"] } },
+        { name: "Public Share ID",type: "TEXT",          required: false },
+        { name: "Line Items",     type: "TEXT",          required: false },
+      ],
+    },
+    {
+      name: "Estimates",
+      icon: "calculator",
+      fields: [
+        { name: "Bill No",        type: "TEXT",   required: true  },
+        { name: "Bill Date",      type: "DATE",   required: true  },
+        { name: "Client Name",    type: "TEXT",   required: true  },
+        { name: "Total Amount",   type: "NUMBER", required: true  },
+        { name: "Paid Amount",    type: "NUMBER", required: false },
+        { name: "Balance Due",    type: "NUMBER", required: false },
+        { name: "Status",         type: "SINGLE_SELECT", required: false, config: { options: ["pending","partial","paid"] } },
+        { name: "Line Items",     type: "TEXT",          required: false },
+      ],
+    },
+  ],
+  pageDefinitions: [
+    {
+      key: "quotation_list",
+      title: "Quotations",
+      icon: "file-text",
+      blocks: [
+        { type: "custom-route", config: { route: "/quotation", label: "Quotations List" } },
+      ],
+    },
+    {
+      key: "quotation_create",
+      title: "New Quotation",
+      icon: "plus-circle",
+      blocks: [
+        { type: "custom-route", config: { route: "/quotation/create", label: "Create Quotation" } },
+      ],
+    },
+    {
+      key: "estimate_list",
+      title: "Estimates",
+      icon: "calculator",
+      blocks: [
+        { type: "custom-route", config: { route: "/estimated", label: "Estimates List" } },
+      ],
+    },
+    {
+      key: "estimate_create",
+      title: "New Estimate",
+      icon: "plus-circle",
+      blocks: [
+        { type: "custom-route", config: { route: "/estimated/create", label: "Create Estimate" } },
+      ],
+    },
+  ],
+};
