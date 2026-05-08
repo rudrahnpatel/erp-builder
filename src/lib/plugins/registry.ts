@@ -114,6 +114,111 @@ export const razorpayPlugin: PluginDefinition = {
   ],
 };
 
+export const pdfPlugin: PluginDefinition = {
+  id: "pdf-invoice-generator",
+  name: "PDF Invoice Generator",
+  description: "Generate professional PDF invoices with jsPDF / react-pdf.",
+  icon: "file-text",
+  category: "Finance",
+  badge: "Free",
+  installs: 4500,
+  configFields: [
+    { name: "Company Name", type: "TEXT", placeholder: "Your Company Ltd." },
+    { name: "GSTIN", type: "TEXT", placeholder: "22AAAAA0000A1Z5" },
+    { name: "Logo URL", type: "TEXT", placeholder: "https://..." },
+    { name: "Bank Details", type: "TEXT", placeholder: "A/C Number, IFSC, etc." },
+  ],
+  triggers: [
+    { event: "manual", table: "Invoices", action: "Generate PDF" },
+  ],
+};
+
+export const upiPlugin: PluginDefinition = {
+  id: "upi-payment-link",
+  name: "UPI Payment Link",
+  description: "Generate UPI deeplinks and QR codes for instant payments.",
+  icon: "smartphone",
+  category: "Finance",
+  badge: "Free",
+  installs: 8200,
+  configFields: [
+    { name: "UPI ID", type: "TEXT", placeholder: "merchant@upi" },
+    { name: "Merchant Name", type: "TEXT", placeholder: "Merchant Name" },
+  ],
+  triggers: [
+    { event: "manual", table: "Invoices", action: "Generate Payment Link/QR" },
+  ],
+};
+
+export const googleSheetsPlugin: PluginDefinition = {
+  id: "google-sheets-sync",
+  name: "Google Sheets Sync",
+  description: "Two-way data sync between ERP and Google Sheets.",
+  icon: "table",
+  category: "Operations",
+  badge: "Pro",
+  installs: 2100,
+  configFields: [
+    { name: "Spreadsheet ID", type: "TEXT", placeholder: "1BxiMVs0XRY..." },
+    { name: "Service Account JSON", type: "TEXT", placeholder: "{...}" },
+  ],
+  triggers: [
+    { event: "record.created", table: "Any", action: "Sync to Sheets" },
+    { event: "cron.daily", table: "Any", action: "Daily Sync" },
+  ],
+};
+
+export const tallyPlugin: PluginDefinition = {
+  id: "tally-export",
+  name: "Tally Export",
+  description: "Export invoices and expenses to Tally-compatible XML.",
+  icon: "database",
+  category: "Finance",
+  badge: "Pro",
+  installs: 3400,
+  configFields: [
+    { name: "Tally Company Name", type: "TEXT", placeholder: "Acme Corp" },
+  ],
+  triggers: [
+    { event: "manual", table: "Invoices/Expenses", action: "Export XML" },
+  ],
+};
+
+export const ewayBillPlugin: PluginDefinition = {
+  id: "eway-bill",
+  name: "E-Way Bill Generation",
+  description: "Automatically generate E-Way Bills via NIC API.",
+  icon: "truck",
+  category: "Logistics",
+  badge: "Pro",
+  installs: 1800,
+  configFields: [
+    { name: "GST Username", type: "TEXT", placeholder: "Enter GST username" },
+    { name: "GST Password", type: "TEXT", placeholder: "Enter GST password" },
+    { name: "NIC API Key", type: "TEXT", placeholder: "Enter NIC API key" },
+  ],
+  triggers: [
+    { event: "record.created", table: "Stock Movements", action: "Generate E-Way Bill" },
+  ],
+};
+
+export const msg91Plugin: PluginDefinition = {
+  id: "sms-msg91",
+  name: "SMS via MSG91",
+  description: "Send transactional SMS notifications using MSG91.",
+  icon: "message-square",
+  category: "Communication",
+  badge: "Pro",
+  installs: 2900,
+  configFields: [
+    { name: "MSG91 API Key", type: "TEXT", placeholder: "Enter API Key" },
+    { name: "Sender ID", type: "TEXT", placeholder: "6-character Sender ID" },
+  ],
+  triggers: [
+    { event: "record.created", table: "Any", action: "Send SMS" },
+  ],
+};
+
 export const allPlugins: PluginDefinition[] = [
   whatsappPlugin,
   attendancePlugin,
@@ -121,4 +226,10 @@ export const allPlugins: PluginDefinition[] = [
   emailPlugin,
   leavePlugin,
   razorpayPlugin,
+  pdfPlugin,
+  upiPlugin,
+  googleSheetsPlugin,
+  tallyPlugin,
+  ewayBillPlugin,
+  msg91Plugin,
 ];

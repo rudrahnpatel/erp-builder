@@ -34,12 +34,8 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
     { href: "/workspace", label: t("common.dashboard"), icon: LayoutDashboard },
   ];
 
-  if (workspace?.installedPacks?.includes("quotation")) {
-    dashboardItems.push(
-      { href: "/quotation", label: "Quotations", icon: FileText },
-      { href: "/estimated", label: "Estimates", icon: FileText }
-    );
-  }
+
+
 
   // Core nav — categorized
   const navSections = [

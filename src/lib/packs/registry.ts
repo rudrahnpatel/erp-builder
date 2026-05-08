@@ -1143,3 +1143,146 @@ export const quotationPack: PackDefinition = {
     },
   ],
 };
+
+export const supportPack: PackDefinition = {
+  id: "support-helpdesk",
+  name: "Helpdesk & CS",
+  description:
+    "Manage customer tickets, SLAs, and knowledge base. Perfect for professional support teams.",
+  icon: "life-buoy",
+  category: "Support",
+  badge: "Free",
+  version: "1.0.0",
+  tables: [
+    {
+      name: "Tickets",
+      icon: "ticket",
+      fields: [
+        { name: "Subject", type: "TEXT", required: true },
+        {
+          name: "Status",
+          type: "SINGLE_SELECT",
+          config: { options: ["Open", "Pending", "Resolved", "Closed"] },
+        },
+        {
+          name: "Priority",
+          type: "SINGLE_SELECT",
+          config: { options: ["Low", "Medium", "High", "Urgent"] },
+        },
+        {
+          name: "Customer",
+          type: "RELATION",
+          config: { linkedTable: "Customers" },
+        },
+        { name: "Assignee", type: "TEXT" },
+        { name: "Description", type: "TEXT" },
+      ],
+      seedData: [
+        {
+          Subject: "Cannot login to portal",
+          Status: "Open",
+          Priority: "High",
+          Assignee: "Rahul",
+        },
+        {
+          Subject: "Invoice correction needed",
+          Status: "Resolved",
+          Priority: "Medium",
+          Assignee: "Sneha",
+        },
+      ],
+    },
+    {
+      name: "KnowledgeBase",
+      icon: "book",
+      fields: [
+        { name: "Title", type: "TEXT", required: true },
+        {
+          name: "Category",
+          type: "SINGLE_SELECT",
+          config: { options: ["General", "Technical", "Billing"] },
+        },
+        { name: "Content", type: "TEXT" },
+        {
+          name: "Status",
+          type: "SINGLE_SELECT",
+          config: { options: ["Draft", "Published"] },
+        },
+      ],
+      seedData: [
+        { Title: "How to reset password", Category: "General", Status: "Published" },
+      ],
+    },
+  ],
+  pageDefinitions: [
+    {
+      key: "ticket_board",
+      title: "Ticket Board",
+      icon: "kanban",
+      blocks: [
+        {
+          type: "TEXT",
+          config: {
+            content: "Ticket Board",
+            level: "h1",
+            description: "Drag and drop customer support tickets across stages.",
+          },
+        },
+        {
+          type: "KANBAN_VIEW",
+          config: {
+            tableRef: "Tickets",
+            groupByField: "Status",
+          },
+        },
+      ],
+    },
+    {
+      key: "ticket_list",
+      title: "All Tickets",
+      icon: "ticket",
+      blocks: [
+        {
+          type: "TEXT",
+          config: {
+            content: "All Tickets",
+            level: "h1",
+            description: "A complete list of all customer support tickets.",
+          },
+        },
+        { type: "FILTER_BAR", config: { tableRef: "Tickets" } },
+        {
+          type: "TABLE_VIEW",
+          config: {
+            tableRef: "Tickets",
+            visibleFields: ["Subject", "Status", "Priority", "Customer", "Assignee"],
+          },
+        },
+      ],
+    },
+    {
+      key: "kb_list",
+      title: "Knowledge Base",
+      icon: "book",
+      blocks: [
+        {
+          type: "TEXT",
+          config: {
+            content: "Knowledge Base",
+            level: "h1",
+            description: "Manage FAQs and support articles.",
+          },
+        },
+        { type: "FILTER_BAR", config: { tableRef: "KnowledgeBase" } },
+        {
+          type: "TABLE_VIEW",
+          config: {
+            tableRef: "KnowledgeBase",
+            visibleFields: ["Title", "Category", "Status"],
+          },
+        },
+      ],
+    },
+  ],
+};
+
