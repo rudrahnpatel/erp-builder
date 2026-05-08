@@ -34,13 +34,18 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       className="flex h-[100dvh] w-full overflow-hidden"
       style={{ background: "var(--background)" }}
     >
-      {/* Noise overlay — breaks digital flatness */}
+      {/* Noise overlay */}
       <div className="noise-overlay" aria-hidden="true" />
 
-      {/* Overlay */}
+      {/* ── Desktop Sidebar — always visible on md+ ── */}
+      <div className="hidden md:flex shrink-0">
+        <Sidebar />
+      </div>
+
+      {/* ── Mobile Sidebar — overlay drawer ── */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 transition-opacity duration-300"
+          className="fixed inset-0 z-40 md:hidden"
           style={{
             background: "oklch(0.08 0.020 260 / 0.55)",
             backdropFilter: "blur(6px)",
@@ -49,17 +54,16 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           aria-hidden="true"
         />
       )}
-
-      {/* Sidebar — hidden by default, slide-in on toggle */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-[var(--ease-out-expo)] ${
+        className={`fixed inset-y-0 left-0 z-50 md:hidden transform transition-transform duration-300 ease-[var(--ease-out-expo)] ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <Sidebar onClose={() => setSidebarOpen(false)} />
       </div>
 
-      <div className="flex flex-col flex-1 overflow-hidden">
+      {/* ── Main content ── */}
+      <div className="flex flex-col flex-1 overflow-hidden min-w-0">
         <Topbar onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
         <main
           id="main-content"

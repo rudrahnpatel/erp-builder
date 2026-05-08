@@ -41,10 +41,10 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
       }}
     >
       <div className="flex items-center gap-3 flex-1">
-        {/* Hamburger menu */}
+        {/* Hamburger menu — mobile only */}
         <button
           onClick={onMenuToggle}
-          className="p-1.5 rounded-md hover-bg-subtle focus-ring"
+          className="p-1.5 rounded-md hover-bg-subtle focus-ring md:hidden"
           style={{ color: "var(--foreground-muted)" }}
         >
           <Menu className="h-5 w-5" />

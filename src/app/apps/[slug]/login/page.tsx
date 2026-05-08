@@ -20,9 +20,7 @@ export default function TenantLoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Restore the remembered username for this tenant on first paint. We never
-  // persist the password — only the identifier the user explicitly opted to
-  // save.
+
   useEffect(() => {
     if (typeof window === "undefined" || !slug) return;
     const saved = window.localStorage.getItem(REMEMBERED_USERNAME_KEY(slug));

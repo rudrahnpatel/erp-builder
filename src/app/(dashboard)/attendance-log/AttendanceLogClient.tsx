@@ -10,16 +10,22 @@ import { Input } from "@/components/ui/input";
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function AttendanceLogClient() {
+  const [mounted, setMounted] = useState(false);
   const [employeeFilter, setEmployeeFilter] = useState("all");
   
-  const now = new Date();
-  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
-  
-  const [startDate, setStartDate] = useState(firstDay);
-  const [endDate, setEndDate] = useState(lastDay);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const [mapModal, setMapModal] = useState<{ isOpen: boolean; lat?: number; lng?: number; type?: string } | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+    setStartDate(firstDay);
+    setEndDate(lastDay);
+  }, []);
 
   const { data, error, isLoading } = useSWR(
     `/api/attendance/records?startDate=${startDate}&endDate=${endDate}&employeeId=${employeeFilter}`,
@@ -143,15 +149,15 @@ export default function AttendanceLogClient() {
               ) : (
                 data?.records?.map((record: any) => (
                   <tr key={record.id} className="table-row-hover transition-colors">
-                    <td className="px-6 py-4 font-semibold" style={{ color: "var(--foreground)" }}>{new Date(record.date).toLocaleDateString()}</td>
+                    <td className="px-6 py-4 font-semibold" style={{ color: "var(--foreground)" }} suppressHydrationWarning>{mounted ? new Date(record.date).toLocaleDateString() : "—"}</td>
                     <td className="px-6 py-4 font-semibold" style={{ color: "var(--foreground)" }}>{record.employeeName}</td>
                     <td className="px-6 py-4">
                       <Badge variant={record.status === "Working" ? "secondary" : record.status === "Completed" ? "default" : "destructive"}>
                         {record.status}
                       </Badge>
                     </td>
-                    <td className="px-6 py-4" style={{ color: "var(--foreground-muted)" }}>{record.checkInTime ? new Date(record.checkInTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "—"}</td>
-                    <td className="px-6 py-4" style={{ color: "var(--foreground-muted)" }}>{record.checkOutTime ? new Date(record.checkOutTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "—"}</td>
+                    <td className="px-6 py-4" style={{ color: "var(--foreground-muted)" }} suppressHydrationWarning>{mounted && record.checkInTime ? new Date(record.checkInTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "—"}</td>
+                    <td className="px-6 py-4" style={{ color: "var(--foreground-muted)" }} suppressHydrationWarning>{mounted && record.checkOutTime ? new Date(record.checkOutTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "—"}</td>
                     <td className="px-6 py-4 font-mono font-bold" style={{ color: "var(--foreground)" }}>{record.durationMinutes ? `${Math.floor(record.durationMinutes / 60)}h ${record.durationMinutes % 60}m` : "—"}</td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
