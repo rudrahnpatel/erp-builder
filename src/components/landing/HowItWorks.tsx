@@ -16,7 +16,8 @@ import {
   FileText,
   Shield,
   Zap,
-  Users,
+  Smartphone,
+  Table,
 } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -140,8 +141,8 @@ function MarketplaceVisual() {
     { name: "Inventory", icon: Database, color: "--accent-blue", installed: true },
     { name: "HR & Payroll", icon: Users, color: "--accent-emerald", installed: true },
     { name: "Finance & GST", icon: Shield, color: "--accent-amber", installed: false },
-    { name: "CRM & Sales", icon: Puzzle, color: "--accent-violet", installed: false },
-    { name: "Page Builder", icon: FileText, color: "--accent-cyan", installed: true },
+    { name: "UPI Payments", icon: Smartphone, color: "--accent-violet", installed: false },
+    { name: "Google Sheets", icon: Table, color: "--accent-cyan", installed: true },
     { name: "Automation", icon: Zap, color: "--accent-rose", installed: false },
   ];
 
