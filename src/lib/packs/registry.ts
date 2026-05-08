@@ -1216,16 +1216,72 @@ export const supportPack: PackDefinition = {
   ],
   pageDefinitions: [
     {
+      key: "ticket_board",
+      title: "Ticket Board",
+      icon: "kanban",
+      blocks: [
+        {
+          type: "TEXT",
+          config: {
+            content: "Ticket Board",
+            level: "h1",
+            description: "Drag and drop customer support tickets across stages.",
+          },
+        },
+        {
+          type: "KANBAN_VIEW",
+          config: {
+            tableRef: "Tickets",
+            groupByField: "Status",
+          },
+        },
+      ],
+    },
+    {
       key: "ticket_list",
-      title: "Support Tickets",
+      title: "All Tickets",
       icon: "ticket",
-      blocks: [{ type: "table", config: { tableName: "Tickets" } }],
+      blocks: [
+        {
+          type: "TEXT",
+          config: {
+            content: "All Tickets",
+            level: "h1",
+            description: "A complete list of all customer support tickets.",
+          },
+        },
+        { type: "FILTER_BAR", config: { tableRef: "Tickets" } },
+        {
+          type: "TABLE_VIEW",
+          config: {
+            tableRef: "Tickets",
+            visibleFields: ["Subject", "Status", "Priority", "Customer", "Assignee"],
+          },
+        },
+      ],
     },
     {
       key: "kb_list",
       title: "Knowledge Base",
       icon: "book",
-      blocks: [{ type: "table", config: { tableName: "KnowledgeBase" } }],
+      blocks: [
+        {
+          type: "TEXT",
+          config: {
+            content: "Knowledge Base",
+            level: "h1",
+            description: "Manage FAQs and support articles.",
+          },
+        },
+        { type: "FILTER_BAR", config: { tableRef: "KnowledgeBase" } },
+        {
+          type: "TABLE_VIEW",
+          config: {
+            tableRef: "KnowledgeBase",
+            visibleFields: ["Title", "Category", "Status"],
+          },
+        },
+      ],
     },
   ],
 };
