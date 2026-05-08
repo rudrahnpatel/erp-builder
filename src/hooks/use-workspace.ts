@@ -4,6 +4,7 @@ export type WorkspaceData = {
   id: string;
   name: string;
   slug: string;
+  settings?: any;
   stats: {
     tables: number;
     totalRecords: number;

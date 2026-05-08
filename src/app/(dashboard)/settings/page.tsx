@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { toast } from "sonner";
 import { AlertTriangle, Loader2, Trash2, Code2, ShieldCheck, Eye, EyeOff, Terminal } from "lucide-react";
@@ -32,6 +32,45 @@ export default function SettingsPage() {
   const [devPassword, setDevPassword] = useState("");
   const [showDevPassword, setShowDevPassword] = useState(false);
   const [devActivating, setDevActivating] = useState(false);
+
+  // Company Profile
+  const [companyProfile, setCompanyProfile] = useState({
+    name: "",
+    tagline: "",
+    logo: "",
+    address: "",
+    phone: "",
+    email: "",
+    website: "",
+    pan: "",
+  });
+  const [savingProfile, setSavingProfile] = useState(false);
+
+  useEffect(() => {
+    if (workspace?.settings?.companyProfile) {
+      setCompanyProfile(workspace.settings.companyProfile);
+    }
+  }, [workspace]);
+
+  async function saveCompanyProfile() {
+    setSavingProfile(true);
+    const pending = toast.loading("Saving company profile...");
+    try {
+      const currentSettings = workspace?.settings || {};
+      const res = await fetch("/api/workspace/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...currentSettings, companyProfile }),
+      });
+      if (!res.ok) throw new Error("Failed to save");
+      toast.success("Company profile saved!", { id: pending });
+      refetch();
+    } catch (e: any) {
+      toast.error(e.message || "Network error.", { id: pending });
+    } finally {
+      setSavingProfile(false);
+    }
+  }
 
   const canDelete = confirmText === "DELETE" && password.length > 0 && !deleting;
 
@@ -112,6 +151,70 @@ export default function SettingsPage() {
               refetch();
             }}
           />
+        </section>
+      )}
+
+      {/* Company Profile Section */}
+      {workspace && (
+        <section
+          className="rounded-xl border p-5"
+          style={{
+            background: "var(--surface-1)",
+            borderColor: "var(--border-subtle)",
+          }}
+        >
+          <h2 className="text-sm font-medium mb-1">Company Profile</h2>
+          <p
+            className="text-xs mb-4"
+            style={{ color: "var(--foreground-dimmed)" }}
+          >
+            These details will be used as the default sender information on all your quotations, estimates, and invoices.
+          </p>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              saveCompanyProfile();
+            }}
+            className="space-y-4 max-w-lg"
+          >
+            <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium" style={{ color: "var(--foreground-muted)" }}>Company Name</label>
+                  <Input value={companyProfile.name} onChange={(e) => setCompanyProfile({ ...companyProfile, name: e.target.value })} placeholder="e.g. Acme Corp" className="h-9" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium" style={{ color: "var(--foreground-muted)" }}>Tagline</label>
+                  <Input value={companyProfile.tagline} onChange={(e) => setCompanyProfile({ ...companyProfile, tagline: e.target.value })} placeholder="e.g. We build things" className="h-9" />
+                </div>
+                <div className="space-y-1.5 col-span-2">
+                  <label className="text-xs font-medium" style={{ color: "var(--foreground-muted)" }}>Logo URL</label>
+                  <Input value={companyProfile.logo} onChange={(e) => setCompanyProfile({ ...companyProfile, logo: e.target.value })} placeholder="https://example.com/logo.png" className="h-9" />
+                </div>
+                <div className="space-y-1.5 col-span-2">
+                  <label className="text-xs font-medium" style={{ color: "var(--foreground-muted)" }}>Address</label>
+                  <Input value={companyProfile.address} onChange={(e) => setCompanyProfile({ ...companyProfile, address: e.target.value })} placeholder="123 Main St, City, Country" className="h-9" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium" style={{ color: "var(--foreground-muted)" }}>Phone</label>
+                  <Input value={companyProfile.phone} onChange={(e) => setCompanyProfile({ ...companyProfile, phone: e.target.value })} placeholder="+1 234 567 890" className="h-9" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium" style={{ color: "var(--foreground-muted)" }}>Email</label>
+                  <Input type="email" value={companyProfile.email} onChange={(e) => setCompanyProfile({ ...companyProfile, email: e.target.value })} placeholder="contact@acme.com" className="h-9" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium" style={{ color: "var(--foreground-muted)" }}>Website</label>
+                  <Input value={companyProfile.website} onChange={(e) => setCompanyProfile({ ...companyProfile, website: e.target.value })} placeholder="https://acme.com" className="h-9" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium" style={{ color: "var(--foreground-muted)" }}>Tax ID / PAN / GST</label>
+                  <Input value={companyProfile.pan} onChange={(e) => setCompanyProfile({ ...companyProfile, pan: e.target.value })} placeholder="ABCDE1234F" className="h-9" />
+                </div>
+            </div>
+            <Button type="submit" size="sm" disabled={savingProfile} className="mt-2">
+              {savingProfile ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Saving...</> : "Save Company Profile"}
+            </Button>
+          </form>
         </section>
       )}
 

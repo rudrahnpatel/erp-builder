@@ -61,7 +61,7 @@ export function DashboardPreview() {
                 className="font-semibold text-[11px]"
                 style={{ color: "var(--foreground)" }}
               >
-                The Ledger
+                Mosaic
               </span>
               <ChevronDown
                 className="h-2.5 w-2.5"

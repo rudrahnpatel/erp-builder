@@ -34,6 +34,7 @@ interface EstimateData {
   items?: EstimateItem[];
   paymentInstructions?: string;
   terms?: string;
+  sender?: { name?: string; address?: string; phone?: string; email?: string; pan?: string; logo?: string; tagline?: string; website?: string };
 }
 
 const EstimatedPreview = ({ data, showGst }: { data: EstimateData; showGst: boolean }) => {
@@ -45,6 +46,7 @@ const EstimatedPreview = ({ data, showGst }: { data: EstimateData; showGst: bool
     items: data?.items || [],
     paymentInstructions: data?.paymentInstructions || '',
     terms: data?.terms || '',
+    sender: data?.sender || {},
   };
 
   const calculateRowTotal = (qty: number, rate: number, gst: number) => {
@@ -73,24 +75,24 @@ const EstimatedPreview = ({ data, showGst }: { data: EstimateData; showGst: bool
 
       <div className="flex justify-between items-start mb-8">
         <div className="text-sm space-y-1">
-           <h2 className="text-xl font-bold mb-1">Champion Security System</h2>
-           <p>Office No- 21A, Gr Floor, New Apollo Estate</p>
-           <p>Mogra Lane, Andheri East, Mumbai, Maharashtra 400069</p>
-           <p>Trademark No- 5290052</p>
-           <p>Mobile: 8080808109---8080808288</p>
-           <p>Email: info@championsecuritysystem.com</p>
-           <p>https://championsecuritysystem.com/</p>
-           <p>GSTIN: 27AHXPD7350C1Z8</p>
+           <h2 className="text-xl font-bold mb-1">{safeData.sender.name || 'Company Name'}</h2>
+           {safeData.sender.address && <p>{safeData.sender.address}</p>}
+           {safeData.sender.phone && <p>Mobile: {safeData.sender.phone}</p>}
+           {safeData.sender.email && <p>Email: {safeData.sender.email}</p>}
+           {safeData.sender.website && <p>{safeData.sender.website}</p>}
+           {safeData.sender.pan && <p>PAN: {safeData.sender.pan}</p>}
         </div>
         <div>
-            {/* Logo placeholder - using the same logo url as other pages if available */}
-             <div className="w-24 h-24 relative">
-                <img 
-                    src="https://championsecuritysystem.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Flogo.e3798401.png&w=384&q=75" 
-                    alt="Logo" 
-                    className="object-contain w-full h-full"
-                />
-            </div>
+            {/* Logo placeholder */}
+             {safeData.sender.logo && (
+                 <div className="w-24 h-24 relative">
+                    <img 
+                        src={safeData.sender.logo} 
+                        alt="Logo" 
+                        className="object-contain w-full h-full"
+                    />
+                </div>
+             )}
         </div>
       </div>
 
@@ -151,7 +153,7 @@ const EstimatedPreview = ({ data, showGst }: { data: EstimateData; showGst: bool
              <div className="mb-6">
                  <h4 className="font-bold mb-2">Payment Instructions</h4>
                  <div className="whitespace-pre-wrap text-sm text-gray-700">
-                     {safeData.paymentInstructions || 'Pay Cheque to\nChampion security system'}
+                     {safeData.paymentInstructions || 'Payment Instructions go here.'}
                  </div>
              </div>
 
@@ -206,12 +208,8 @@ const EstimatedPreview = ({ data, showGst }: { data: EstimateData; showGst: bool
           </div>
           
           <div className="text-center">
-              {/* Signature Image Placeholder */}
-              <div className="mb-2 flex justify-center">
-                  {/* Replace with actual signature if available, or keep generic */}
-                  <img src="https://championsecuritysystem.com/signature.png" alt="Signature" className="h-16 object-contain opacity-80" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}/> 
-              </div>
               <p className="font-bold text-sm">Authorized Signatory</p>
+              <p className="text-xs">{safeData.sender.name}</p>
           </div>
       </div>
 

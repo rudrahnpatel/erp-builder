@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import RichTextEditor from './RichTextEditor';
 import {
   DndContext, 
@@ -87,7 +88,8 @@ interface QuotationData {
   showMake?: boolean;
   poDate?: string;
   poNo?: string;
-  sender: { name: string; address: string; phone: string; email: string; pan?: string; signatory?: string };
+  template?: string;
+  sender: { name: string; address: string; phone: string; email: string; pan?: string; signatory?: string; logo?: string; tagline?: string; website?: string; };
   receiver: { name: string; company: string; address: string; phone: string; gst?: string };
   items: QuotationItem[];
   terms: string;
@@ -104,9 +106,45 @@ interface QuotationFormProps {
   isEditMode: boolean;
   onShare: () => void;
   onReorderItems: (items: QuotationItem[]) => void;
+  onTemplateChange?: (template: string) => void;
 }
 
-const QuotationForm = ({ data, onChange, onAddItem, onRemoveItem, onItemChange, onSave, isSaving, isEditMode, onShare, onReorderItems }: QuotationFormProps) => {
+const QuotationForm = ({ data, onChange, onAddItem, onRemoveItem, onItemChange, onSave, isSaving, isEditMode, onShare, onReorderItems, onTemplateChange }: QuotationFormProps) => {
+
+  const [savingDefault, setSavingDefault] = useState(false);
+
+  const saveAsDefault = async () => {
+    setSavingDefault(true);
+    const pending = toast.loading('Saving as default…');
+    try {
+      // Fetch current settings first to merge
+      const wsRes = await fetch('/api/workspace');
+      const ws = await wsRes.json();
+      const currentSettings = ws?.settings || {};
+      const companyProfile = {
+        ...(currentSettings.companyProfile || {}),
+        name: data.sender.name || '',
+        address: data.sender.address || '',
+        phone: data.sender.phone || '',
+        email: data.sender.email || '',
+        pan: data.sender.pan || '',
+        logo: data.sender.logo || '',
+        tagline: data.sender.tagline || '',
+        website: data.sender.website || '',
+      };
+      const res = await fetch('/api/workspace/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...currentSettings, companyProfile }),
+      });
+      if (!res.ok) throw new Error('Failed');
+      toast.success('Saved as default! Future documents will use these details.', { id: pending });
+    } catch {
+      toast.error('Could not save default.', { id: pending });
+    } finally {
+      setSavingDefault(false);
+    }
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -206,6 +244,33 @@ const QuotationForm = ({ data, onChange, onAddItem, onRemoveItem, onItemChange, 
            </div>
        )}
 
+      {/* Template Selector */}
+      {onTemplateChange && (
+        <div className="mb-6">
+          <label className="block text-xs font-medium text-gray-500 mb-2">Document Template</label>
+          <div className="flex gap-2">
+            {[
+              { id: 'classic', label: '📄 Classic', desc: 'Traditional layout with full branding' },
+              { id: 'modern', label: '✨ Modern', desc: 'Accent colors, rounded elements' },
+              { id: 'minimal', label: '⬜ Minimal', desc: 'Clean, typographic, B&W' },
+            ].map((t) => (
+              <button
+                key={t.id}
+                onClick={() => onTemplateChange(t.id)}
+                title={t.desc}
+                className={`flex-1 px-3 py-2 text-sm font-medium rounded-lg border transition-all ${
+                  (data.template || 'classic') === t.id
+                    ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-sm'
+                    : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300'
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Meta Fields */}
       <div className="mb-8">
         <h3 className="text-xs font-bold text-blue-500 uppercase tracking-widest mb-4">Details</h3>
@@ -261,17 +326,48 @@ const QuotationForm = ({ data, onChange, onAddItem, onRemoveItem, onItemChange, 
 
       {/* Sender Info (Our Company) */}
       <div className="mb-8">
-        <h3 className="text-xs font-bold text-blue-500 uppercase tracking-widest mb-4">Our Details</h3>
+        <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
+          <h3 className="text-xs font-bold text-blue-500 uppercase tracking-widest">Our Details</h3>
+          <div className="flex gap-2">
+            <button
+              onClick={saveAsDefault}
+              disabled={savingDefault}
+              className="text-xs font-semibold text-green-700 bg-green-50 px-3 py-1.5 rounded-md hover:bg-green-100 transition-colors border border-green-200 disabled:opacity-60"
+            >
+              {savingDefault ? 'Saving…' : '💾 Save as Default'}
+            </button>
+            <a
+              href="/settings"
+              className="text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-md hover:bg-blue-100 transition-colors border border-blue-200"
+            >
+              ⚙ Manage in Settings
+            </a>
+          </div>
+        </div>
         <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <input
+              placeholder="Company Name"
+              value={data.sender.name || ''}
+              onChange={(e) => handleChange(e, 'sender', 'name')}
+              className="w-full rounded-md border border-gray-200 bg-white text-gray-900 px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+            />
+            <input
+              placeholder="Tagline (e.g. CCTV, Alarms, Access Control)"
+              value={data.sender.tagline || ''}
+              onChange={(e) => handleChange(e, 'sender', 'tagline')}
+              className="w-full rounded-md border border-gray-200 bg-white text-gray-900 px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+            />
+          </div>
           <input
-            placeholder="Company Name"
-            value={data.sender.name}
-            onChange={(e) => handleChange(e, 'sender', 'name')}
+            placeholder="Logo URL"
+            value={data.sender.logo || ''}
+            onChange={(e) => handleChange(e, 'sender', 'logo')}
             className="w-full rounded-md border border-gray-200 bg-white text-gray-900 px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
           />
           <input
             placeholder="Address Line 1"
-            value={data.sender.address}
+            value={data.sender.address || ''}
             onChange={(e) => handleChange(e, 'sender', 'address')}
             className="w-full rounded-md border border-gray-200 bg-white text-gray-900 px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
           />
@@ -281,17 +377,23 @@ const QuotationForm = ({ data, onChange, onAddItem, onRemoveItem, onItemChange, 
             onChange={(e) => handleChange(e, 'sender', 'pan')}
             className="w-full rounded-md border border-gray-200 bg-white text-gray-900 px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
           />
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <input
               placeholder="Phone"
-              value={data.sender.phone}
+              value={data.sender.phone || ''}
               onChange={(e) => handleChange(e, 'sender', 'phone')}
               className="w-full rounded-md border border-gray-200 bg-white text-gray-900 px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
             />
             <input
               placeholder="Email"
-              value={data.sender.email}
+              value={data.sender.email || ''}
               onChange={(e) => handleChange(e, 'sender', 'email')}
+              className="w-full rounded-md border border-gray-200 bg-white text-gray-900 px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+            />
+            <input
+              placeholder="Website URL"
+              value={data.sender.website || ''}
+              onChange={(e) => handleChange(e, 'sender', 'website')}
               className="w-full rounded-md border border-gray-200 bg-white text-gray-900 px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
             />
           </div>

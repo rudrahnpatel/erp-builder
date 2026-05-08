@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState, useRef, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import EstimatedPreview from '@/components/EstimatedPreview';
-import { Menu, Plus, Trash2, Printer, Save, ToggleLeft, ToggleRight, Share2 } from 'lucide-react';
+import { Menu, Plus, Trash2, Printer, Save, ToggleLeft, ToggleRight, Share2, ArrowLeft } from 'lucide-react';
 import { buildShareSlug } from '@/lib/shareSlug';
 import { useReactToPrint } from 'react-to-print';
+import { useWorkspace } from '@/hooks/use-workspace';
 
 interface EstimateItem {
   description: string;
@@ -28,12 +29,15 @@ interface FormData {
   publicId?: string;
   showGst?: boolean;
   totalAmount?: number;
+  sender?: { name?: string; address?: string; phone?: string; email?: string; pan?: string; logo?: string; tagline?: string; website?: string };
 }
 
-function CreateEstimateForm() {
+function CreateEstimateForm({ listUrl }: { listUrl?: string }) {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const editId = searchParams.get('id');
+  const { workspace } = useWorkspace();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showGst, setShowGst] = useState(false); // Default OFF
@@ -43,32 +47,46 @@ function CreateEstimateForm() {
   const [formData, setFormData] = useState<FormData>({
     id: '', // Initial empty, will be set on client or ignored if new
     billTo: '',
-    billNo: 'CSS/2025/',
+    billNo: `EST/${new Date().getFullYear()}/`,
     // Store as YYYY-MM-DD for input, format for display later
     billDate: '', // Initial empty to match server
     paidAmount: 0,
     items: [
-      { description: 'ESSL K30 Biometric', make: 'ESSL', sn: 'PHY7244\n700691', qty: 1, rate: 6800 },
-      { description: 'E Time track light software and License', make: '', sn: '', qty: 1, rate: 2500 }
+      { description: '', make: '', sn: '', qty: 1, rate: 0 },
     ],
-    paymentInstructions: 'Pay Cheque to\nChampion security system',
+    paymentInstructions: '',
     terms: `1. Good once sold Will not be taken back or exchanged
 2. Seller is not responsible for any loss or damaged of good in transit
 3. 100% Advance payment
 4. Interest will be charged @ 20% p.a. if bill not paid within due date
-5. Damage And Repair Not Cover In Warranty`
+5. Damage And Repair Not Cover In Warranty`,
+    sender: {}
   });
 
-  // Initialize date on client only to avoid hydration mismatch
+  // Initialize date on client and load company profile from workspace settings
   useEffect(() => {
     if (!formData.billDate && !editId) {
-        setFormData(prev => ({
-            ...prev,
-            id: Date.now().toString(),
-            billDate: new Date().toISOString().slice(0, 10)
-        }));
+      const companyProfile = workspace?.settings?.companyProfile || {};
+      const prefix = companyProfile.name ? companyProfile.name.substring(0, 3).toUpperCase() : 'EST';
+      setFormData(prev => ({
+        ...prev,
+        id: Date.now().toString(),
+        billDate: new Date().toISOString().slice(0, 10),
+        billNo: `${prefix}/${new Date().getFullYear()}/`,
+        sender: {
+          ...prev.sender,
+          name: companyProfile.name || '',
+          address: companyProfile.address || '',
+          phone: companyProfile.phone || '',
+          email: companyProfile.email || '',
+          pan: companyProfile.pan || '',
+          logo: companyProfile.logo || '',
+          tagline: companyProfile.tagline || '',
+          website: companyProfile.website || '',
+        },
+      }));
     }
-  }, []);
+  }, [workspace]);
 
   // Load Data for Edit
   // Load Data for Edit
@@ -185,8 +203,8 @@ function CreateEstimateForm() {
            setTimeout(() => setSaveStatus(''), 2000);
            const result = await res.json();
            if (!editId) {
-               // If created new, redirect or update ID
-               router.push(`/estimated/create?id=${result.id}`);
+               // If created new, update ID using current pathname to keep user in module
+               router.push(`${pathname}?id=${result.id}`);
            }
       } else {
           throw new Error('Failed to save');
@@ -214,11 +232,20 @@ function CreateEstimateForm() {
       {/* Main Content */}
       <main className="flex-1 p-4 md:p-6 overflow-hidden flex flex-col h-screen">
         
-        {/* Header Toolbar */}
         <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-xl border border-slate-200 shadow-sm shrink-0">
-            <div>
-                <h1 className="text-xl font-bold text-slate-900">Estimated Generation</h1>
-                <p className="text-xs text-slate-500">Create EST documents</p>
+            <div className="flex items-center gap-4">
+                <button
+                  onClick={() => router.push(listUrl || "/estimated")}
+                  className="p-2 bg-slate-50 text-slate-600 rounded-lg border border-slate-200 hover:text-blue-600 hover:border-blue-400 transition-all flex items-center gap-2"
+                  title="Back to List"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                  <span className="hidden md:inline font-medium text-sm">Back</span>
+                </button>
+                <div>
+                    <h1 className="text-xl font-bold text-slate-900">Estimated Generation</h1>
+                    <p className="text-xs text-slate-500">Create EST documents</p>
+                </div>
             </div>
             <div className="flex gap-4 items-center">
                 {/* GST Toggle */}
@@ -437,10 +464,10 @@ function CreateEstimateForm() {
   );
 }
 
-export default function EstimatedPage() {
+export default function EstimatedPage({ listUrl }: { listUrl?: string }) {
   return (
     <Suspense fallback={<div className="flex h-screen items-center justify-center">Loading...</div>}>
-      <CreateEstimateForm />
+      <CreateEstimateForm listUrl={listUrl} />
     </Suspense>
   );
 }

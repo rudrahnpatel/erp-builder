@@ -31,6 +31,7 @@ model Workspace {
   tenantUsers      TenantUser[]
   modules          ModuleDefinition[]
   globalSearchIndices GlobalSearchIndex[]
+  settings         Json               @default("{}")
   createdAt        DateTime           @default(now())
 }
 

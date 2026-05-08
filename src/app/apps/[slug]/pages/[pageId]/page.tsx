@@ -22,6 +22,10 @@ import { ImageBlock } from "@/components/blocks/ImageBlock";
 import { GstCalculator } from "@/components/blocks/GstCalculator";
 import { AttendanceLogBlock } from "@/components/blocks/AttendanceLogBlock";
 import { SettingsPage } from "@/components/app-runtime/SettingsPage";
+import QuotationsPage from "@/app/(dashboard)/quotation/page";
+import CreateQuotation from "@/app/(dashboard)/quotation/create/page";
+import EstimatedListPage from "@/app/(dashboard)/estimated/page";
+import CreateEstimate from "@/app/(dashboard)/estimated/create/page";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -93,6 +97,31 @@ export default function TenantCustomPage({
         workspaceSlug={page.workspace?.slug || slug}
       />
     );
+  }
+
+  // Inject hardcoded Quotation and Estimate pages from the module system
+  if (page?.packPageKey === "quotation_list") {
+    const createPage = page.workspace?.pages?.find((p: any) => p.packPageKey === "quotation_create");
+    const createUrl = createPage ? `/apps/${page.workspace.slug}/pages/${createPage.id}` : undefined;
+    return <QuotationsPage createUrl={createUrl} />;
+  }
+
+  if (page?.packPageKey === "quotation_create") {
+    const listPage = page.workspace?.pages?.find((p: any) => p.packPageKey === "quotation_list");
+    const listUrl = listPage ? `/apps/${page.workspace.slug}/pages/${listPage.id}` : undefined;
+    return <CreateQuotation listUrl={listUrl} />;
+  }
+
+  if (page?.packPageKey === "estimate_list") {
+    const createPage = page.workspace?.pages?.find((p: any) => p.packPageKey === "estimate_create");
+    const createUrl = createPage ? `/apps/${page.workspace.slug}/pages/${createPage.id}` : undefined;
+    return <EstimatedListPage createUrl={createUrl} />;
+  }
+
+  if (page?.packPageKey === "estimate_create") {
+    const listPage = page.workspace?.pages?.find((p: any) => p.packPageKey === "estimate_list");
+    const listUrl = listPage ? `/apps/${page.workspace.slug}/pages/${listPage.id}` : undefined;
+    return <CreateEstimate listUrl={listUrl} />;
   }
 
   const blocks = Array.isArray(page?.blocks) ? page.blocks : [];

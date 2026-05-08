@@ -43,7 +43,7 @@ const steps = [
   {
     step: "03",
     title: "Build & deploy your ERP",
-    desc: "Configure schemas, compose pages, wire up plugins — then deploy. Your team gets a live ERP at yourname.erpbuilder.app.",
+    desc: "Configure schemas, compose pages, wire up plugins — then deploy. Your team gets a live ERP at yourname.mosaic.app.",
     icon: Rocket,
     accentVar: "--accent-violet",
     // Visual: dashboard deployed
@@ -71,7 +71,7 @@ function LoginVisual() {
           className="font-semibold text-sm"
           style={{ color: "var(--foreground)" }}
         >
-          The Ledger
+          Mosaic
         </span>
       </div>
       <p
@@ -244,7 +244,7 @@ function DeployedVisual() {
             color: "var(--foreground-dimmed)",
           }}
         >
-          🔒 acme.erpbuilder.app
+          🔒 acme.mosaic.app
         </div>
       </div>
       {/* Mini dashboard */}

@@ -171,7 +171,7 @@ export default function TenantLoginPage() {
       </form>
 
       <p className="text-center mt-6 text-xs" style={{ color: "var(--foreground-dimmed)" }}>
-        Secured by ERP Builder
+        Secured by Mosaic
       </p>
 
       {showForgotInfo && (

@@ -65,7 +65,7 @@ export default async function LandingPage() {
                 className="text-sm font-medium"
                 style={{ color: "var(--foreground-muted)" }}
               >
-                The Ledger
+                Mosaic
               </span>
               <span
                 className="text-xs ml-2"

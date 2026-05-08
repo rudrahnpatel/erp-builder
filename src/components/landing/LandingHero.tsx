@@ -11,7 +11,7 @@ import { DashboardPreview } from "./DashboardPreview";
 const fadeUp = (delay: number = 0) => ({
   initial: { opacity: 0, y: 16 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] },
+  transition: { duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] as any },
 });
 
 function InteractiveDashboard() {
@@ -152,7 +152,7 @@ export function LandingHero() {
               className="text-xl font-semibold tracking-tight"
               style={{ color: "var(--foreground)" }}
             >
-              The Ledger
+              Mosaic
             </span>
           </Link>
 
@@ -294,7 +294,7 @@ export function LandingHero() {
           transition={{
             duration: 0.8,
             delay: 0.5,
-            ease: [0.16, 1, 0.3, 1],
+            ease: [0.16, 1, 0.3, 1] as any,
           }}
           className="mt-10 w-full max-w-5xl"
         >

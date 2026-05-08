@@ -155,7 +155,7 @@ export default function OnboardingPage() {
           <div className="h-8 w-8 rounded-lg flex items-center justify-center" style={{ background: "var(--primary-subtle)" }}>
             <Building2 className="h-4 w-4" style={{ color: "var(--primary)" }} />
           </div>
-          <span className="font-bold text-sm" style={{ color: "var(--foreground)" }}>ERP Builder</span>
+          <span className="font-bold text-sm" style={{ color: "var(--foreground)" }}>Mosaic</span>
         </div>
 
         {/* Step indicator */}

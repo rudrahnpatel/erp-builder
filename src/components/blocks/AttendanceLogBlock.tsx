@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useSWR from "swr";
 import { Download, MapPin, Loader2, X, Calendar as CalendarIcon, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -202,7 +202,7 @@ export function AttendanceLogBlock({ config }: { config?: any }) {
                 className="dark:invert dark:hue-rotate-180 opacity-90"
               ></iframe>
               <div className="absolute bottom-4 right-4 bg-card/80 backdrop-blur px-3 py-1.5 rounded-lg border border-border/40 text-[10px] font-bold text-muted-foreground uppercase tracking-tighter">
-                {mapModal.lat.toFixed(6)}, {mapModal.lng.toFixed(6)}
+                {mapModal.lat?.toFixed(6) ?? 'N/A'}, {mapModal.lng?.toFixed(6) ?? 'N/A'}
               </div>
             </div>
           </div>
