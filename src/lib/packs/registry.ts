@@ -1143,3 +1143,90 @@ export const quotationPack: PackDefinition = {
     },
   ],
 };
+
+export const supportPack: PackDefinition = {
+  id: "support-helpdesk",
+  name: "Helpdesk & CS",
+  description:
+    "Manage customer tickets, SLAs, and knowledge base. Perfect for professional support teams.",
+  icon: "life-buoy",
+  category: "Support",
+  badge: "Free",
+  version: "1.0.0",
+  tables: [
+    {
+      name: "Tickets",
+      icon: "ticket",
+      fields: [
+        { name: "Subject", type: "TEXT", required: true },
+        {
+          name: "Status",
+          type: "SINGLE_SELECT",
+          config: { options: ["Open", "Pending", "Resolved", "Closed"] },
+        },
+        {
+          name: "Priority",
+          type: "SINGLE_SELECT",
+          config: { options: ["Low", "Medium", "High", "Urgent"] },
+        },
+        {
+          name: "Customer",
+          type: "RELATION",
+          config: { linkedTable: "Customers" },
+        },
+        { name: "Assignee", type: "TEXT" },
+        { name: "Description", type: "TEXT" },
+      ],
+      seedData: [
+        {
+          Subject: "Cannot login to portal",
+          Status: "Open",
+          Priority: "High",
+          Assignee: "Rahul",
+        },
+        {
+          Subject: "Invoice correction needed",
+          Status: "Resolved",
+          Priority: "Medium",
+          Assignee: "Sneha",
+        },
+      ],
+    },
+    {
+      name: "KnowledgeBase",
+      icon: "book",
+      fields: [
+        { name: "Title", type: "TEXT", required: true },
+        {
+          name: "Category",
+          type: "SINGLE_SELECT",
+          config: { options: ["General", "Technical", "Billing"] },
+        },
+        { name: "Content", type: "TEXT" },
+        {
+          name: "Status",
+          type: "SINGLE_SELECT",
+          config: { options: ["Draft", "Published"] },
+        },
+      ],
+      seedData: [
+        { Title: "How to reset password", Category: "General", Status: "Published" },
+      ],
+    },
+  ],
+  pageDefinitions: [
+    {
+      key: "ticket_list",
+      title: "Support Tickets",
+      icon: "ticket",
+      blocks: [{ type: "table", config: { tableName: "Tickets" } }],
+    },
+    {
+      key: "kb_list",
+      title: "Knowledge Base",
+      icon: "book",
+      blocks: [{ type: "table", config: { tableName: "KnowledgeBase" } }],
+    },
+  ],
+};
+
