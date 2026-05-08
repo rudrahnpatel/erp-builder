@@ -255,7 +255,7 @@ export default function ModulesPage() {
 
       {/* Module Cards Grid */}
       {isLoading ? (
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4 stagger-children">
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 stagger-children">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="rounded-2xl p-5 border h-64 flex flex-col" style={{ background: "var(--card)", borderColor: "var(--border-subtle)" }}>
               <div className="flex items-center gap-3 mb-4">
@@ -274,7 +274,7 @@ export default function ModulesPage() {
           ))}
         </div>
       ) : filteredPacks.length > 0 ? (
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4 stagger-children">
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 stagger-children">
           {filteredPacks.map((pack) => (
             <PackCard
               key={pack.id}

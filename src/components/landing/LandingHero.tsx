@@ -11,7 +11,7 @@ import { DashboardPreview } from "./DashboardPreview";
 const fadeUp = (delay: number = 0) => ({
   initial: { opacity: 0, y: 16 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] as any },
+  transition: { duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
 });
 
 function InteractiveDashboard() {
@@ -101,6 +101,16 @@ function LandingThemeToggle() {
 }
 
 export function LandingHero() {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <section className="relative overflow-hidden">
       {/* ── Background Video ── */}
@@ -129,10 +139,16 @@ export function LandingHero() {
       />
 
       {/* ── Navbar ── */}
-      <header className="relative z-10">
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          isScrolled
+            ? "py-3 bg-background/80 backdrop-blur-md border-b border-border/50 shadow-sm"
+            : "py-5 bg-transparent"
+        }`}
+      >
         <nav
           aria-label="Primary"
-          className="flex items-center justify-between px-6 md:px-12 lg:px-20 py-5"
+          className="flex items-center justify-between px-6 md:px-12 lg:px-20"
           style={{ fontFamily: "var(--font-body)" }}
         >
           <Link href="/" className="flex items-center gap-2.5 group">
@@ -162,6 +178,7 @@ export function LandingHero() {
               { label: "Home", href: "/" },
               { label: "Features", href: "#features" },
               { label: "How it Works", href: "#how-it-works" },
+              { label: "Docs", href: "/docs" },
               { label: "Contact", href: "#cta" },
             ].map((link) => (
               <Link
@@ -196,22 +213,8 @@ export function LandingHero() {
       </header>
 
       {/* ── Hero Content ── */}
-      <div className="relative z-10 flex flex-col items-center w-full px-4 sm:px-6 pt-12 sm:pt-20 pb-0">
-        {/* Badge */}
-        <motion.div {...fadeUp(0)}>
-          <div
-            className="inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm mb-6"
-            style={{
-              background: "var(--hero-badge-bg)",
-              border: "1px solid var(--hero-badge-border)",
-              color: "var(--foreground-muted)",
-              fontFamily: "var(--font-body)",
-              backdropFilter: "blur(8px)",
-            }}
-          >
-            Built for Indian SMEs · v0.1 ✨
-          </div>
-        </motion.div>
+      <div className="relative z-10 flex flex-col items-center w-full px-4 sm:px-6 pt-32 sm:pt-40 pb-0">
+  
 
         {/* Headline */}
         <motion.h1

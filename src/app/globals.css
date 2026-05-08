@@ -409,3 +409,11 @@
   outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
+
+.theme-transition,
+.theme-transition *,
+.theme-transition *:before,
+.theme-transition *:after {
+  transition: all 0.4s ease !important;
+  transition-delay: 0s !important;
+}

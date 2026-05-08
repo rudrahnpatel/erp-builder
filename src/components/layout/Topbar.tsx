@@ -1,12 +1,14 @@
 "use client";
 
-import { Bell, Search, Menu, Command, LogOut, Settings, ChevronDown, Languages, Code2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Bell, Search, Menu, Command, LogOut, Settings, ChevronDown, Languages, Code2, Building2, ExternalLink } from "lucide-react";
+import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useSession, signOut } from "next-auth/react";
 import { useLanguage } from "@/lib/i18n";
 import { useDevMode } from "@/hooks/use-dev-mode";
+import { useWorkspace } from "@/hooks/use-workspace";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,10 +21,14 @@ import {
 
 export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
   const { data: session } = useSession();
+  const { workspace, isLoading } = useWorkspace();
   const router = useRouter();
+  const pathname = usePathname();
   const [isMac, setIsMac] = useState(false);
   const { lang, setLang, t } = useLanguage();
   const { isDevMode } = useDevMode();
+
+  const isWorkspacePage = pathname === "/workspace";
 
   useEffect(() => {
     const platform =
@@ -40,21 +46,81 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
         borderColor: "var(--border-subtle)",
       }}
     >
-      <div className="flex items-center gap-3 flex-1">
-        {/* Hamburger menu — mobile only */}
+      <div className="flex items-center gap-3 flex-1 min-w-0">
+        {/* Hamburger menu */}
         <button
           onClick={onMenuToggle}
-          className="p-1.5 rounded-md hover-bg-subtle focus-ring md:hidden"
+          className="p-1.5 rounded-md hover-bg-subtle focus-ring shrink-0"
           style={{ color: "var(--foreground-muted)" }}
         >
           <Menu className="h-5 w-5" />
         </button>
 
+        {/* Workspace Branding - Only on /workspace page */}
+        {isWorkspacePage && (
+          <div className="flex items-center min-w-0 animate-fade-in">
+            <div
+              className="relative h-8 w-8 rounded-lg flex items-center justify-center shrink-0 overflow-hidden"
+              style={{
+                background: "linear-gradient(135deg, var(--primary), var(--primary-hover))",
+                boxShadow: "inset 0 1px 0 oklch(1 0 0 / 0.18), 0 2px 8px color-mix(in oklch, var(--primary), transparent 60%)",
+              }}
+            >
+              <Building2 className="h-4 w-4 text-white" />
+              <span
+                className="absolute bottom-0.5 right-0.5 h-1.5 w-1.5 rounded-full border"
+                style={{
+                  background: "var(--success)",
+                  borderColor: "var(--surface-1)",
+                  boxShadow: "0 0 4px var(--success)",
+                }}
+                aria-hidden="true"
+              />
+            </div>
+            <div className="ml-2.5 min-w-0 hidden sm:block">
+              {isLoading && !workspace ? (
+                <div className="space-y-1">
+                  <div className="h-3 w-20 skeleton rounded" />
+                  <div className="h-2 w-28 skeleton rounded" />
+                </div>
+              ) : (
+                <>
+                  <span
+                    className="font-semibold text-[13px] block leading-tight truncate tracking-tight"
+                    style={{ color: "var(--foreground)" }}
+                  >
+                    {workspace?.name || "Workspace"}
+                  </span>
+                  {workspace?.slug && (
+                    <Link
+                      href={`/apps/${workspace.slug}`}
+                      target="_blank"
+                      rel="noopener"
+                      className="group/link flex items-center gap-1 mt-0.5 transition-colors hover:opacity-80"
+                    >
+                      <span
+                        className="text-[10px] tracking-[0.05em] mono block truncate"
+                        style={{ color: "var(--foreground-dimmed)" }}
+                      >
+                        {workspace.slug}.erpbuilder.app
+                      </span>
+                      <ExternalLink 
+                        className="h-2.5 w-2.5 opacity-40 group-hover/link:opacity-100 transition-opacity" 
+                        style={{ color: "var(--foreground-dimmed)" }}
+                      />
+                    </Link>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
 
         {/* Dev mode indicator */}
         {isDevMode && (
           <span
-            className="hidden sm:inline-flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold px-2 py-1 rounded-full"
+            className="hidden lg:inline-flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold px-2 py-1 rounded-full ml-2"
             style={{
               background: "linear-gradient(135deg, var(--accent-emerald), color-mix(in oklch, var(--accent-emerald), var(--primary) 40%))",
               color: "#fff",
@@ -74,7 +140,7 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
         <button
           type="button"
           onClick={() => setLang(lang === "en" ? "hi" : "en")}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium hover-bg-subtle focus-ring"
+          className="hidden inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium hover-bg-subtle focus-ring"
           style={{ color: "var(--foreground-muted)" }}
           title={t("common.language")}
           aria-label={`${t("common.language")}: ${lang === "en" ? t("common.english") : t("common.hindi")}`}

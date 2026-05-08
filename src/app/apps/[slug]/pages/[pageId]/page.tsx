@@ -66,16 +66,11 @@ export default function TenantCustomPage({
         
         {/* Blocks Skeleton */}
         <div className="flex-1 p-4 sm:p-8" style={{ background: "var(--background)" }}>
-          <div className="max-w-4xl mx-auto flex flex-wrap items-start gap-6 stagger-children">
-            {[1, 2].map((i) => (
-              <div key={i} className="basis-full md:basis-[calc(50%-12px)] rounded-xl border p-5 h-64" style={{ background: "var(--card)", borderColor: "var(--border-subtle)" }}>
-                <div className="skeleton h-6 w-32 rounded-md mb-4" />
-                <div className="skeleton h-4 w-full rounded-md mb-2" />
-                <div className="skeleton h-4 w-3/4 rounded-md mb-6" />
-                <div className="skeleton h-20 w-full rounded-md" />
-              </div>
-            ))}
-            <div className="basis-full rounded-xl border p-5 h-80" style={{ background: "var(--card)", borderColor: "var(--border-subtle)" }}>
+          <div className="max-w-5xl mx-auto space-y-4 stagger-children">
+            <div className="skeleton h-10 w-64 rounded-md" />
+            <div className="skeleton h-5 w-96 rounded-md" />
+            <div className="skeleton h-12 w-full rounded-xl mt-4" />
+            <div className="rounded-xl border p-5 h-80 mt-2" style={{ background: "var(--card)", borderColor: "var(--border-subtle)" }}>
               <div className="skeleton h-6 w-48 rounded-md mb-4" />
               <div className="skeleton h-4 w-full rounded-md mb-2" />
               <div className="skeleton h-4 w-full rounded-md mb-2" />
@@ -131,34 +126,11 @@ export default function TenantCustomPage({
       className="h-full flex flex-col"
       style={{ background: "var(--background)" }}
     >
-      <div
-        className="flex items-center gap-3 px-4 sm:px-6 py-4 border-b shrink-0"
-        style={{
-          borderColor: "var(--border-subtle)",
-          background: "color-mix(in oklch, var(--surface-1), transparent 30%)",
-          backdropFilter: "blur(16px)",
-        }}
-      >
-        <Link
-          href={`/apps/${slug}`}
-          className="p-1.5 rounded-lg hover-bg-subtle focus-ring transition-colors"
-          style={{ color: "var(--foreground-muted)" }}
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Link>
-        <span
-          className="font-semibold text-[15px]"
-          style={{ color: "var(--foreground)" }}
-        >
-          {page?.title || "Custom Page"}
-        </span>
-      </div>
-
-      <div className="flex-1 overflow-auto p-4 sm:p-8">
-        <div className="max-w-4xl mx-auto flex flex-wrap items-start gap-6">
+      <div className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
+        <div className="max-w-5xl mx-auto flex flex-wrap items-start gap-4">
           {blocks.length === 0 ? (
             <div
-              className="text-center p-12 text-sm border-2 border-dashed rounded-xl basis-full"
+              className="text-center p-12 text-sm border-2 border-dashed rounded-xl"
               style={{
                 borderColor: "var(--border-subtle)",
                 color: "var(--foreground-muted)",
@@ -176,21 +148,25 @@ export default function TenantCustomPage({
           ) : (
             blocks.map((block: any, index: number) => {
               const displayLabel = block.label || (block.config?.content) || block.type.replace("_", " ");
+              // For filter bars, use the table reference name instead of the block type
+              const searchPlaceholder = block.config?.tableRef
+                ? `Search ${block.config.tableRef}...`
+                : `Search records...`;
               const isHeaderBlock = block.type === "TEXT";
-              const isFullWidthBlock = ["TABLE_VIEW", "ATTENDANCE_LOG", "KANBAN_VIEW"].includes(block.type);
+              const isFullWidthBlock = ["TABLE_VIEW", "ATTENDANCE_LOG", "KANBAN_VIEW", "FILTER_BAR"].includes(block.type);
               
               const blockContent = (
-                <div className={isHeaderBlock ? "mb-10 mt-2" : isFullWidthBlock ? "" : "p-5"}>
+                <div className={isHeaderBlock ? "mb-2" : isFullWidthBlock ? "" : "p-5"}>
                   {block.type === "TEXT" && (
-                    <div className="space-y-1.5">
+                    <div className="space-y-1">
                       <h1
-                        className="text-4xl font-bold tracking-tight"
+                        className="text-2xl sm:text-3xl font-bold tracking-tight"
                         style={{ color: "var(--foreground)" }}
                       >
                         {displayLabel}
                       </h1>
                       {block.config?.description && (
-                        <p className="text-lg mt-2 max-w-3xl whitespace-pre-wrap opacity-70" style={{ color: "var(--foreground-muted)" }}>
+                        <p className="text-sm sm:text-base max-w-3xl whitespace-pre-wrap leading-relaxed" style={{ color: "var(--foreground-muted)" }}>
                           {block.config.description}
                         </p>
                       )}
@@ -204,33 +180,67 @@ export default function TenantCustomPage({
                   {block.type === "FILTER_BAR" && (
                     <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                       <div className="flex-1 relative group w-full">
-                        <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                        <Search
+                          className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors"
+                          style={{ color: "var(--foreground-dimmed)" }}
+                        />
                         <input
                           type="text"
-                          placeholder={`Search ${displayLabel}...`}
-                          className="w-full pl-10 pr-4 py-2 text-sm rounded-xl bg-secondary/30 border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground/60"
+                          placeholder={searchPlaceholder}
+                          className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl outline-none transition-all"
+                          style={{
+                            background: "var(--surface-2)",
+                            border: "1px solid var(--border-subtle)",
+                            color: "var(--foreground)",
+                          }}
+                          onFocus={(e) => {
+                            e.currentTarget.style.borderColor = "var(--primary)";
+                            e.currentTarget.style.boxShadow = "0 0 0 3px color-mix(in oklch, var(--primary), transparent 85%)";
+                          }}
+                          onBlur={(e) => {
+                            e.currentTarget.style.borderColor = "var(--border-subtle)";
+                            e.currentTarget.style.boxShadow = "none";
+                          }}
                         />
                       </div>
                       {block.config?.includeDateRange && (
                         <div className="flex items-center gap-2 shrink-0">
                           <div className="relative">
-                            <Calendar className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                            <Calendar className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5" style={{ color: "var(--foreground-dimmed)" }} />
                             <input
                               type="date"
-                              className="pl-8 pr-2 py-2 text-sm rounded-xl bg-secondary/30 border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20"
+                              className="pl-8 pr-2 py-2.5 text-sm rounded-xl outline-none"
+                              style={{
+                                background: "var(--surface-2)",
+                                border: "1px solid var(--border-subtle)",
+                                color: "var(--foreground)",
+                              }}
                             />
                           </div>
-                          <span className="text-xs text-muted-foreground">to</span>
+                          <span className="text-xs" style={{ color: "var(--foreground-dimmed)" }}>to</span>
                           <div className="relative">
-                            <Calendar className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                            <Calendar className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5" style={{ color: "var(--foreground-dimmed)" }} />
                             <input
                               type="date"
-                              className="pl-8 pr-2 py-2 text-sm rounded-xl bg-secondary/30 border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20"
+                              className="pl-8 pr-2 py-2.5 text-sm rounded-xl outline-none"
+                              style={{
+                                background: "var(--surface-2)",
+                                border: "1px solid var(--border-subtle)",
+                                color: "var(--foreground)",
+                              }}
                             />
                           </div>
                         </div>
                       )}
-                      <Button variant="outline" className="gap-2 shrink-0 h-10 rounded-xl bg-background border-border/60 hover:bg-secondary/50">
+                      <Button
+                        variant="outline"
+                        className="gap-2 shrink-0 h-10 rounded-xl transition-colors"
+                        style={{
+                          background: "var(--surface-2)",
+                          borderColor: "var(--border-subtle)",
+                          color: "var(--foreground-muted)",
+                        }}
+                      >
                         <Filter className="h-4 w-4" /> Filter
                       </Button>
                     </div>
@@ -259,7 +269,14 @@ export default function TenantCustomPage({
                     block.config?.tableId ? (
                       <TableView config={block.config} tableId={block.config.tableId} />
                     ) : (
-                      <div className="p-10 border-2 border-dashed border-border/40 rounded-xl flex flex-col items-center justify-center text-muted-foreground bg-secondary/20">
+                      <div
+                        className="p-10 border-2 border-dashed rounded-xl flex flex-col items-center justify-center"
+                        style={{
+                          borderColor: "var(--border-subtle)",
+                          color: "var(--foreground-muted)",
+                          background: "var(--surface-1)",
+                        }}
+                      >
                         <Table2 className="h-8 w-8 mb-3 opacity-40" />
                         <p className="text-sm font-medium">No table connected to this block.</p>
                       </div>
@@ -267,8 +284,14 @@ export default function TenantCustomPage({
                   )}
 
                   {block.type === "CHART" && (
-                    <div className="h-64 rounded-xl flex flex-col items-center justify-center text-sm bg-secondary/20 border border-border/40 text-muted-foreground/80 relative overflow-hidden group/chart">
-                      <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent opacity-0 group-hover/chart:opacity-100 transition-opacity" />
+                    <div
+                      className="h-64 rounded-xl flex flex-col items-center justify-center text-sm relative overflow-hidden group/chart"
+                      style={{
+                        background: "var(--surface-1)",
+                        border: "1px solid var(--border-subtle)",
+                        color: "var(--foreground-muted)",
+                      }}
+                    >
                       <BarChart3 className="h-10 w-10 mb-3 opacity-50" /> 
                       <span className="font-medium">{displayLabel}</span>
                       <span className="text-xs mt-1 opacity-70">Requires data source connection</span>
@@ -279,7 +302,14 @@ export default function TenantCustomPage({
                     block.config?.tableId ? (
                       <KanbanView config={block.config} tableId={block.config.tableId} />
                     ) : (
-                      <div className="p-10 border-2 border-dashed border-border/40 rounded-xl flex flex-col items-center justify-center text-muted-foreground bg-secondary/20">
+                      <div
+                        className="p-10 border-2 border-dashed rounded-xl flex flex-col items-center justify-center"
+                        style={{
+                          borderColor: "var(--border-subtle)",
+                          color: "var(--foreground-muted)",
+                          background: "var(--surface-1)",
+                        }}
+                      >
                         <Plus className="h-8 w-8 mb-3 opacity-40" />
                         <p className="text-sm font-medium">No table connected to this Kanban block.</p>
                       </div>
@@ -289,24 +319,39 @@ export default function TenantCustomPage({
                   {block.type === "FORM" && (
                     <div className="space-y-4 max-w-lg p-2">
                       <div className="space-y-1.5 mb-2">
-                        <h3 className="text-lg font-bold text-foreground">{displayLabel || "New Entry Form"}</h3>
-                        <p className="text-xs text-muted-foreground">Automatically generated from the selected table schema.</p>
+                        <h3 className="text-lg font-bold" style={{ color: "var(--foreground)" }}>{displayLabel || "New Entry Form"}</h3>
+                        <p className="text-xs" style={{ color: "var(--foreground-muted)" }}>Automatically generated from the selected table schema.</p>
                       </div>
                       
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {["Product Name", "SKU Number"].map((label) => (
                           <div key={label} className="space-y-1.5">
-                            <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">
+                            <label
+                              className="text-[11px] font-bold uppercase tracking-wider block"
+                              style={{ color: "var(--foreground-dimmed)" }}
+                            >
                               {label}
                             </label>
                             <input
-                              className="w-full text-sm px-3.5 py-2.5 rounded-xl bg-secondary/30 border border-border/60 text-foreground placeholder:text-muted-foreground/50 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                              className="w-full text-sm px-3.5 py-2.5 rounded-xl outline-none transition-all"
                               placeholder={`Enter ${label.toLowerCase()}...`}
+                              style={{
+                                background: "var(--surface-2)",
+                                border: "1px solid var(--border-subtle)",
+                                color: "var(--foreground)",
+                              }}
                             />
                           </div>
                         ))}
                       </div>
-                      <Button className="w-full sm:w-auto h-11 px-8 rounded-xl font-bold bg-primary text-primary-foreground shadow-lg shadow-primary/20 pressable">
+                      <Button
+                        className="w-full sm:w-auto h-11 px-8 rounded-xl font-bold pressable"
+                        style={{
+                          background: "linear-gradient(135deg, var(--primary), var(--primary-hover))",
+                          color: "var(--primary-foreground)",
+                          boxShadow: "0 2px 8px color-mix(in oklch, var(--primary), transparent 60%)",
+                        }}
+                      >
                         Submit Entry
                       </Button>
                     </div>
@@ -331,7 +376,7 @@ export default function TenantCustomPage({
                 </div>
               );
 
-              if (isHeaderBlock) {
+              if (isHeaderBlock || isFullWidthBlock) {
                 return (
                   <div key={block.id || `block-${index}`} className="w-full">
                     {blockContent}
@@ -342,8 +387,8 @@ export default function TenantCustomPage({
               return (
                 <div
                   key={block.id || `block-${index}`}
-                  className={isFullWidthBlock ? "w-full mb-6" : "rounded-xl overflow-hidden shadow-sm mb-6"}
-                  style={isFullWidthBlock ? blockSizeStyle(block.config) : {
+                  className="rounded-xl overflow-hidden shadow-sm"
+                  style={{
                     background: "var(--card)",
                     border: "1px solid var(--border-subtle)",
                     ...blockSizeStyle(block.config),

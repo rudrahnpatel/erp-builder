@@ -23,7 +23,7 @@ export const DEFAULT_WORKSPACE_PAGES: DefaultPageSeed[] = [
           content: "Dashboard",
           level: "h1",
           description:
-            "Overview of your app. Drop in charts and table views from the composer to bring this space to life.",
+            "Your workspace at a glance. Use the sidebar to navigate between pages, or head to the builder to add charts and widgets here.",
         },
       },
     ],

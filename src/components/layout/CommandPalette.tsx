@@ -152,23 +152,11 @@ export function CommandPalette() {
     };
   }, [open, close]);
 
-  const fuse = useMemo(() => {
-    if (!open) return null;
-    return new Fuse(deepSearchData, {
-      keys: ["title", "keywords", "category"],
-      threshold: 0.3,
-      ignoreLocation: true,
-    });
-  }, [deepSearchData, open]);
-
-  const results = useMemo(() => {
-    if (!query) return baseNavigationData;
+  // Combine deepSearchData and backend results so Fuse can rank them all globally
+  const allAvailableData = useMemo(() => {
+    const data = [...deepSearchData];
     
-    // 1. Local results (Navigation + Settings + Plugins + Packs)
-    const localResults = fuse ? fuse.search(query).map((r) => r.item) : [];
-    
-    // 2. Backend results (Pages, Tables, Modules, Records, Custom Indices)
-    const backendResults = searchResults.map((res: any) => ({
+    const backendItems = searchResults.map((res: any) => ({
       ...res,
       icon: res.icon === "FileText" ? FileText :
             res.icon === "Database" ? Database :
@@ -178,18 +166,29 @@ export function CommandPalette() {
             Search
     }));
 
-    // Combine them, ensuring no duplicates
-    const seenIds = new Set(localResults.map(r => r.id));
-    const merged = [...localResults];
-    
-    backendResults.forEach((b: any) => {
+    const seenIds = new Set(data.map(r => r.id));
+    backendItems.forEach((b: any) => {
       if (!seenIds.has(b.id)) {
-        merged.push(b);
+        data.push(b);
       }
     });
+    
+    return data;
+  }, [deepSearchData, searchResults]);
 
-    return merged;
-  }, [query, fuse, searchResults]);
+  const fuse = useMemo(() => {
+    if (!open) return null;
+    return new Fuse(allAvailableData, {
+      keys: ["title", "keywords", "category"],
+      threshold: 0.3,
+      ignoreLocation: true,
+    });
+  }, [allAvailableData, open]);
+
+  const results = useMemo(() => {
+    if (!query || !fuse) return baseNavigationData;
+    return fuse.search(query).map((result) => result.item);
+  }, [query, fuse]);
 
   // Group results by category
   const groupedResults = useMemo(() => {

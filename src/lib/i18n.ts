@@ -19,8 +19,10 @@ const dict = {
   en: {
     "common.dashboard": "Dashboard",
     "common.marketplace": "Marketplace",
+    "common.browseModules": "Browse Modules",
     "common.managePages": "Manage Pages",
     "common.manageTables": "Manage Tables",
+    "common.manageApp": "Manage App",
     "common.plugins": "Plugins",
     "common.builder": "Builder",
     "common.helpDocs": "Help & docs",
@@ -39,8 +41,10 @@ const dict = {
   hi: {
     "common.dashboard": "डैशबोर्ड",
     "common.marketplace": "मार्केटप्लेस",
+    "common.browseModules": "मॉड्यूल खोजें",
     "common.managePages": "पेज प्रबंधन",
     "common.manageTables": "टेबल प्रबंधन",
+    "common.manageApp": "ऐप प्रबंधन",
     "common.plugins": "प्लगइन्स",
     "common.builder": "बिल्डर",
     "common.helpDocs": "सहायता",

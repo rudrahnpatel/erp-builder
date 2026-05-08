@@ -96,6 +96,12 @@ export default async function LandingPage() {
                 How it works
               </Link>
               <Link
+                href="/docs"
+                className="transition-colors hover:text-[var(--foreground)]"
+              >
+                Docs
+              </Link>
+              <Link
                 href="/login"
                 className="transition-colors hover:text-[var(--foreground)]"
               >
