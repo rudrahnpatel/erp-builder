@@ -30,9 +30,37 @@ import {
   IndianRupee,
   Receipt,
   Layers,
+<<<<<<< HEAD
   ChevronLeft,
+=======
+  ChevronRight,
+  ChevronDown,
+>>>>>>> 7e27408 (feat: refactor app sidebar to use collapsible module groups)
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+
+function NavGroup({ title, icon: Icon, children, defaultOpen = true }: any) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  return (
+    <div className="mb-1">
+      <button 
+        onClick={() => setIsOpen(!isOpen)} 
+        className="w-full flex items-center justify-between px-3 py-2 text-[13px] rounded-lg hover-bg-subtle focus-ring text-[var(--foreground-muted)] font-medium"
+      >
+        <div className="flex items-center gap-2.5">
+          {Icon && <Icon className="h-[16px] w-[16px]" />}
+          <span className="truncate uppercase text-[10px] tracking-wider">{title}</span>
+        </div>
+        {isOpen ? <ChevronDown className="h-4 w-4 opacity-50" /> : <ChevronRight className="h-4 w-4 opacity-50" />}
+      </button>
+      {isOpen && (
+        <div className="ml-4 pl-2 border-l border-[var(--sidebar-border)] mt-1 space-y-1">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
 
 const IconMap: Record<string, any> = {
   "file-text": FileText,
@@ -141,6 +169,48 @@ export function AppShell({
     return <div className="min-h-screen flex items-center justify-center bg-[var(--background)]">{children}</div>;
   }
 
+  // Group pages by packSource
+  const groupedPages: Record<string, typeof nonSystemPages> = {};
+  const flatPages: typeof nonSystemPages = [];
+
+  nonSystemPages.forEach(p => {
+    if (p.packSource) {
+      if (!groupedPages[p.packSource]) groupedPages[p.packSource] = [];
+      groupedPages[p.packSource].push(p);
+    } else {
+      flatPages.push(p);
+    }
+  });
+
+  const formatPackName = (slug: string) => {
+    if (slug === 'hr') return 'HR';
+    if (slug === 'crm') return 'CRM';
+    return slug
+      .split('-')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
+  const NavItemRender = ({ item, active }: { item: any, active: boolean }) => (
+    <Link
+      href={item.href}
+      onClick={() => setSidebarOpen(false)}
+      className={`relative flex items-center gap-2.5 px-3 py-2 text-[13px] rounded-lg focus-ring ${
+        active ? "sidebar-nav-item active font-medium" : "sidebar-nav-item"
+      }`}
+      style={active ? undefined : { color: "var(--foreground-muted)" }}
+    >
+      {active && (
+        <span
+          className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full animate-nav-indicator"
+          style={{ background: "var(--primary)" }}
+        />
+      )}
+      <item.icon className="h-[16px] w-[16px] shrink-0" />
+      <span className="truncate">{item.label}</span>
+    </Link>
+  );
+
   return (
     <div
       className="flex h-screen w-full overflow-hidden"
@@ -211,36 +281,60 @@ export function AppShell({
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-1">
-          {navItems.map((item) => {
-            const active = isActive(item.href, item.exact);
+        <nav className="flex-1 overflow-y-auto py-3 px-3 space-y-1.5 custom-scrollbar">
+          {/* Home */}
+          <NavItemRender 
+            item={{ href: base, label: "Home", icon: Home }} 
+            active={isActive(base, true)} 
+          />
+
+          {/* Grouped Pages */}
+          {Object.entries(groupedPages).map(([packSource, pages]) => {
+            const hasActiveChild = pages.some(p => isActive(`${base}/pages/${p.id}`, false));
             return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setSidebarOpen(false)}
-                className={`relative flex items-center gap-2.5 px-3 py-2.5 text-[13px] rounded-lg focus-ring ${
-                  active
-                    ? "sidebar-nav-item active"
-                    : "sidebar-nav-item"
-                }`}
-                style={
-                  active
-                    ? undefined
-                    : { color: "var(--foreground-muted)" }
-                }
+              <NavGroup 
+                key={packSource} 
+                title={formatPackName(packSource)} 
+                defaultOpen={hasActiveChild || true}
+                icon={Box} // Generic icon for modules
               >
-                {active && (
-                  <span
-                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[18px] rounded-full animate-nav-indicator"
-                    style={{ background: "var(--primary)" }}
-                  />
-                )}
-                <item.icon className="h-[18px] w-[18px] shrink-0" />
-                <span className="truncate">{item.label}</span>
-              </Link>
+                {pages.map((p) => {
+                  const href = `${base}/pages/${p.id}`;
+                  return (
+                    <NavItemRender
+                      key={p.id}
+                      item={{
+                        href,
+                        label: p.title,
+                        icon: p.icon ? (IconMap[p.icon] || LayoutDashboard) : LayoutDashboard,
+                      }}
+                      active={isActive(href, false)}
+                    />
+                  );
+                })}
+              </NavGroup>
             );
           })}
+
+          {/* Flat Pages */}
+          {flatPages.length > 0 && (
+            <div className="pt-2 mt-2 border-t" style={{ borderColor: "var(--sidebar-border)" }}>
+              {flatPages.map((p) => {
+                const href = `${base}/pages/${p.id}`;
+                return (
+                  <NavItemRender
+                    key={p.id}
+                    item={{
+                      href,
+                      label: p.title,
+                      icon: p.icon ? (IconMap[p.icon] || LayoutDashboard) : LayoutDashboard,
+                    }}
+                    active={isActive(href, false)}
+                  />
+                );
+              })}
+            </div>
+          )}
 
           {workspace.tables.length === 0 && nonSystemPages.length === 0 && (
             <div
