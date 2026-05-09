@@ -30,12 +30,9 @@ import {
   IndianRupee,
   Receipt,
   Layers,
-<<<<<<< HEAD
   ChevronLeft,
-=======
   ChevronRight,
   ChevronDown,
->>>>>>> 7e27408 (feat: refactor app sidebar to use collapsible module groups)
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 
