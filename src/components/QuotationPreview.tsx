@@ -1,6 +1,7 @@
 "use client";
 import Image from 'next/image';
 import React from 'react';
+import { type LayoutSection, DEFAULT_LAYOUT } from './QuotationLayoutEditor';
 
 // Inline number-to-words conversion
 function numberToWords(num: number): string {
@@ -43,7 +44,9 @@ interface QuotationPreviewData {
   showImages?: boolean;
   showHSN?: boolean;
   showMake?: boolean;
-  sender?: { name?: string; address?: string; phone?: string; email?: string; pan?: string };
+  template?: string;
+  layout?: LayoutSection[];
+  sender?: { name?: string; address?: string; phone?: string; email?: string; pan?: string; logo?: string; tagline?: string; website?: string };
   receiver?: { name?: string; company?: string; address?: string; phone?: string; gst?: string };
   items?: QuotationItem[];
   terms?: string;
@@ -183,6 +186,162 @@ const QuotationPreview = ({ data }: { data: QuotationPreviewData }) => {
   
   const isLastPage = (index: number) => index === pages.length - 1;
 
+  const template = safeData.template || 'classic';
+
+  // --- Template style tokens ---
+  const templateTokens = {
+    classic: {
+      pageFont: 'Inter, sans-serif',
+      headingColor: 'text-blue-900',
+      accentBg: 'bg-blue-900',
+      accentText: 'text-white',
+      tableHeaderBg: 'bg-blue-900',
+      tableHeaderText: 'text-white',
+      borderClass: '',
+      rounded: 'rounded-none',
+    },
+    modern: {
+      pageFont: 'Inter, sans-serif',
+      headingColor: 'text-indigo-700',
+      accentBg: 'bg-indigo-600',
+      accentText: 'text-white',
+      tableHeaderBg: 'bg-indigo-600',
+      tableHeaderText: 'text-white',
+      borderClass: 'rounded-xl',
+      rounded: 'rounded-xl',
+    },
+    minimal: {
+      pageFont: 'Georgia, serif',
+      headingColor: 'text-gray-900',
+      accentBg: 'bg-gray-900',
+      accentText: 'text-white',
+      tableHeaderBg: 'bg-gray-900',
+      tableHeaderText: 'text-white',
+      borderClass: '',
+      rounded: 'rounded-none',
+    },
+  } as const;
+
+  type TemplateKey = keyof typeof templateTokens;
+  const tok = templateTokens[(template as TemplateKey) in templateTokens ? (template as TemplateKey) : 'classic'];
+
+  // --- Layout ---
+  // Merge saved layout with defaults (handles new sections added after save)
+  const rawLayout = data.layout && data.layout.length > 0 ? data.layout : DEFAULT_LAYOUT.sections;
+  const layoutSections = DEFAULT_LAYOUT.sections.map((def) => {
+    const found = rawLayout.find((s) => s.id === def.id);
+    return found ?? def;
+  });
+  // Reorder by saved order
+  const savedIds = rawLayout.map((s) => s.id);
+  const orderedSections = [
+    ...savedIds.filter((id) => layoutSections.find((s) => s.id === id)).map((id) => layoutSections.find((s) => s.id === id)!),
+    ...layoutSections.filter((s) => !savedIds.includes(s.id)),
+  ];
+
+  const isSectionVisible = (id: string) => {
+    const s = orderedSections.find((sec) => sec.id === id);
+    return s ? s.visible : true;
+  };
+
+  // Header-zone sections in layout order (sections that appear before items table)
+  const headerZoneOrder = orderedSections
+    .filter((s) => ['header','contact','pan','meta','subject','client'].includes(s.id) && s.visible)
+    .map((s) => s.id);
+
+  // Tail-zone sections in layout order (sections that appear after items table)
+  const tailZoneOrder = orderedSections
+    .filter((s) => ['totals','terms','signature'].includes(s.id) && s.visible)
+    .map((s) => s.id);
+
+  // --- Named section renderers ---
+  const renderSectionHeader = () => (
+    <div className="flex flex-col items-center mb-4 text-center">
+      <div className="flex items-center gap-4 mb-2">
+        {safeData.sender?.logo && (
+          <div className="w-16 h-16 flex items-center justify-center">
+            <img src={safeData.sender.logo} alt="company logo" className="object-contain max-w-full max-h-full" />
+          </div>
+        )}
+        <div className="text-center">
+          <h1 className={`text-3xl font-bold ${tok.headingColor}`}>{safeData.sender?.name || 'Company Name'}</h1>
+          {safeData.sender?.tagline && (
+            <p className="text-sm font-semibold text-gray-800">{safeData.sender.tagline}</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderSectionContact = () => (
+    <div className={`text-sm font-medium leading-tight text-center mb-3 ${tok.headingColor}`}>
+      <p className="mb-1">
+        {safeData.sender?.email && (
+          <>Email: <a href={`mailto:${safeData.sender.email}`} className="underline">{safeData.sender.email}</a></>
+        )}
+        {safeData.sender?.website && (
+          <><span className="mx-2">Web:</span><a href={safeData.sender.website} className="underline" target="_blank" rel="noopener noreferrer">{safeData.sender.website}</a></>
+        )}
+      </p>
+      <p className="mb-1 text-black font-bold">{safeData.sender?.address}</p>
+      <p className="text-black font-bold">Mobile: {safeData.sender?.phone}</p>
+    </div>
+  );
+
+  const renderSectionPan = () => (
+    safeData.sender?.pan ? (
+      <div className="text-center text-xs mb-3">
+        <span className="font-bold text-gray-700">PAN: {safeData.sender.pan}</span>
+        {safeData.gstNo && <span className="ml-4 font-bold text-gray-700">GSTIN: {safeData.gstNo}</span>}
+      </div>
+    ) : null
+  );
+
+  const renderSectionSubject = () => (
+    <div className="mb-4 text-center">
+      <h3 className="text-md font-bold text-black underline tracking-wide">
+        {safeData.type === 'Proforma' ? 'PROFORMA INVOICE' : `Sub:- ${safeData.subject || ''}`}
+      </h3>
+    </div>
+  );
+
+  const renderSectionClient = () => (
+    <div className="flex justify-between items-start mb-4 px-8">
+      <div className="text-sm text-gray-800 w-1/2">
+        <p className={`font-bold text-md ${tok.headingColor}`}>{safeData.receiver?.company || 'Client Company'}</p>
+        <p className="font-semibold">{safeData.receiver?.name}</p>
+        <p className="text-gray-700 whitespace-pre-wrap">{safeData.receiver?.address}</p>
+        {safeData.receiver?.phone && <p className="font-semibold mt-1">Ph: {safeData.receiver.phone}</p>}
+        {safeData.receiver?.gst && <p className="font-bold text-gray-800 mt-1">GSTIN: {safeData.receiver.gst}</p>}
+      </div>
+      {isSectionVisible('meta') ? null : null /* meta rendered separately */}
+    </div>
+  );
+
+  const renderSectionMeta = () => (
+    <div className="text-right text-sm font-bold text-gray-800 px-8 mb-4">
+      <div className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-1 justify-end">
+        <span className="text-gray-600">{safeData.type === 'Proforma' ? 'PI No:' : 'Quotation No:'}</span>
+        <span>{safeData.quotationNo}</span>
+        <span className="text-gray-600">Date:</span>
+        <span>{safeData.date}</span>
+        {isProforma ? (
+          <>
+            <span className="text-gray-600">PO Date:</span>
+            <span>{safeData.poDate || '-'}</span>
+            <span className="text-gray-600">PO No.:</span>
+            <span>{safeData.poNo || '-'}</span>
+          </>
+        ) : (
+          <>
+            <span className="text-gray-600">Valid Till:</span>
+            <span>{safeData.validTill}</span>
+          </>
+        )}
+      </div>
+    </div>
+  );
+
   // --- Render Page Function ---
   const renderPage = (pageItems: QuotationItem[], pageIndex: number) => {
     // For Proforma, show totals on the very last page (which might be an intentionally added overflow page)
@@ -192,16 +351,17 @@ const QuotationPreview = ({ data }: { data: QuotationPreviewData }) => {
     <div 
       key={pageIndex} 
       className={`bg-white shadow-2xl mx-auto w-[210mm] h-[297mm] p-10 relative text-sm sm:text-base text-gray-800 mb-8 overflow-hidden flex flex-col print:shadow-none print:mb-0 print:w-full print:h-[297mm] print:overflow-hidden print:mx-0 ${pageIndex < pages.length - 1 ? 'print:break-after-page' : ''}`}
-      style={{ fontFamily: 'Inter, sans-serif' }}
+      style={{ fontFamily: tok.pageFont }}
     >
        {/* Watermark */}
        <div className="absolute inset-0 flex items-center justify-center opacity-[0.06] pointer-events-none z-0">
           <div className="w-[500px] h-[500px] flex items-center justify-center">
-             <Image 
-                 src="https://championsecuritysystem.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Flogo.e3798401.png&w=384&q=75" 
-                 alt="watermark logo" width={400} height={400} className="object-contain" 
-                 unoptimized
-             />
+             {safeData.sender?.logo && (
+                 <img 
+                     src={safeData.sender.logo} 
+                     alt="watermark logo" className="object-contain max-w-full max-h-full" 
+                 />
+             )}
           </div>
        </div>
 
@@ -209,83 +369,18 @@ const QuotationPreview = ({ data }: { data: QuotationPreviewData }) => {
          <div>
             {pageIndex === 0 ? (
                 <>
-                {/* Page 1 Header */}
-                <div className="flex flex-col items-center mb-4 text-center">
-                    <div className="flex items-center gap-4 mb-2">
-                         <div className="w-16 h-16 flex items-center justify-center items-center">
-                            <Image 
-                                src="https://championsecuritysystem.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Flogo.e3798401.png&w=384&q=75" 
-                                alt="company logo" width={350} height={350} className="object-contain"
-                                unoptimized
-                            />
-                        </div>
-                        <div className="text-center">
-                           <h1 className="text-3xl font-bold text-blue-900">{safeData.sender?.name || 'Company Name'}</h1>
-                           <p className="text-sm font-semibold text-gray-800">CCTV.Intruder Alarm. Access Controls.Multi Apt.VDP.</p>
-                        </div>
-                    </div>
-                    
-                    <div className="text-sm text-blue-800 font-medium leading-tight">
-                         <p className="mb-1">
-                            Email: <a href={`mailto:${safeData.sender?.email}`} className="underline">{safeData.sender?.email}</a> 
-                            <span className="mx-2">Web:</span><a href="https://championsecuritysystem.com" className="underline">https://championsecuritysystem.com</a>
-                         </p>
-                         <p className="mb-1 text-black font-bold">{safeData.sender?.address}</p>
-                         <p className="text-black font-bold">Mobile: {safeData.sender?.phone}</p>
-                    </div>
-                </div>
-
-                <div className="mb-6 text-center">
-                    <h3 className="text-md font-bold text-black underline tracking-wide">
-                        {safeData.type === 'Proforma' ? 'PROFORMA INVOICE' : `Sub:- ${safeData.subject || ''}`}
-                    </h3>
-                </div>
-
-                <div className="flex justify-between items-start mb-6 px-8">
-                      <div className="text-sm text-gray-800 w-1/2">
-                         <p className="font-bold text-md text-blue-900">{safeData.receiver?.company || 'Client Company'}</p>
-                         <p className="font-semibold">{safeData.receiver?.name}</p>
-                         <p className="text-gray-700 whitespace-pre-wrap">{safeData.receiver?.address}</p>
-                         {safeData.receiver?.phone && <p className="font-semibold mt-1">Ph: {safeData.receiver.phone}</p>}
-                         {safeData.receiver?.gst && <p className="font-bold text-gray-800 mt-1">GSTIN: {safeData.receiver.gst}</p>}
-                      </div>
-
-                      <div className="text-right text-sm font-bold text-gray-800 w-1/2">
-                         <div className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-1 justify-end">
-                            <span className="text-gray-600">{safeData.type === 'Proforma' ? 'PI No:' : 'Quotation No:'}</span>
-                            <span>{safeData.quotationNo}</span>
-                            
-                            <span className="text-gray-600">Date:</span>
-                            <span>{safeData.date}</span>
-                            
-
-                            
-                            {isProforma ? (
-                                <>
-                                    <span className="text-gray-600">PO Date:</span>
-                                    <span>{safeData.poDate || '-'}</span>
-                                    <span className="text-gray-600">PO No.:</span>
-                                    <span>{safeData.poNo || '-'}</span>
-                                </>
-                            ) : (
-                                <>
-                                    <span className="text-gray-600">Valid Till:</span>
-                                    <span>{safeData.validTill}</span>
-                                </>
-                            )}
-
-                            <span className="text-gray-600">GSTIN No:</span>
-                            <span>{safeData.gstNo || '27AHXPD7350C1Z8'}</span>
-
-                            {safeData.sender?.pan && (
-                                <>
-                                    <span className="text-gray-600">PAN No:</span>
-                                    <span>{safeData.sender.pan}</span>
-                                </>
-                            )}
-                         </div>
-                      </div>
-                </div>
+                {/* Page 1: render header-zone sections in layout order */}
+                {headerZoneOrder.map((sectionId) => {
+                  switch(sectionId) {
+                    case 'header':  return <React.Fragment key={sectionId}>{renderSectionHeader()}</React.Fragment>;
+                    case 'contact': return <React.Fragment key={sectionId}>{renderSectionContact()}</React.Fragment>;
+                    case 'pan':     return <React.Fragment key={sectionId}>{renderSectionPan()}</React.Fragment>;
+                    case 'subject': return <React.Fragment key={sectionId}>{renderSectionSubject()}</React.Fragment>;
+                    case 'meta':    return <React.Fragment key={sectionId}>{renderSectionMeta()}</React.Fragment>;
+                    case 'client':  return <React.Fragment key={sectionId}>{renderSectionClient()}</React.Fragment>;
+                    default: return null;
+                  }
+                })}
                 </>
             ) : (
                 <div className="flex justify-between items-center border-b pb-4 mb-6">
@@ -302,7 +397,7 @@ const QuotationPreview = ({ data }: { data: QuotationPreviewData }) => {
             <div className="mb-4 w-full flex-grow flex flex-col">
                 <table className="w-full text-xs border-collapse h-full table-fixed">
                     <thead>
-                        <tr className="border-y border-slate-500 bg-slate-50 text-slate-900">
+                        <tr className={`border-y border-slate-500 ${tok.tableHeaderBg} ${tok.tableHeaderText}`}>
                             <th className="w-[5%] py-2 border-r border-slate-300 text-center font-bold">Sr.n</th>
                             <th className="w-[45%] px-3 py-2 border-r border-slate-300 text-left font-bold">Particulars</th>
                             {safeData.showImages && safeData.type !== 'Proforma' && <th className="w-[8%] py-2 border-r border-slate-300 text-center font-bold">Image</th>}
@@ -410,9 +505,9 @@ const QuotationPreview = ({ data }: { data: QuotationPreviewData }) => {
 
                         {/* Signature Block */}
                         <div className="text-center w-[200px]">
-                           <p className="font-bold text-xs text-black mb-4">FOR CHAMPION SECURITY SYSTEM</p>
+                           <p className="font-bold text-xs text-black mb-4 uppercase">FOR {safeData.sender?.name}</p>
                            <div className="h-16 flex items-center justify-center mb-1">
-                               <img src="/sign/signature.png" alt="Signature" className="max-h-full max-w-full object-contain" />
+                               {/* <img src="/sign/signature.png" alt="Signature" className="max-h-full max-w-full object-contain" /> */}
                            </div>
                            <p className="font-bold text-xs text-black border-t border-black pt-1">AUTHORISED SIGNATORY</p>
                         </div>
@@ -455,84 +550,50 @@ const QuotationPreview = ({ data }: { data: QuotationPreviewData }) => {
          {!isProforma && isLastPage(pageIndex) && (
             <div className="flex flex-col h-full justify-start">
                 <div className="pt-4">
-                    <div className="flex justify-between items-start gap-8 mb-6">
-                        <div className="flex-1 text-xs text-gray-700 leading-relaxed">
-                             <div className="space-y-2">
-                                {(safeData.terms || '').split('\n').map((term, i) => {
-                                    const parts = term.split(/(:|-)/); 
-                                    if (parts.length > 1) {
-                                        return (
-                                            <p key={i}>
-                                                <span className="font-bold text-black">• {parts[0].trim()}{parts[1]}</span>
-                                                <span dangerouslySetInnerHTML={{ __html: term.substring(parts[0].length + 1).trim() }} />
-                                            </p>
-                                        );
-                                    }
-                                    return term.trim() ? <p key={i} dangerouslySetInnerHTML={{ __html: '• ' + term }} /> : null;
-                                })}
-                             </div>
-                             {/* <div className="mt-4">
-                                <p><span className="font-bold text-black">• Complain will be received by Email:-</span> <a href="mailto:info@championsecuritysystem.com" className="text-blue-600 underline">info@championsecuritysystem.com</a></p>
-                                <p className="pl-2">with detail (like camera number, place etc). Time:- 10:30am To 6:30pm</p>
-                                <p className="pl-2">Service will be provided in 24 to 48 hours after call received by Authorized Person</p>
-                             </div> */}
-                        </div>
-                    </div>
-                    {/* Footer Logos & Certificates - Hide for Proforma */}
-                    {safeData.type !== 'Proforma' && (
-                        <>
-                            <div className="text-center mb-6">
-                                <div className="flex justify-center items-center gap-4 mb-2">
-                                    <div className="h-10 w-24 relative">
-                                        <img src="https://upload.wikimedia.org/wikipedia/hi/thumb/e/e7/GeM-logo.svg/1280px-GeM-logo.svg.png" alt="Gem" className="w-48 object-contain" />
-                                    </div>
-                                </div>
-                                <p className="text-red-600 font-bold text-sm">Trademark registration number-5290052/ Certificate No- 3149953</p>
-                                <p className="text-red-600 font-bold text-sm">ISO-9001 : 2015. CERTIFICATE NO- 250210Q105---</p>
-                                <p className="text-xs text-gray-700 mt-1">
-                                    We are the authorized Registered channel partner of <span className="font-bold text-red-600">Axis, Pelco, Hanwha, Honeywell, Panasonic I-Pro, D-LINK, TP-LINK</span> Surveillance product and Government Approved <span className="font-bold text-red-600 underline">GEM & Trademark</span> registered Company
+                  {tailZoneOrder.map((sectionId) => {
+                    if (sectionId === 'totals') return null; // totals rendered in the page-second-to-last block above
+                    if (sectionId === 'terms') return (
+                      <div key="terms" className="flex-1 text-xs text-gray-700 leading-relaxed mb-6">
+                        <div className="space-y-2">
+                          {(safeData.terms || '').split('\n').map((term, i) => {
+                            const parts = term.split(/(:|-)/);
+                            if (parts.length > 1) {
+                              return (
+                                <p key={i}>
+                                  <span className="font-bold text-black">• {parts[0].trim()}{parts[1]}</span>
+                                  <span dangerouslySetInnerHTML={{ __html: term.substring(parts[0].length + 1).trim() }} />
                                 </p>
-                            </div>
-                            <div className="flex flex-wrap gap-6 justify-between items-center px-4 opacity-90 mb-8">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Axis_Communications_logo.svg/1280px-Axis_Communications_logo.svg.png" alt="Axis" className="h-10 object-contain" />
-                                <img src="https://wicom.ca/wp-content/uploads/2023/03/logo-pelco.png" alt="Pelco" className="h-15 object-contain" />
-                                <img src="https://www.secomp.fr/thumbor/o7rRmg8K9vuWJVwmE2VThnpQivM=/filters:cachevalid(2022-09-23T12:17:17.716683):strip_icc():strip_exif()/cms_secde/cms/ueber_uns/markenwelt/hersteller_logos/i-pro_logo_rgb_blue.png" alt="Panasonic" className="h-10 object-contain" />
-                                <img src="https://www.matrixcomsec.com/products/wp-content/uploads/2022/01/Matrix-ComSec_Logo1new.png" alt="Matrix" className="h-10 object-contain" />
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnzwl-53GN5z4FI3ITAH6aA946jNx65kaU_Q&s" alt="Hanwha" className="h-10 object-contain" />
-                                <img src="https://www.actility.com/wp-content/uploads/2024/12/Milesight-logo.png" alt="Milesight" className="h-10 object-contain" />
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJ1lgzY1sVnPeAwLedBr3z4u-zjeaDmHCx5w&s" alt="Honeywell" className="h-20 object-contain" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/D-Link_wordmark.svg/960px-D-Link_wordmark.svg.png" alt="Honeywell" className="h-10 object-contain" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Alcatel-Lucent_logo.svg/1280px-Alcatel-Lucent_logo.svg.png" alt="Honeywell" className="h-10 object-contain" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/TPLINK_Logo_2.svg/1280px-TPLINK_Logo_2.svg.png" alt="Honeywell" className="h-10 object-contain" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/22/Logo_Netgear.png" alt="Honeywell" className="h-5 object-contain" />
-                                <img src="https://www.nit.ae/wp-content/uploads/2022/11/MS_logo_CBlue_CMYK-1-1024x212.png" alt="Milestone" className="h-10 object-contain" />
-                            </div>
-
-                            {/* Contact & Links Footer */}
-                            <div className="flex justify-between items-start text-xs border-t border-gray-200 pt-4 mt-auto">
-                                <div className="space-y-1">
-                                    <p>
-                                        <span className="font-semibold text-black">Web:- </span>
-                                        <a href="https://championsecuritysystem.com" className="text-blue-600 underline">https://championsecuritysystem.com</a>
-                                    </p>
-                                    <p>
-                                        <span className="font-semibold text-black">Email:- </span>
-                                        <a href="mailto:admin@championsecuritysystem.com" className="text-blue-600 underline">admin@championsecuritysystem.com</a>
-                                    </p>
-                                    <p>
-                                        <span className="font-semibold text-black">Email:- </span>
-                                        <a href="mailto:info@championsecuritysystem.com" className="text-blue-600 underline">info@championsecuritysystem.com</a>
-                                    </p>
-                                </div>
-                                <div className="text-right space-y-1">
-                                    <p className="font-semibold text-black">Please Click on Link Below (Company Profile)</p>
-                                    <a href="https://championsecuritysystem.com/documents/profile.pdf" className="text-blue-600 underline block">
-                                        https://championsecuritysystem.com/documents/profile.pdf
-                                    </a>
-                                </div>
-                            </div>
-                        </>
-                    )}
+                              );
+                            }
+                            return term.trim() ? <p key={i} dangerouslySetInnerHTML={{ __html: '• ' + term }} /> : null;
+                          })}
+                        </div>
+                      </div>
+                    );
+                    if (sectionId === 'signature') return (
+                      <div key="signature" className="flex justify-end mb-6">
+                        <div className="text-center w-[200px]">
+                          <p className="font-bold text-xs text-black mb-4 uppercase">FOR {safeData.sender?.name}</p>
+                          <div className="h-16 flex items-center justify-center mb-1" />
+                          <p className="font-bold text-xs text-black border-t border-black pt-1">AUTHORISED SIGNATORY</p>
+                        </div>
+                      </div>
+                    );
+                    return null;
+                  })}
+                  {/* Footer Contact & Links */}
+                  {safeData.type !== 'Proforma' && (
+                    <div className="flex justify-between items-start text-xs border-t border-gray-200 pt-4 mt-auto">
+                      <div className="space-y-1">
+                        {safeData.sender?.website && (
+                          <p><span className="font-semibold text-black">Web: </span><a href={safeData.sender.website} className="text-blue-600 underline" target="_blank" rel="noopener noreferrer">{safeData.sender.website}</a></p>
+                        )}
+                        {safeData.sender?.email && (
+                          <p><span className="font-semibold text-black">Email: </span><a href={`mailto:${safeData.sender.email}`} className="text-blue-600 underline">{safeData.sender.email}</a></p>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
             </div>
          )}

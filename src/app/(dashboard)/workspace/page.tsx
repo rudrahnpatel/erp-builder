@@ -199,7 +199,7 @@ export default function WorkspacePage() {
             className="mt-2 text-sm sm:text-base max-w-lg"
             style={{ color: "var(--foreground-muted)", lineHeight: "1.6" }}
           >
-            {workspace.name} — your ERP builder workspace.
+            {workspace.name} — your Mosaic workspace.
           </p>
           {workspace.slug && (
             <div className="mt-5 flex flex-wrap items-center gap-3">

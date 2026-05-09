@@ -48,6 +48,7 @@ export async function GET() {
       id: workspace.id,
       name: workspace.name,
       slug: workspace.slug,
+      settings: workspace.settings,
       stats: {
         tables: tables.length,
         totalRecords: tables.reduce((sum, t) => sum + t._count.records, 0),

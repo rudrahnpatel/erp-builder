@@ -24,11 +24,11 @@ const instrumentSerif = Instrument_Serif({
 
 export const metadata: Metadata = {
   title: {
-    default: "The Ledger — ERP builder for Indian SMEs",
-    template: "%s · The Ledger",
+    default: "Mosaic — Business ERP for Indian SMEs",
+    template: "%s · Mosaic",
   },
   description:
-    "Install modules, design schemas, compose pages. A no-code ERP builder shipped for Indian SMEs — built by people who've worked the GST side of a spreadsheet.",
+    "Install modules, design schemas, compose pages. Mosaic is a no-code ERP platform built for Indian SMEs.",
 };
 
 export default function RootLayout({

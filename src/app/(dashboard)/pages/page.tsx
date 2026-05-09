@@ -70,6 +70,8 @@ const IconMap: Record<string, any> = {
   "clock": Clock,
   "indian-rupee": IndianRupee,
   "receipt": Receipt,
+  "layers": Layers,
+  "activity": Activity,
 };
 import { Button } from "@/components/ui/button";
 
@@ -188,6 +190,12 @@ export default function PagesPage() {
       {/* Header */}
       <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
+          <p
+            className="text-[11px] font-medium uppercase tracking-[0.14em] mb-2 mono"
+            style={{ color: "var(--foreground-dimmed)" }}
+          >
+            / builder · pages
+          </p>
           <h1
             className="text-3xl sm:text-4xl font-bold tracking-tight"
             style={{ color: "var(--foreground)" }}

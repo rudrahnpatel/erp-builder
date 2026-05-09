@@ -30,32 +30,32 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
   const { t } = useLanguage();
   const { isDevMode } = useDevMode();
 
-  // Core nav — always visible
-  const coreItems = [
+  const dashboardItems = [
     { href: "/workspace", label: t("common.dashboard"), icon: LayoutDashboard },
-    { href: "/pages", label: "Manage Pages", icon: FileText },
-    { href: "/tables", label: "Manage Tables", icon: Database },
-    { href: "/schema", label: "Schema Designer", icon: Network },
-    { href: "/modules", label: t("common.marketplace"), icon: Blocks },
-    { href: "/plugins", label: t("common.plugins"), icon: Puzzle },
   ];
 
-  if (workspace?.installedPacks?.includes("quotation")) {
-    coreItems.push(
-      { href: "/quotation", label: "Quotations", icon: FileText },
-      { href: "/estimated", label: "Estimates", icon: FileText }
-    );
-  }
 
-  // Dev-only items — shown only in developer mode
-  const devItems = [
-    { href: "/dev/modules", label: "My Modules", icon: Package },
-  ];
 
+
+  // Core nav — categorized
   const navSections = [
     {
-      label: t("common.builder"),
-      items: coreItems,
+      label: null,
+      items: dashboardItems,
+    },
+    {
+      label: t("common.marketplace"),
+      items: [
+        { href: "/modules", label: t("common.browseModules") || "Browse Modules", icon: Blocks },
+        { href: "/plugins", label: t("common.plugins"), icon: Puzzle },
+      ],
+    },
+    {
+      label: t("common.manageApp") || "Manage App",
+      items: [
+        { href: "/pages", label: t("common.managePages"), icon: FileText },
+        { href: "/tables", label: t("common.manageTables"), icon: Database },
+      ],
     },
     // Conditionally add dev section
     ...(isDevMode
@@ -63,7 +63,9 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
           {
             label: "Developer Tools",
             isDev: true,
-            items: devItems,
+            items: [
+              { href: "/dev/modules", label: "My Modules", icon: Package },
+            ],
           },
         ]
       : []),
@@ -119,18 +121,10 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
           ) : (
             <>
               <span
-                className="font-semibold text-[13px] block leading-tight truncate tracking-tight"
+                className="font-semibold text-[16px] block leading-tight truncate tracking-tight"
                 style={{ color: "var(--sidebar-foreground)" }}
               >
                 {workspace?.name || "Workspace"}
-              </span>
-              <span
-                className="text-[10px] tracking-[0.08em] mono block mt-0.5"
-                style={{ color: "var(--foreground-dimmed)" }}
-              >
-                {workspace?.slug
-                  ? `${workspace.slug}.erpbuilder.app`
-                  : ""}
               </span>
             </>
           )}
@@ -202,7 +196,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                     {/* Active indicator bar */}
                     {isActive && (
                       <span
-                        className="absolute -left-2 top-1/2 -translate-y-1/2 w-[3px] h-6 rounded-r-full animate-nav-indicator"
+                        className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[18px] rounded-full animate-nav-indicator"
                         style={{ background: "var(--primary)" }}
                       />
                     )}
@@ -245,22 +239,15 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
         className="px-2.5 py-2.5 border-t space-y-0.5"
         style={{ borderColor: "var(--sidebar-border)" }}
       >
-        <button
-          type="button"
-          onClick={() => {
-            window.open(
-              "https://github.com/the-ledger/docs",
-              "_blank",
-              "noopener,noreferrer"
-            );
-            onClose?.();
-          }}
+        <Link
+          href="/docs"
+          onClick={() => onClose?.()}
           className="flex w-full items-center gap-2.5 px-3 py-2 text-[13px] rounded-lg hover-bg-subtle focus-ring"
           style={{ color: "var(--foreground-muted)" }}
         >
           <HelpCircle className="h-4 w-4" />
           {t("common.helpDocs")}
-        </button>
+        </Link>
         <button
           onClick={() => {
             onClose?.();

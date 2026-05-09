@@ -36,13 +36,15 @@ interface Estimate {
   terms?: string;
 }
 
-export default function EstimatedListPage() {
+export default function EstimatedListPage({ createUrl }: { createUrl?: string }) {
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [estimates, setEstimates] = useState<Estimate[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState('All');
+  
+  const finalCreateUrl = createUrl || "/estimated/create";
 
   const [isPreview, setIsPreview] = useState(false);
   const [printingEstimate, setPrintingEstimate] = useState<Estimate | null>(null);
@@ -168,7 +170,7 @@ export default function EstimatedListPage() {
                             </button>
 
                             <Link 
-                                href="/estimated/create" 
+                                href={finalCreateUrl} 
                                 className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-lg shadow-emerald-600/20 transition-all text-sm font-medium ml-auto md:ml-0"
                             >
                                 <Plus className="w-4 h-4" />
@@ -259,7 +261,7 @@ export default function EstimatedListPage() {
                                                 {index + 1}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <Link href={`/estimated/create?id=${est.id}`} className="font-medium text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1">
+                                                <Link href={`${finalCreateUrl}?id=${est.id}`} className="font-medium text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1">
                                                     {est.billNo}
                                                 </Link>
                                             </td>
@@ -328,7 +330,7 @@ export default function EstimatedListPage() {
                                                         <Printer className="w-4 h-4" />
                                                     </button>
                                                     <button 
-                                                        onClick={() => router.push(`/estimated/create?id=${est.id}`)} 
+                                                        onClick={() => router.push(`${finalCreateUrl}?id=${est.id}`)} 
                                                         className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                                         title="Edit"
                                                     >

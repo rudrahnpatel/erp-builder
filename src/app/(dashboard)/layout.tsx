@@ -37,15 +37,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       {/* Noise overlay */}
       <div className="noise-overlay" aria-hidden="true" />
 
-      {/* ── Desktop Sidebar — always visible on md+ ── */}
-      <div className="hidden md:flex shrink-0">
-        <Sidebar />
-      </div>
-
-      {/* ── Mobile Sidebar — overlay drawer ── */}
+      {/* Overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 md:hidden"
+          className="fixed inset-0 z-40 transition-opacity duration-300"
           style={{
             background: "oklch(0.08 0.020 260 / 0.55)",
             backdropFilter: "blur(6px)",
@@ -55,8 +50,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         />
       )}
       <div
-        className={`fixed inset-y-0 left-0 z-50 md:hidden transform transition-transform duration-300 ease-[var(--ease-out-expo)] ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-[var(--ease-out-expo)] ${
+          sidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"
         }`}
       >
         <Sidebar onClose={() => setSidebarOpen(false)} />

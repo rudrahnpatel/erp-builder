@@ -15,7 +15,15 @@ export async function GET(
   const page = await db.page.findFirst({
     where: { id, workspaceId: workspace.id },
     include: {
-      workspace: { select: { name: true, slug: true } },
+      workspace: { 
+        select: { 
+          name: true, 
+          slug: true,
+          pages: {
+            select: { id: true, packPageKey: true }
+          }
+        } 
+      },
     },
   });
 

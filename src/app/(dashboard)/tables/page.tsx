@@ -144,6 +144,12 @@ export default function TablesPage() {
       {/* Header */}
       <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
+          <p
+            className="text-[11px] font-medium uppercase tracking-[0.14em] mb-2 mono"
+            style={{ color: "var(--foreground-dimmed)" }}
+          >
+            / builder · tables
+          </p>
           <h1
             className="text-3xl sm:text-4xl font-bold tracking-tight"
             style={{ color: "var(--foreground)" }}
@@ -381,14 +387,14 @@ export default function TablesPage() {
                     style={{ color: "var(--foreground-dimmed)" }}
                   >
                     <Layers className="h-3 w-3" />
-                    {table.fieldCount} fields
+                    {table.fieldCount} field{table.fieldCount !== 1 ? 's' : ''}
                   </span>
                   <span
                     className="inline-flex items-center gap-1.5 text-xs"
                     style={{ color: "var(--foreground-dimmed)" }}
                   >
                     <Rows3 className="h-3 w-3" />
-                    {table.recordCount} records
+                    {table.recordCount} record{table.recordCount !== 1 ? 's' : ''}
                   </span>
 
                   {table.packSource && (

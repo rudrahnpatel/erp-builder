@@ -16,7 +16,8 @@ import {
   FileText,
   Shield,
   Zap,
-  Users,
+  Smartphone,
+  Table,
 } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -43,7 +44,7 @@ const steps = [
   {
     step: "03",
     title: "Build & deploy your ERP",
-    desc: "Configure schemas, compose pages, wire up plugins — then deploy. Your team gets a live ERP at yourname.erpbuilder.app.",
+    desc: "Configure schemas, compose pages, wire up plugins — then deploy. Your team gets a live ERP at yourname.mosaic.app.",
     icon: Rocket,
     accentVar: "--accent-violet",
     // Visual: dashboard deployed
@@ -71,7 +72,7 @@ function LoginVisual() {
           className="font-semibold text-sm"
           style={{ color: "var(--foreground)" }}
         >
-          The Ledger
+          Mosaic
         </span>
       </div>
       <p
@@ -140,8 +141,8 @@ function MarketplaceVisual() {
     { name: "Inventory", icon: Database, color: "--accent-blue", installed: true },
     { name: "HR & Payroll", icon: Users, color: "--accent-emerald", installed: true },
     { name: "Finance & GST", icon: Shield, color: "--accent-amber", installed: false },
-    { name: "CRM & Sales", icon: Puzzle, color: "--accent-violet", installed: false },
-    { name: "Page Builder", icon: FileText, color: "--accent-cyan", installed: true },
+    { name: "UPI Payments", icon: Smartphone, color: "--accent-violet", installed: false },
+    { name: "Google Sheets", icon: Table, color: "--accent-cyan", installed: true },
     { name: "Automation", icon: Zap, color: "--accent-rose", installed: false },
   ];
 
@@ -244,7 +245,7 @@ function DeployedVisual() {
             color: "var(--foreground-dimmed)",
           }}
         >
-          🔒 acme.erpbuilder.app
+          🔒 acme.mosaic.app
         </div>
       </div>
       {/* Mini dashboard */}

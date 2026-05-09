@@ -1,5 +1,5 @@
 import { PackDefinition } from "@/types/pack";
-import { inventoryPack, crmPack, hrPack, financePack, quotationPack } from "./registry";
+import { inventoryPack, crmPack, hrPack, financePack, quotationPack, supportPack } from "./registry";
 import { db } from "@/lib/db";
 
 // Central pack registry — add new packs here
@@ -14,6 +14,7 @@ export const packRegistry: Record<string, PackDefinition> = {
   // [crmPack.id]: crmPack,
   [hrPack.id]: hrPack,
   [quotationPack.id]: quotationPack,
+  [supportPack.id]: supportPack,
 };
 
 // ── Synchronous lookups (built-in packs only) ───────────────────────────

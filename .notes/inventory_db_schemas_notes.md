@@ -1,4 +1,4 @@
-# ERP Builder — DB Schema Design Notes
+    # ERP Builder — DB Schema Design Notes
 
 > Bottom-up approach: **DB → Pages → Module UI**.  
 > Complete one module fully before starting the next.

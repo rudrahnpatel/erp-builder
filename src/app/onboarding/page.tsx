@@ -33,7 +33,7 @@ const presets = [
     icon: Package,
     color: "bg-blue-50 text-blue-600 border-blue-200",
     modules: ["Inventory", "Suppliers", "Stock Movements"],
-    plugins: ["WhatsApp Notifications", "GST Invoice Generator"],
+    plugins: ["WhatsApp Notifications", "GST Invoice Generator", "E-Way Bill Generation"],
   },
   {
     id: "crm",
@@ -42,7 +42,7 @@ const presets = [
     icon: Users,
     color: "bg-emerald-50 text-emerald-600 border-emerald-200",
     modules: ["CRM & Sales", "Contacts", "Deals"],
-    plugins: ["Email Campaigns", "Payment Gateway (Razorpay)"],
+    plugins: ["Email Campaigns", "Payment Gateway (Razorpay)", "SMS via MSG91"],
   },
   {
     id: "hr",
@@ -51,7 +51,7 @@ const presets = [
     icon: Briefcase,
     color: "bg-amber-50 text-amber-600 border-amber-200",
     modules: ["HR & Payroll", "Attendance", "Leave Management"],
-    plugins: ["Employee Attendance", "Leave Management"],
+    plugins: ["Employee Attendance", "Leave Management", "Google Sheets Sync"],
   },
   {
     id: "finance",
@@ -60,7 +60,7 @@ const presets = [
     icon: IndianRupee,
     color: "bg-violet-50 text-violet-600 border-violet-200",
     modules: ["Finance", "Invoices", "Expenses"],
-    plugins: ["GST Invoice Generator", "Payment Gateway (Razorpay)"],
+    plugins: ["GST Invoice Generator", "Payment Gateway (Razorpay)", "PDF Invoice Generator", "UPI Payment Link", "Tally Export"],
   },
 ];
 
@@ -155,7 +155,7 @@ export default function OnboardingPage() {
           <div className="h-8 w-8 rounded-lg flex items-center justify-center" style={{ background: "var(--primary-subtle)" }}>
             <Building2 className="h-4 w-4" style={{ color: "var(--primary)" }} />
           </div>
-          <span className="font-bold text-sm" style={{ color: "var(--foreground)" }}>ERP Builder</span>
+          <span className="font-bold text-sm" style={{ color: "var(--foreground)" }}>Mosaic</span>
         </div>
 
         {/* Step indicator */}

@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import useSWR from "swr";
 import { toast } from "sonner";
+import { QuotationLayoutEditor } from "@/components/QuotationLayoutEditor";
 import {
   Settings as SettingsIcon,
   Users,
@@ -12,6 +13,8 @@ import {
   Loader2,
   Trash2,
   X,
+  Building2,
+  LayoutDashboard,
 } from "lucide-react";
 
 const fetcher = (url: string) =>
@@ -27,10 +30,12 @@ type TenantUser = {
   createdAt: string;
 };
 
-type TabKey = "general" | "preferences" | "users";
+type TabKey = "general" | "preferences" | "company" | "layout" | "users";
 
 const TABS: Array<{ key: TabKey; label: string; icon: typeof SettingsIcon }> = [
   { key: "general", label: "General", icon: SettingsIcon },
+  { key: "company", label: "Company", icon: Building2 },
+  { key: "layout", label: "Layout", icon: LayoutDashboard },
   { key: "preferences", label: "Preferences", icon: SlidersHorizontal },
   { key: "users", label: "Users", icon: Users },
 ];
@@ -103,6 +108,15 @@ export function SettingsPage({
         <div className="max-w-5xl mx-auto">
           {tab === "general" && (
             <GeneralTab workspaceName={workspaceName} workspaceSlug={workspaceSlug} />
+          )}
+          {tab === "company" && <CompanyProfileTab />}
+          {tab === "layout" && (
+            <Card
+              title="Quotation Layout"
+              description="Drag sections to reorder them on the quotation canvas. Toggle the eye icon to show/hide a section. Click Save Layout when done."
+            >
+              <QuotationLayoutEditor />
+            </Card>
           )}
           {tab === "preferences" && <PreferencesTab />}
           {tab === "users" && <UsersTab />}
@@ -200,6 +214,132 @@ function GeneralTab({
           hint="Your tenant URL."
         />
       </div>
+    </Card>
+  );
+}
+
+function CompanyProfileTab() {
+  const [profile, setProfile] = useState({
+    name: "",
+    tagline: "",
+    logo: "",
+    address: "",
+    phone: "",
+    email: "",
+    website: "",
+    pan: "",
+  });
+  const [saving, setSaving] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/workspace")
+      .then((r) => r.json())
+      .then((ws) => {
+        if (ws?.settings?.companyProfile) {
+          setProfile((prev) => ({ ...prev, ...ws.settings.companyProfile }));
+        }
+        setLoaded(true);
+      })
+      .catch(() => setLoaded(true));
+  }, []);
+
+  const save = async () => {
+    setSaving(true);
+    const pending = toast.loading("Saving company profile…");
+    try {
+      // First get current settings to merge
+      const wsRes = await fetch("/api/workspace");
+      const ws = await wsRes.json();
+      const currentSettings = ws?.settings || {};
+      const res = await fetch("/api/workspace/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...currentSettings, companyProfile: profile }),
+      });
+      if (!res.ok) throw new Error("Failed to save");
+      toast.success("Company profile saved!", { id: pending });
+    } catch {
+      toast.error("Failed to save", { id: pending });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const inputStyle = {
+    background: "var(--surface-2)",
+    border: "1px solid var(--border-subtle)",
+    color: "var(--foreground)",
+  } as React.CSSProperties;
+
+  if (!loaded) {
+    return (
+      <div className="flex items-center justify-center py-16" style={{ color: "var(--foreground-muted)" }}>
+        <Loader2 className="h-5 w-5 animate-spin" />
+      </div>
+    );
+  }
+
+  const fields: Array<{ key: keyof typeof profile; label: string; placeholder: string; type?: string; colSpan?: boolean }> = [
+    { key: "name", label: "Company Name", placeholder: "e.g. Acme Corp" },
+    { key: "tagline", label: "Tagline", placeholder: "e.g. Built for the future" },
+    { key: "logo", label: "Logo URL", placeholder: "https://yoursite.com/logo.png", colSpan: true },
+    { key: "address", label: "Address", placeholder: "123 Main St, City, State, Country", colSpan: true },
+    { key: "phone", label: "Phone", placeholder: "+91 98765 43210" },
+    { key: "email", label: "Email", placeholder: "contact@acme.com", type: "email" },
+    { key: "website", label: "Website", placeholder: "https://acme.com" },
+    { key: "pan", label: "Tax ID / PAN / GST", placeholder: "ABCDE1234F" },
+  ];
+
+  return (
+    <Card
+      title="Company Profile"
+      description="These details auto-fill on every new Quotation and Estimate. Save once, use everywhere."
+    >
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+        {fields.map((f) => (
+          <div key={f.key} className={f.colSpan ? "sm:col-span-2" : ""}>
+            <label
+              className="text-[11px] font-semibold uppercase tracking-wider block mb-1.5"
+              style={{ color: "var(--foreground-muted)" }}
+            >
+              {f.label}
+            </label>
+            <input
+              type={f.type || "text"}
+              value={profile[f.key]}
+              onChange={(e) => setProfile((prev) => ({ ...prev, [f.key]: e.target.value }))}
+              placeholder={f.placeholder}
+              className="w-full text-sm px-3.5 py-2.5 rounded-xl outline-none focus:ring-2"
+              style={inputStyle}
+            />
+          </div>
+        ))}
+      </div>
+
+      {profile.logo && (
+        <div className="mb-5 p-3 rounded-xl flex items-center gap-3" style={{ background: "var(--surface-2)", border: "1px solid var(--border-subtle)" }}>
+          <img src={profile.logo} alt="Logo preview" className="h-10 w-10 object-contain rounded" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+          <span className="text-xs" style={{ color: "var(--foreground-muted)" }}>Logo preview</span>
+        </div>
+      )}
+
+      <button
+        onClick={save}
+        disabled={saving}
+        className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl pressable disabled:opacity-70"
+        style={{
+          background: "linear-gradient(135deg, var(--primary), var(--primary-hover))",
+          color: "var(--primary-foreground)",
+          boxShadow: "0 2px 8px color-mix(in oklch, var(--primary), transparent 65%)",
+        }}
+      >
+        {saving ? (
+          <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Saving…</>
+        ) : (
+          <><Building2 className="h-3.5 w-3.5" /> Save Company Profile</>
+        )}
+      </button>
     </Card>
   );
 }

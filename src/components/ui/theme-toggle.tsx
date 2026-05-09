@@ -39,7 +39,7 @@ export function ThemeToggle() {
       {/* Sun icon */}
       <Sun
         className={`h-4 w-4 absolute transition-all duration-300 ${
-          resolvedTheme === "light"
+          theme === "light"
             ? "opacity-100 rotate-0 scale-100"
             : "opacity-0 rotate-90 scale-75"
         }`}
@@ -48,7 +48,7 @@ export function ThemeToggle() {
       {/* Moon icon */}
       <Moon
         className={`h-4 w-4 absolute transition-all duration-300 ${
-          resolvedTheme === "dark" && theme !== "system"
+          theme === "dark"
             ? "opacity-100 rotate-0 scale-100"
             : "opacity-0 -rotate-90 scale-75"
         }`}

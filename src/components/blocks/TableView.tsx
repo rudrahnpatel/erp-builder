@@ -52,15 +52,16 @@ export function TableView({ config, tableId }: { config: any; tableId?: string }
   }
 
   const visibleFieldNames = config.visibleFields || [];
-  
-  // Create an ordered headers list based on `visibleFieldNames`
-  const headers = fields
-    ? visibleFieldNames
-        .map((name: string) => fields.find((f: any) => f.name === name || f.packFieldKey === name))
-        .filter(Boolean)
-    : [];
 
-  const records = recordsData?.records || [];
+  // Normalise API response — on auth/404 errors the API returns an object, not an array
+  const fieldsArray: any[] = Array.isArray(fields) ? fields : [];
+
+  // Create an ordered headers list based on `visibleFieldNames`
+  const headers = visibleFieldNames
+    .map((name: string) => fieldsArray.find((f: any) => f.name === name || f.packFieldKey === name))
+    .filter(Boolean);
+
+  const records: any[] = Array.isArray(recordsData?.records) ? recordsData.records : [];
 
   return (
     <div 
@@ -70,34 +71,34 @@ export function TableView({ config, tableId }: { config: any; tableId?: string }
         borderColor: "var(--border-subtle)" 
       }}
     >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between px-6 py-5 gap-4 border-b" style={{ borderColor: "var(--border-subtle)", background: "var(--surface-2)" }}>
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between px-5 py-3.5 gap-3 border-b" style={{ borderColor: "var(--border-subtle)", background: "var(--surface-2)" }}>
+        <div className="flex items-center gap-2.5">
           <div
-            className="h-10 w-10 rounded-xl flex items-center justify-center shadow-inner"
+            className="h-8 w-8 rounded-lg flex items-center justify-center"
             style={{
               background: "color-mix(in oklch, var(--primary), transparent 88%)",
               color: "var(--primary)",
             }}
           >
-            <Table2 className="h-5.5 w-5.5" />
+            <Table2 className="h-4 w-4" />
           </div>
           <div className="flex flex-col">
-            <span className="text-xl font-bold text-foreground tracking-tight leading-tight">
+            <span className="text-base font-semibold tracking-tight leading-tight" style={{ color: "var(--foreground)" }}>
               {config.tableRef || "Records"}
             </span>
             <span
-              className="text-[11px] font-bold uppercase tracking-widest mt-0.5 opacity-60"
+              className="text-[10px] font-semibold uppercase tracking-wider opacity-60"
               style={{ color: "var(--foreground-dimmed)" }}
             >
-              {records.length} {records.length === 1 ? "entry" : "entries"} total
+              {records.length} {records.length === 1 ? "entry" : "entries"}
             </span>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <Button 
-            className="gap-2 h-10 px-5 rounded-xl font-bold shadow-lg shadow-primary/20 pressable"
+            className="gap-1.5 h-9 px-4 rounded-lg text-sm font-semibold pressable"
             style={{
-              background: "linear-gradient(135deg, var(--primary), var(--primary-hover))",
+              background: "var(--primary)",
               color: "var(--primary-foreground)",
             }}
             onClick={() => {
@@ -105,10 +106,10 @@ export function TableView({ config, tableId }: { config: any; tableId?: string }
               setIsFormOpen(true);
             }}
           >
-            <Plus className="h-4 w-4" /> Add Record
+            <Plus className="h-3.5 w-3.5" /> Add Record
           </Button>
-          <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover-bg-subtle border" style={{ borderColor: "var(--border-subtle)" }}>
-            <MoreHorizontal className="h-5 w-5 text-muted-foreground" />
+          <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg hover-bg-subtle border" style={{ borderColor: "var(--border-subtle)" }}>
+            <MoreHorizontal className="h-4 w-4" style={{ color: "var(--foreground-muted)" }} />
           </Button>
         </div>
       </div>
@@ -247,7 +248,7 @@ export function TableView({ config, tableId }: { config: any; tableId?: string }
           refreshRecords();
           setIsFormOpen(false);
         }}
-        fields={fields || []}
+        fields={fieldsArray}
       />
     </div>
   );

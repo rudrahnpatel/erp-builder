@@ -95,14 +95,22 @@ export default function PluginsPage() {
     <div className="space-y-10 max-w-5xl mx-auto animate-fade-in-up py-6 px-4">
       {/* Header */}
       <header className="flex flex-col gap-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 text-xs font-medium uppercase tracking-widest text-muted-foreground w-fit rounded-full bg-secondary/50 border border-border/50">
-          <Settings2 className="w-3.5 h-3.5" />
-          <span>Ecosystem &middot; Plugins</span>
-        </div>
-        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground mt-2">
+        <p
+          className="text-[11px] font-medium uppercase tracking-[0.14em] mb-2 mono"
+          style={{ color: "var(--foreground-dimmed)" }}
+        >
+          / ecosystem · plugins
+        </p>
+        <h1
+          className="text-3xl sm:text-4xl font-semibold"
+          style={{ color: "var(--foreground)" }}
+        >
           Plugins
         </h1>
-        <p className="max-w-2xl text-base sm:text-lg text-muted-foreground leading-relaxed mt-1">
+        <p
+          className="max-w-2xl text-sm sm:text-base leading-relaxed mt-1"
+          style={{ color: "var(--foreground-muted)" }}
+        >
           Drop-in integrations for your modules. Install the specific capabilities you need—from WhatsApp invoice delivery to Razorpay collections—in a single click.
         </p>
       </header>

@@ -264,11 +264,6 @@ export function PackCard({
               </>
             )}
           </Button>
-          <Link href={`/modules/${pack.id}/configure`} className="w-full">
-            <Button variant="outline" className="w-full gap-2 font-medium text-xs h-8">
-              <Settings2 className="h-3.5 w-3.5" /> Configure first
-            </Button>
-          </Link>
         </div>
       )}
 

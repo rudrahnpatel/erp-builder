@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useSWR from "swr";
 import { Download, MapPin, Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -201,7 +201,7 @@ export default function AttendanceLogClient() {
                 height="100%"
                 frameBorder="0"
                 style={{ border: 0 }}
-                src={`https://maps.google.com/maps?q=${mapModal.lat},${mapModal.lng}&z=16&output=embed`}
+                src={`https://maps.google.com/maps?q=${mapModal.lat ?? 0},${mapModal.lng ?? 0}&z=16&output=embed`}
                 allowFullScreen
               ></iframe>
             </div>

@@ -65,7 +65,7 @@ export default async function LandingPage() {
                 className="text-sm font-medium"
                 style={{ color: "var(--foreground-muted)" }}
               >
-                The Ledger
+                Mosaic
               </span>
               <span
                 className="text-xs ml-2"
@@ -94,6 +94,12 @@ export default async function LandingPage() {
                 className="transition-colors hover:text-[var(--foreground)]"
               >
                 How it works
+              </Link>
+              <Link
+                href="/docs"
+                className="transition-colors hover:text-[var(--foreground)]"
+              >
+                Docs
               </Link>
               <Link
                 href="/login"

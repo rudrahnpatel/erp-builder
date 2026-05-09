@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -30,8 +30,34 @@ import {
   IndianRupee,
   Receipt,
   Layers,
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+
+function NavGroup({ title, icon: Icon, children, defaultOpen = true }: any) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  return (
+    <div className="mb-1">
+      <button 
+        onClick={() => setIsOpen(!isOpen)} 
+        className="w-full flex items-center justify-between px-3 py-2 text-[13px] rounded-lg hover-bg-subtle focus-ring text-[var(--foreground-muted)] font-medium"
+      >
+        <div className="flex items-center gap-2.5">
+          {Icon && <Icon className="h-[16px] w-[16px]" />}
+          <span className="truncate uppercase text-[10px] tracking-wider">{title}</span>
+        </div>
+        {isOpen ? <ChevronDown className="h-4 w-4 opacity-50" /> : <ChevronRight className="h-4 w-4 opacity-50" />}
+      </button>
+      {isOpen && (
+        <div className="ml-4 pl-2 border-l border-[var(--sidebar-border)] mt-1 space-y-1">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
 
 const IconMap: Record<string, any> = {
   "file-text": FileText,
@@ -89,6 +115,17 @@ export function AppShell({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        setSidebarOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   const base = `/apps/${workspace.slug}`;
 
   async function handleLogout() {
@@ -129,23 +166,72 @@ export function AppShell({
     return <div className="min-h-screen flex items-center justify-center bg-[var(--background)]">{children}</div>;
   }
 
+  // Group pages by packSource
+  const groupedPages: Record<string, typeof nonSystemPages> = {};
+  const flatPages: typeof nonSystemPages = [];
+
+  nonSystemPages.forEach(p => {
+    if (p.packSource) {
+      if (!groupedPages[p.packSource]) groupedPages[p.packSource] = [];
+      groupedPages[p.packSource].push(p);
+    } else {
+      flatPages.push(p);
+    }
+  });
+
+  const formatPackName = (slug: string) => {
+    if (slug === 'hr') return 'HR';
+    if (slug === 'crm') return 'CRM';
+    return slug
+      .split('-')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
+  const NavItemRender = ({ item, active }: { item: any, active: boolean }) => (
+    <Link
+      href={item.href}
+      onClick={() => setSidebarOpen(false)}
+      className={`relative flex items-center gap-2.5 px-3 py-2 text-[13px] rounded-lg focus-ring ${
+        active ? "sidebar-nav-item active font-medium" : "sidebar-nav-item"
+      }`}
+      style={active ? undefined : { color: "var(--foreground-muted)" }}
+    >
+      {active && (
+        <span
+          className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full animate-nav-indicator"
+          style={{ background: "var(--primary)" }}
+        />
+      )}
+      <item.icon className="h-[16px] w-[16px] shrink-0" />
+      <span className="truncate">{item.label}</span>
+    </Link>
+  );
+
   return (
     <div
       className="flex h-screen w-full overflow-hidden"
       style={{ background: "var(--background)" }}
     >
-      {/* Mobile overlay */}
+      {/* Noise overlay — breaks digital flatness */}
+      <div className="noise-overlay" aria-hidden="true" />
+
+      {/* Overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 lg:hidden"
-          style={{ background: "rgba(0, 0, 0, 0.4)", backdropFilter: "blur(8px)" }}
+          className="fixed inset-0 z-40 transition-opacity duration-300"
+          style={{
+            background: "oklch(0.08 0.020 260 / 0.55)",
+            backdropFilter: "blur(6px)",
+          }}
           onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar — hidden by default, slide-in on toggle */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-[260px] flex flex-col border-r transform transition-all duration-300 ease-spring lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-[248px] flex flex-col border-r transform transition-transform duration-300 ease-[var(--ease-out-expo)] ${
           sidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"
         }`}
         style={{
@@ -155,72 +241,97 @@ export function AppShell({
       >
         {/* Brand */}
         <div
-          className="h-[64px] flex items-center px-5 border-b shrink-0 bg-surface-1/50 backdrop-blur-sm"
+          className="h-[60px] flex items-center px-3 border-b shrink-0"
           style={{ borderColor: "var(--sidebar-border)" }}
         >
           <div
-            className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0 shadow-lg"
+            className="relative h-9 w-9 rounded-xl flex items-center justify-center shrink-0 overflow-hidden"
             style={{
               background: "linear-gradient(135deg, var(--primary), var(--primary-hover))",
-              boxShadow: "0 4px 12px rgba(59, 130, 246, 0.2)",
+              boxShadow: "inset 0 1px 0 oklch(1 0 0 / 0.18), 0 2px 8px oklch(0.08 0.02 260 / 0.5)",
             }}
           >
-            <Building2 className="h-5 w-5 text-white" />
+            <Building2 className="h-4.5 w-4.5 text-white" />
           </div>
-          <div className="ml-3 min-w-0">
+          <div className="ml-2.5 min-w-0 flex-1">
             <span
-              className="font-bold text-[14px] block truncate tracking-tight"
+              className="font-semibold text-[15px] block leading-tight truncate tracking-tight"
               style={{ color: "var(--sidebar-foreground)" }}
             >
               {workspace.name}
             </span>
             <span
-              className="text-[10px] tracking-[0.05em] font-medium opacity-60 uppercase"
+              className="text-[10px] tracking-[0.05em] font-medium opacity-50 uppercase"
               style={{ color: "var(--foreground-dimmed)" }}
             >
               {workspace.slug}
             </span>
           </div>
           <button
-            className="ml-auto lg:hidden p-1 rounded hover-bg-subtle focus-ring"
             onClick={() => setSidebarOpen(false)}
-            aria-label="Close menu"
+            className="h-7 w-7 rounded-lg flex items-center justify-center hover-bg-subtle focus-ring ml-auto"
+            style={{ color: "var(--foreground-dimmed)", background: "var(--surface-2)" }}
+            aria-label="Close sidebar"
           >
-            <X className="h-4 w-4" style={{ color: "var(--foreground-muted)" }} />
+            <ChevronLeft className="h-3.5 w-3.5" />
           </button>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-1">
-          {navItems.map((item) => {
-            const active = isActive(item.href, item.exact);
+        <nav className="flex-1 overflow-y-auto py-3 px-3 space-y-1.5 custom-scrollbar">
+          {/* Home */}
+          <NavItemRender 
+            item={{ href: base, label: "Home", icon: Home }} 
+            active={isActive(base, true)} 
+          />
+
+          {/* Grouped Pages */}
+          {Object.entries(groupedPages).map(([packSource, pages]) => {
+            const hasActiveChild = pages.some(p => isActive(`${base}/pages/${p.id}`, false));
             return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setSidebarOpen(false)}
-                className={`relative flex items-center gap-2.5 px-3 py-2.5 text-[13px] rounded-lg focus-ring ${
-                  active
-                    ? "sidebar-nav-item active"
-                    : "sidebar-nav-item"
-                }`}
-                style={
-                  active
-                    ? undefined
-                    : { color: "var(--foreground-muted)" }
-                }
+              <NavGroup 
+                key={packSource} 
+                title={formatPackName(packSource)} 
+                defaultOpen={hasActiveChild || true}
+                icon={Box} // Generic icon for modules
               >
-                {active && (
-                  <span
-                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full animate-nav-indicator"
-                    style={{ background: "var(--primary)" }}
-                  />
-                )}
-                <item.icon className="h-[18px] w-[18px] shrink-0" />
-                <span className="truncate">{item.label}</span>
-              </Link>
+                {pages.map((p) => {
+                  const href = `${base}/pages/${p.id}`;
+                  return (
+                    <NavItemRender
+                      key={p.id}
+                      item={{
+                        href,
+                        label: p.title,
+                        icon: p.icon ? (IconMap[p.icon] || LayoutDashboard) : LayoutDashboard,
+                      }}
+                      active={isActive(href, false)}
+                    />
+                  );
+                })}
+              </NavGroup>
             );
           })}
+
+          {/* Flat Pages */}
+          {flatPages.length > 0 && (
+            <div className="pt-2 mt-2 border-t" style={{ borderColor: "var(--sidebar-border)" }}>
+              {flatPages.map((p) => {
+                const href = `${base}/pages/${p.id}`;
+                return (
+                  <NavItemRender
+                    key={p.id}
+                    item={{
+                      href,
+                      label: p.title,
+                      icon: p.icon ? (IconMap[p.icon] || LayoutDashboard) : LayoutDashboard,
+                    }}
+                    active={isActive(href, false)}
+                  />
+                );
+              })}
+            </div>
+          )}
 
           {workspace.tables.length === 0 && nonSystemPages.length === 0 && (
             <div
@@ -251,7 +362,7 @@ export function AppShell({
               >
                 {active && (
                   <span
-                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full animate-nav-indicator"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[18px] rounded-full animate-nav-indicator"
                     style={{ background: "var(--primary)" }}
                   />
                 )}
@@ -277,9 +388,9 @@ export function AppShell({
 
       {/* Main */}
       <div className="flex flex-col flex-1 overflow-hidden">
-        {/* Mobile top bar (only visible < lg) */}
+        {/* Top bar — always visible to allow sidebar toggle */}
         <div
-          className="lg:hidden h-[56px] flex items-center px-4 border-b shrink-0 gap-3"
+          className="h-[56px] flex items-center px-4 border-b shrink-0 gap-3"
           style={{
             borderColor: "var(--border-subtle)",
             background: "var(--surface-1)",
@@ -287,10 +398,11 @@ export function AppShell({
         >
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-1 rounded hover-bg-subtle focus-ring"
+            className="p-1.5 rounded-md hover-bg-subtle focus-ring shrink-0"
+            style={{ color: "var(--foreground-muted)" }}
             aria-label="Open menu"
           >
-            <Menu className="h-5 w-5" style={{ color: "var(--foreground)" }} />
+            <Menu className="h-5 w-5" />
           </button>
           <span
             className="font-semibold text-sm truncate"
@@ -305,3 +417,4 @@ export function AppShell({
     </div>
   );
 }
+
