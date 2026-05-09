@@ -253,3 +253,18 @@ model Estimate {
   data        Json
   createdAt   DateTime @default(now())
 }
+
+model SystemSetting {
+  id    String @id @default("global")
+  data  Json   @default("{}")
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  action     String
+  actorId    String?
+  actorEmail String?
+  targetId   String?
+  details    Json?
+  createdAt  DateTime @default(now())
+}

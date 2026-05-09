@@ -126,8 +126,8 @@ export function InteractiveCTA() {
           </div>
 
           <div className="relative z-10 grid lg:grid-cols-12 gap-8 items-center">
-            <div className="lg:col-span-7">
-              <div className="flex items-center gap-2 mb-5">
+            <div className="lg:col-span-10 lg:col-start-2 text-center flex flex-col items-center">
+              <div className="flex items-center gap-2 mb-5 justify-center">
                 <Sparkles
                   className="h-5 w-5"
                   style={{ color: "var(--primary)" }}
@@ -162,39 +162,39 @@ export function InteractiveCTA() {
                 your ERP?
               </h2>
               <p
-                className="text-base mt-4 max-w-xl leading-relaxed"
+                className="text-base mt-4 max-w-xl leading-relaxed mx-auto"
                 style={{ color: "var(--foreground-muted)" }}
               >
                 Book a 15-minute call or start building right now. We&apos;ll
-                walk you through every feature — and if it&apos;s not for you,
-                no hard feelings.
+                walk you through every feature to ensure it&apos;s the right
+                fit for your business.
               </p>
 
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mt-8">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-8 w-full">
                 <Link href="/register">
                   <Button
                     size="lg"
-                    className="gap-2 text-base px-7 h-12 w-full sm:w-auto font-medium rounded-xl group"
+                    className="gap-3 text-lg px-10 h-14 w-full sm:w-auto font-bold rounded-xl group shadow-lg shadow-primary/10"
                   >
-                    <Zap className="h-4 w-4 transition-transform group-hover:scale-110" />
+                    <Zap className="h-5 w-5 transition-transform group-hover:scale-110" />
                     Start building, free
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </Link>
                 <Link href="/register">
                   <Button
                     variant="outline"
                     size="lg"
-                    className="gap-2 text-base px-7 h-12 w-full sm:w-auto rounded-xl"
+                    className="gap-2 text-lg px-10 h-14 w-full sm:w-auto rounded-xl font-medium"
                   >
-                    <Phone className="h-4 w-4" />
+                    <Phone className="h-5 w-5" />
                     Book a call
                   </Button>
                 </Link>
               </div>
 
               <div
-                className="flex items-center gap-4 mt-6 text-xs flex-wrap"
+                className="flex items-center justify-center gap-4 mt-6 text-xs flex-wrap"
                 style={{ color: "var(--foreground-dimmed)" }}
               >
                 {["No credit card", "Free tier", "Made in India 🇮🇳"].map(
@@ -205,73 +205,6 @@ export function InteractiveCTA() {
                     </span>
                   )
                 )}
-              </div>
-            </div>
-
-            {/* Interactive visual */}
-            <div className="lg:col-span-5 hidden lg:flex justify-center">
-              <div className="relative">
-                {/* Main card */}
-                <div
-                  className="h-56 w-56 rounded-3xl flex flex-col items-center justify-center p-6 transition-transform duration-500 hover:scale-105"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, color-mix(in oklch, var(--primary), transparent 75%), color-mix(in oklch, var(--accent-violet), transparent 80%))",
-                    boxShadow:
-                      "0 20px 60px color-mix(in oklch, var(--primary), transparent 65%)",
-                  }}
-                >
-                  <Building2
-                    className="h-12 w-12 mb-3"
-                    style={{ color: "var(--primary)" }}
-                  />
-                  <span
-                    className="text-sm font-semibold"
-                    style={{ color: "var(--foreground)" }}
-                  >
-                    Your ERP
-                  </span>
-                  <span
-                    className="text-xs mt-1"
-                    style={{ color: "var(--foreground-muted)" }}
-                  >
-                    is waiting
-                  </span>
-                </div>
-                {/* Floating orbit elements */}
-                <div
-                  className="absolute -top-4 -right-4 h-10 w-10 rounded-xl flex items-center justify-center"
-                  style={{
-                    background: "var(--success)",
-                    boxShadow:
-                      "0 4px 16px color-mix(in oklch, var(--success), transparent 50%)",
-                    animation: "float 4s ease-in-out infinite",
-                  }}
-                >
-                  <Sparkles className="h-5 w-5 text-white" />
-                </div>
-                <div
-                  className="absolute -bottom-3 -left-3 h-8 w-8 rounded-full flex items-center justify-center"
-                  style={{
-                    background: "var(--accent-violet)",
-                    boxShadow:
-                      "0 4px 16px color-mix(in oklch, var(--accent-violet), transparent 50%)",
-                    animation: "float 5s ease-in-out infinite 1.5s",
-                  }}
-                >
-                  <Mail className="h-3.5 w-3.5 text-white" />
-                </div>
-                <div
-                  className="absolute top-1/2 -right-6 h-6 w-6 rounded-md flex items-center justify-center"
-                  style={{
-                    background: "var(--accent-amber)",
-                    boxShadow:
-                      "0 4px 12px color-mix(in oklch, var(--accent-amber), transparent 50%)",
-                    animation: "float 6s ease-in-out infinite 0.8s",
-                  }}
-                >
-                  <Zap className="h-3 w-3 text-white" />
-                </div>
               </div>
             </div>
           </div>

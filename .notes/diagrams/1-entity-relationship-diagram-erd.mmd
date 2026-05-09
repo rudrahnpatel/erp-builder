@@ -1,0 +1,20 @@
+erDiagram
+    User ||--o| Workspace : "owns (1-to-1)"
+    Workspace ||--o{ Table : "has"
+    Workspace ||--o{ Page : "has"
+    Workspace ||--o{ InstalledPack : "has"
+    Workspace ||--o{ InstalledPlugin : "has"
+    Workspace ||--o{ TenantUser : "has"
+    Table ||--o{ Field : "has"
+    Table ||--o{ Record : "stores"
+    InstalledPack ||--o{ WorkspaceSchemaOverride : "tracks deltas"
+
+    User { string id PK string email }
+    Workspace { string id PK string name string userId FK }
+    Table { string id PK string name string workspaceId FK }
+    Field { string id PK string name enum type string tableId FK }
+    Record { string id PK json data string tableId FK }
+    Page { string id PK string title json blocks }
+    InstalledPack { string id PK string packId string packVersion }
+    InstalledPlugin { string id PK string pluginId json config boolean enabled }
+    TenantUser { string id PK string username string role }

@@ -17,7 +17,7 @@ export const inventoryPack: PackDefinition = {
   version: "1.2.0",
   tables: [
     // ─── 1. Stock ─────────────────────────────────────────────────────────────
-    // NOTE: order matters — RELATION fields can only resolve to tables that
+    // NOTE: order matters - RELATION fields can only resolve to tables that
     // were created earlier in this list during a fresh install. Suppliers and
     // Customers must come before Products (which links to both). For existing
     // installs, the /api/packs/update endpoint resolves cross-table refs from
@@ -204,7 +204,7 @@ export const inventoryPack: PackDefinition = {
       fields: [
         { name: "Product Name", type: "TEXT", required: true },
         { name: "SKU", type: "TEXT", required: true },
-        { name: "HSN Code", type: "TEXT" }, // Harmonised System of Nomenclature — required for GST invoicing
+        { name: "HSN Code", type: "TEXT" }, // Harmonised System of Nomenclature - required for GST invoicing
         {
           name: "Category",
           type: "SINGLE_SELECT",
@@ -296,7 +296,7 @@ export const inventoryPack: PackDefinition = {
         { name: "Contact Person", type: "TEXT" },
         { name: "Phone", type: "PHONE" },
         { name: "Email", type: "EMAIL" },
-        { name: "GST Number (GSTIN)", type: "TEXT" }, // 15-char GSTIN — required for ITC claims
+        { name: "GST Number (GSTIN)", type: "TEXT" }, // 15-char GSTIN - required for ITC claims
         { name: "PAN Number", type: "TEXT" },          // For TDS deduction
         { name: "Address", type: "TEXT" },
         { name: "City", type: "TEXT" },
@@ -450,12 +450,12 @@ export const inventoryPack: PackDefinition = {
         { name: "Quantity", type: "NUMBER", required: true },
         { name: "Date", type: "DATE", required: true },
         {
-          name: "From Godown",        // Source — used for Transfer and Outward
+          name: "From Godown",        // Source - used for Transfer and Outward
           type: "RELATION",
           config: { linkedTable: "Godowns" },
         },
         {
-          name: "To Godown",          // Destination — used for Inward, Transfer, Return
+          name: "To Godown",          // Destination - used for Inward, Transfer, Return
           type: "RELATION",
           config: { linkedTable: "Godowns" },
         },

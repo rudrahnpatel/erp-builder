@@ -17,7 +17,7 @@ const features = [
     icon: Blocks,
     eyebrow: "01 · Modules",
     title: "A marketplace, not a template dump",
-    desc: "Inventory, CRM, HR & payroll, finance — each pack ships with schemas, pages and sensible defaults. Install in one click, then bend it to your business.",
+    desc: "Inventory, CRM, HR & payroll, and finance packs ship with schemas, pages, and sensible defaults. Install in one click, then bend it to your business.",
     accentVar: "--accent-blue",
     // Comes from left
     from: { x: -120, y: -60, rotation: -8 },
@@ -26,7 +26,7 @@ const features = [
     icon: Database,
     eyebrow: "02 · Schema",
     title: "Schema designer that respects your data",
-    desc: "Tables, relations, validations — visually. No hand-written migrations, no re-deploys, no downtime.",
+    desc: "Tables, relations, and validations are handled visually. No hand-written migrations, no re-deploys, no downtime.",
     accentVar: "--accent-emerald",
     // Comes from top
     from: { x: 60, y: -120, rotation: 6 },
@@ -43,7 +43,7 @@ const features = [
   {
     icon: Puzzle,
     eyebrow: "04 · Plugins",
-    title: "WhatsApp, GST, Razorpay — already wired",
+    title: "WhatsApp, GST, and Razorpay integrations",
     desc: "Send invoices over WhatsApp. Generate GST-compliant PDFs. Accept payments on Razorpay. Zero code, zero glue.",
     accentVar: "--accent-violet",
     // Comes from right
@@ -140,33 +140,21 @@ export function PuzzleFeatures() {
         </p>
       </div>
 
-      <div ref={containerRef} className="grid lg:grid-cols-12 gap-5">
+      <div ref={containerRef} className="grid md:grid-cols-2 gap-6 md:gap-8">
         {features.map((f, i) => (
           <div
-            key={f.title}
+            key={f.eyebrow}
             ref={(el) => {
               cardsRef.current[i] = el;
             }}
-            className={`group rounded-2xl p-7 sm:p-8 card-interactive relative ${
-              i === 0 || i === 3 ? "lg:col-span-7" : "lg:col-span-5"
-            }`}
+            className="group rounded-2xl p-8 sm:p-10 card-interactive relative"
             style={{
               background: "var(--card)",
               border: "1px solid var(--border-subtle)",
               opacity: 0,
             }}
           >
-            {/* Puzzle connector notch — decorative */}
-            {i < features.length - 1 && (
-              <div
-                className="absolute -right-2.5 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full z-10 hidden lg:block"
-                style={{
-                  background: `var(${f.accentVar})`,
-                  boxShadow: `0 0 12px color-mix(in oklch, var(${f.accentVar}), transparent 60%)`,
-                  opacity: 0.6,
-                }}
-              />
-            )}
+
 
             <div className="flex items-start justify-between mb-6">
               <div

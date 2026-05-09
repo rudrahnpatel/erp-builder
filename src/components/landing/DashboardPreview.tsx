@@ -48,21 +48,7 @@ export function DashboardPreview() {
             style={{ borderBottom: "1px solid var(--border-subtle)" }}
           >
             <div className="flex items-center gap-2">
-              <div
-                className="h-6 w-6 rounded-md flex items-center justify-center"
-                style={{
-                  background:
-                    "linear-gradient(135deg, var(--primary), var(--primary-hover))",
-                }}
-              >
-                <Building2 className="h-3 w-3 text-white" />
-              </div>
-              <span
-                className="font-semibold text-[11px]"
-                style={{ color: "var(--foreground)" }}
-              >
-                Mosaic
-              </span>
+              <img src="/logo/logo.png" alt="Logo" className="h-9 w-auto" />
               <ChevronDown
                 className="h-2.5 w-2.5"
                 style={{ color: "var(--foreground-dimmed)" }}

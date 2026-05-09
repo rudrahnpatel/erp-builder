@@ -1,0 +1,15 @@
+stateDiagram-v2
+    [*] --> FetchPageInfo: User requests page
+    FetchPageInfo --> FetchBlocks: System fetches blocks JSON
+    FetchBlocks --> RenderBlocks
+    
+    state RenderBlocks {
+        [*] --> CheckBlockType
+        CheckBlockType --> RenderTable : if type == TABLE_VIEW
+        CheckBlockType --> RenderMetric : if type == METRIC
+        CheckBlockType --> RenderForm : if type == FORM
+        CheckBlockType --> RenderCalendar : if type == CALENDAR_VIEW
+    }
+    
+    RenderBlocks --> DisplayPage
+    DisplayPage --> [*]

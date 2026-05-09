@@ -17,7 +17,7 @@ const whyUs = [
   {
     icon: Globe,
     title: "Built for India, not bolted on",
-    desc: "GST compliance, INR-first invoicing, UPI payments, Hindi language support — not afterthoughts, but core features.",
+    desc: "GST compliance, INR-first invoicing, UPI payments, and Hindi language support are core features, not afterthoughts.",
     accentVar: "--accent-emerald",
   },
   {

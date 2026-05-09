@@ -152,30 +152,13 @@ export function LandingHero() {
           style={{ fontFamily: "var(--font-body)" }}
         >
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div
-              className="h-8 w-8 rounded-lg flex items-center justify-center"
-              style={{
-                background: "var(--primary)",
-                boxShadow: "inset 0 1px 0 oklch(1 0 0 / 0.15)",
-              }}
-            >
-              <Building2
-                className="h-4 w-4 text-white"
-                aria-hidden="true"
-              />
-            </div>
-            <span
-              className="text-xl font-semibold tracking-tight"
-              style={{ color: "var(--foreground)" }}
-            >
-              Mosaic
-            </span>
+            <img src="/logo/logo.png" alt="Logo" className="h-14 w-auto" />
           </Link>
 
           {/* Nav links — hidden on mobile */}
           <div className="hidden md:flex items-center gap-8">
             {[
-              { label: "Home", href: "/" },
+              { label: "Home", href: "#main-content" },
               { label: "Features", href: "#features" },
               { label: "How it Works", href: "#how-it-works" },
               { label: "Docs", href: "/docs" },
@@ -196,16 +179,16 @@ export function LandingHero() {
           <div className="flex items-center gap-3">
             <LandingThemeToggle />
             <Link href="/login" className="hidden sm:inline-flex">
-              <Button variant="ghost" size="sm" className="text-sm">
+              <Button variant="ghost" size="default" className="text-[15px] font-medium">
                 Log in
               </Button>
             </Link>
             <Link href="/register">
               <Button
-                size="sm"
-                className="gap-1.5 text-sm font-medium rounded-full px-5"
+                size="lg"
+                className="gap-2 text-[15px] font-bold rounded-full px-8 h-11 shadow-lg shadow-primary/10 hover:shadow-primary/20 transition-all"
               >
-                Start building <ArrowRight className="h-3.5 w-3.5" />
+                Start building <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
           </div>
@@ -248,9 +231,9 @@ export function LandingHero() {
             fontFamily: "var(--font-body)",
           }}
         >
-          Install module packs, configure schemas, compose pages — deploy a
-          custom ERP tailored to your business. No consultants. No
-          quarter-long implementations. No code.
+          Install module packs, configure schemas, and compose pages. Deploy a
+          custom ERP tailored to your business without consultants or
+          quarter-long implementations.
         </motion.p>
 
         {/* CTA Buttons */}
@@ -261,11 +244,11 @@ export function LandingHero() {
           <Link href="/register">
             <Button
               size="lg"
-              className="gap-2 text-sm px-6 py-5 font-medium rounded-full"
+              className="gap-3 text-lg px-10 py-7 font-bold rounded-full shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all duration-300 hover:scale-[1.02]"
               style={{ fontFamily: "var(--font-body)" }}
             >
               Start building, free
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-5 w-5" />
             </Button>
           </Link>
           <Link href="#how-it-works">

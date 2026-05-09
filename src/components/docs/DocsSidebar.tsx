@@ -72,15 +72,8 @@ export function DocsSidebar({
         style={{ borderColor: "var(--border-subtle)" }}
       >
         <Link href="/" className="flex items-center gap-2">
-          <div
-            className="h-7 w-7 rounded-lg flex items-center justify-center shrink-0"
-            style={{ background: "var(--primary)" }}
-          >
-            <Building2 className="h-3.5 w-3.5 text-white" />
-          </div>
-          <span className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>
-            Mosaic Docs
-          </span>
+          <img src="/logo/logo.png" alt="Logo" className="h-10 w-auto" />
+          <span className="text-sm font-semibold text-primary/80">Docs</span>
         </Link>
         <div className="flex items-center gap-1">
           <ThemeToggle />

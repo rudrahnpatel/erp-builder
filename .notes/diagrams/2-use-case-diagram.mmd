@@ -1,0 +1,22 @@
+flowchart LR
+    Builder((Builder))
+    Tenant((Tenant))
+    
+    subgraph ERP_System ["ERP Builder System"]
+        UC1(Design Schemas & Tables)
+        UC2(Compose Pages visually)
+        UC3(Install Modules/Plugins)
+        UC4(View Dashboards)
+        UC5(Manage Data Records)
+        UC6(Generate Invoices & Run Workflows)
+    end
+    
+    Builder --> UC1
+    Builder --> UC2
+    Builder --> UC3
+    Builder --> UC4
+    Builder --> UC5
+    
+    Tenant --> UC4
+    Tenant --> UC5
+    Tenant --> UC6

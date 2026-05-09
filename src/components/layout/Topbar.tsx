@@ -59,23 +59,8 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
         {/* Workspace Branding - Only on /workspace page */}
         {isWorkspacePage && (
           <div className="flex items-center min-w-0 animate-fade-in">
-            <div
-              className="relative h-8 w-8 rounded-lg flex items-center justify-center shrink-0 overflow-hidden"
-              style={{
-                background: "linear-gradient(135deg, var(--primary), var(--primary-hover))",
-                boxShadow: "inset 0 1px 0 oklch(1 0 0 / 0.18), 0 2px 8px color-mix(in oklch, var(--primary), transparent 60%)",
-              }}
-            >
-              <Building2 className="h-4 w-4 text-white" />
-              <span
-                className="absolute bottom-0.5 right-0.5 h-1.5 w-1.5 rounded-full border"
-                style={{
-                  background: "var(--success)",
-                  borderColor: "var(--surface-1)",
-                  boxShadow: "0 0 4px var(--success)",
-                }}
-                aria-hidden="true"
-              />
+            <div className="relative shrink-0 flex items-center">
+              <img src="/logo/logo.png" alt="Logo" className="h-10 w-auto" />
             </div>
             <div className="ml-2.5 min-w-0 hidden sm:block">
               {isLoading && !workspace ? (

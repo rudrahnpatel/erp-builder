@@ -191,7 +191,7 @@ export function TableView({ config, tableId }: { config: any; tableId?: string }
                            </Badge>
                          ) : h.type === "RELATION" ? (
                            <span className="font-bold border-b-2 border-primary/20 pb-0.5" style={{ color: "var(--primary)" }}>
-                             {val?.displayValue || val || "—"}
+                             {val?.displayValue || val || "-"}
                            </span>
                          ) : (
                            <span className="font-medium text-[14px]" style={{ color: "var(--foreground)" }}>

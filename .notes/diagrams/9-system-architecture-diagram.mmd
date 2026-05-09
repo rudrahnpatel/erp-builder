@@ -1,0 +1,25 @@
+flowchart TD
+    subgraph Users ["👥 Users"]
+        BUILDER["🏗️ Builder (Owner)"]
+        TENANT["👷 Tenant User (Staff)"]
+    end
+
+    subgraph AppRouter ["⚛️ Next.js 16"]
+        UI_Builder["Builder Routes /(dashboard)"]
+        UI_Tenant["Tenant Runtime /apps/[slug]"]
+        APIs["API Routes /api/*"]
+    end
+
+    subgraph Infrastructure ["🗄️ Backend Services"]
+        Prisma["Prisma ORM"]
+        Neon[("Neon PostgreSQL")]
+        Registry["Pack Registry (registry.ts)"]
+    end
+
+    BUILDER --> UI_Builder
+    TENANT --> UI_Tenant
+    UI_Builder --> APIs
+    UI_Tenant --> APIs
+    APIs --> Prisma
+    Prisma --> Neon
+    APIs -.->|reads| Registry

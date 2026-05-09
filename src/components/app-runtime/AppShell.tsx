@@ -244,14 +244,8 @@ export function AppShell({
           className="h-[60px] flex items-center px-3 border-b shrink-0"
           style={{ borderColor: "var(--sidebar-border)" }}
         >
-          <div
-            className="relative h-9 w-9 rounded-xl flex items-center justify-center shrink-0 overflow-hidden"
-            style={{
-              background: "linear-gradient(135deg, var(--primary), var(--primary-hover))",
-              boxShadow: "inset 0 1px 0 oklch(1 0 0 / 0.18), 0 2px 8px oklch(0.08 0.02 260 / 0.5)",
-            }}
-          >
-            <Building2 className="h-4.5 w-4.5 text-white" />
+          <div className="relative shrink-0 flex items-center">
+            <img src="/logo/logo.png" alt="Logo" className="h-12 w-auto" />
           </div>
           <div className="ml-2.5 min-w-0 flex-1">
             <span

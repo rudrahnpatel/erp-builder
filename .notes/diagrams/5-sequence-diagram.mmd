@@ -1,0 +1,15 @@
+sequenceDiagram
+    actor User
+    participant UI as ERP Interface
+    participant PluginAPI as /api/plugins/execute
+    participant DB as PostgreSQL
+    participant ExternalSystem as External Service (e.g. MSG91, Tally)
+
+    User->>UI: Click Plugin Action (e.g. Generate PDF)
+    UI->>PluginAPI: POST { pluginId, recordId }
+    PluginAPI->>DB: Fetch InstalledPlugin config + Record data
+    DB-->>PluginAPI: Config & Data JSON
+    PluginAPI->>ExternalSystem: Execute external API call
+    ExternalSystem-->>PluginAPI: Response (PDF link / Status)
+    PluginAPI-->>UI: Action Result
+    UI-->>User: Visual Feedback

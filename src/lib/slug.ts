@@ -62,8 +62,8 @@ export function slugProblem(raw: string): string | null {
   if (!raw) return "Pick a subdomain first.";
   const cleaned = normalizeSlug(raw);
   if (!cleaned) {
-    if (raw.length < MIN_LEN) return `Too short — at least ${MIN_LEN} characters.`;
-    if (raw.length > MAX_LEN) return `Too long — at most ${MAX_LEN} characters.`;
+    if (raw.length < MIN_LEN) return `Too short - at least ${MIN_LEN} characters.`;
+    if (raw.length > MAX_LEN) return `Too long - at most ${MAX_LEN} characters.`;
     return "Only lowercase letters, numbers, and hyphens.";
   }
   if (RESERVED_SLUGS.has(cleaned)) return "That subdomain is reserved.";

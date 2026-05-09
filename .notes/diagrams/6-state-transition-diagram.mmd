@@ -1,0 +1,8 @@
+stateDiagram-v2
+    [*] --> Open: Ticket raised
+    Open --> InProgress: Assigned to Engineer
+    InProgress --> OnHold: Waiting for spare parts
+    OnHold --> InProgress: Parts received
+    InProgress --> Resolved: Issue fixed
+    Resolved --> Closed: Verified by customer
+    Closed --> [*]

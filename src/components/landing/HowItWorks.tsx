@@ -36,7 +36,7 @@ const steps = [
   {
     step: "02",
     title: "Pick your modules & plugins",
-    desc: "Browse our marketplace — install Inventory, CRM, HR, Finance, or any combination. Add plugins like WhatsApp, GST, Razorpay.",
+    desc: "Browse our marketplace to install Inventory, CRM, HR, Finance, or any combination. Add plugins like WhatsApp, GST, and Razorpay.",
     icon: Blocks,
     accentVar: "--accent-emerald",
     // Visual: marketplace grid
@@ -45,7 +45,7 @@ const steps = [
   {
     step: "03",
     title: "Build & deploy your ERP",
-    desc: "Configure schemas, compose pages, wire up plugins — then deploy. Your team gets a live ERP at yourname.mosaic.app.",
+    desc: "Configure schemas, compose pages, and wire up plugins before deploying. Your team gets a live ERP at yourname.mosaic.app.",
     icon: Rocket,
     accentVar: "--accent-violet",
     // Visual: dashboard deployed
@@ -63,18 +63,7 @@ function LoginVisual() {
       }}
     >
       <div className="flex items-center gap-2 mb-5">
-        <div
-          className="h-7 w-7 rounded-lg flex items-center justify-center"
-          style={{ background: "var(--primary)" }}
-        >
-          <Building2 className="h-3.5 w-3.5 text-white" />
-        </div>
-        <span
-          className="font-semibold text-sm"
-          style={{ color: "var(--foreground)" }}
-        >
-          Mosaic
-        </span>
+        <img src="/logo/logo.png" alt="Logo" className="h-10 w-auto" />
       </div>
       <p
         className="text-lg font-semibold mb-1"
@@ -86,7 +75,7 @@ function LoginVisual() {
         className="text-xs mb-5"
         style={{ color: "var(--foreground-dimmed)" }}
       >
-        Get started in 30 seconds — it&apos;s free.
+        Get started in 30 seconds for free.
       </p>
       {/* Mock form fields */}
       <div className="space-y-3">
@@ -252,12 +241,7 @@ function DeployedVisual() {
       {/* Mini dashboard */}
       <div className="p-3">
         <div className="flex items-center gap-2 mb-3">
-          <div
-            className="h-5 w-5 rounded-md flex items-center justify-center"
-            style={{ background: "var(--primary)" }}
-          >
-            <Building2 className="h-2.5 w-2.5 text-white" />
-          </div>
+          <img src="/logo/logo.png" alt="Acme ERP" className="h-8 w-auto" />
           <span
             className="font-semibold text-xs"
             style={{ color: "var(--foreground)" }}
@@ -435,7 +419,7 @@ export function HowItWorks() {
 
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
           {/* Steps list */}
-          <div className="space-y-2">
+          <div className="space-y-2 min-h-[380px] sm:min-h-[320px]">
             {steps.map((item, i) => {
               const isActive = activeStep === i;
               return (
@@ -526,7 +510,7 @@ export function HowItWorks() {
 
           {/* Visual preview — sticky on desktop */}
           <div className="lg:sticky lg:top-20">
-            <div className="relative">
+            <div className="relative min-h-[320px]">
               {visuals.map((visual, i) => (
                 <div
                   key={i}

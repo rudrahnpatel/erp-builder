@@ -10,13 +10,13 @@ export function SectionGettingStarted() {
     <section>
       <DocH1>Help & Documentation</DocH1>
       <DocP>
-        Welcome! This guide will help you set up and use your custom ERP —
+        Welcome! This guide will help you set up and use your custom ERP -
         from installing your first module to inviting your team.
       </DocP>
 
       <DocH2 id="what-is-mosaic">What is Mosaic?</DocH2>
       <DocP>
-        Mosaic is an <strong>ERP builder</strong> — it lets you assemble a
+        Mosaic is an <strong>ERP builder</strong> - it lets you assemble a
         business management system tailored to exactly what your business needs.
         Instead of paying for a rigid, expensive ERP software, you pick and
         install only the modules you need, then customize the pages your team
@@ -37,19 +37,19 @@ export function SectionGettingStarted() {
           {
             icon: "🔌",
             title: "Plugins",
-            desc: "Add-ons that connect your ERP to the outside world — generate PDF invoices, send SMS alerts, export to Tally, and more.",
+            desc: "Add-ons that connect your ERP to the outside world - generate PDF invoices, send SMS alerts, export to Tally, and more.",
           },
           {
             icon: "👷",
             title: "Tenant Access",
-            desc: "Give your staff their own login. They use the finished ERP — they never see the builder side.",
+            desc: "Give your staff their own login. They use the finished ERP - they never see the builder side.",
           },
         ]}
       />
 
       <DocDivider />
 
-      <DocH2 id="two-user-types">Builder vs Tenant — Who is Who?</DocH2>
+      <DocH2 id="two-user-types">Builder vs Tenant - Who is Who?</DocH2>
       <DocP>
         Mosaic has two kinds of people. Understanding this is the most
         important thing before you start.
@@ -58,32 +58,32 @@ export function SectionGettingStarted() {
         items={[
           {
             icon: "🏗️",
-            title: "You — the Builder",
+            title: "You - the Builder",
             desc: "You set everything up. You install modules, design pages, create fields, and manage staff accounts. You work inside /workspace.",
           },
           {
             icon: "👨‍💼",
-            title: "Your Staff — Tenant Users",
+            title: "Your Staff - Tenant Users",
             desc: "They log in at a separate URL and just use the ERP you built. They add records, view dashboards, and do their daily work. They never see the builder.",
           },
         ]}
       />
       <DocCallout type="info">
-        Your staff logs in at <strong>/apps/your-workspace-name/login</strong> — not the main login page. You create their accounts in Settings → Tenant Users.
+        Your staff logs in at <strong>/apps/your-workspace-name/login</strong> - not the main login page. You create their accounts in Settings → Tenant Users.
       </DocCallout>
 
       <DocDivider />
 
-      <DocH2 id="quick-start">Quick Start — Up and running in 5 minutes</DocH2>
+      <DocH2 id="quick-start">Quick Start - Up and running in 5 minutes</DocH2>
       <DocSteps
         steps={[
           {
             title: "Create your account",
-            desc: 'Go to /register and sign up. Give your workspace a name — something like "Acme Traders" or your business name.',
+            desc: 'Go to /register and sign up. Give your workspace a name - something like "Acme Traders" or your business name.',
           },
           {
             title: "Install a Module",
-            desc: 'Click "Modules" in the left sidebar. Browse the available modules and click Install on the one that fits your business — Inventory is a great starting point.',
+            desc: 'Click "Modules" in the left sidebar. Browse the available modules and click Install on the one that fits your business - Inventory is a great starting point.',
           },
           {
             title: "See what was created",
@@ -91,7 +91,7 @@ export function SectionGettingStarted() {
           },
           {
             title: "Open your ERP",
-            desc: 'Click "Open My ERP" at the bottom of the sidebar. This opens the tenant view — what your staff will see. You can use it yourself too!',
+            desc: 'Click "Open My ERP" at the bottom of the sidebar. This opens the tenant view - what your staff will see. You can use it yourself too!',
           },
           {
             title: "Invite your staff",
@@ -111,7 +111,7 @@ export function SectionModules() {
       <DocP>
         Modules (also called Packs) are pre-built bundles that add a complete
         set of tables and pages to your workspace in one click. Think of them
-        like apps you install on your phone — each one adds new functionality.
+        like apps you install on your phone - each one adds new functionality.
       </DocP>
       <DocCallout type="tip">
         You can install multiple modules together. For example, Inventory + Finance gives you products, stock, suppliers, and invoicing all linked up automatically.
@@ -134,7 +134,7 @@ export function SectionModules() {
           },
           {
             title: "Start using it",
-            desc: "Go to Pages — you'll see the new pages created. Open your ERP to see the live version your staff will use.",
+            desc: "Go to Pages - you'll see the new pages created. Open your ERP to see the live version your staff will use.",
           },
         ]}
       />
@@ -194,7 +194,7 @@ export function SectionPageBuilder() {
       <DocP>
         Every page your staff sees is built in the Page Composer. You drag
         blocks onto a canvas, configure each one, and hit Publish. It's
-        similar to building a slide in PowerPoint — but the blocks are live
+        similar to building a slide in PowerPoint - but the blocks are live
         and connected to your data.
       </DocP>
       <DocSteps
@@ -213,18 +213,18 @@ export function SectionPageBuilder() {
           },
           {
             title: "Publish the page",
-            desc: "Click the Publish button at the top. Your changes go live immediately — refresh the tenant view to see them.",
+            desc: "Click the Publish button at the top. Your changes go live immediately - refresh the tenant view to see them.",
           },
         ]}
       />
       <DocCallout type="tip">
-        Width snaps to preset fractions — ¼, ½, ¾, or full width. Two half-width blocks sit side-by-side automatically, letting you build multi-column layouts.
+        Width snaps to preset fractions - ¼, ½, ¾, or full width. Two half-width blocks sit side-by-side automatically, letting you build multi-column layouts.
       </DocCallout>
 
       <DocH2 id="block-types">What Each Block Does</DocH2>
       <DocCards
         items={[
-          { icon: "📊", title: "Metric", desc: "A KPI card showing a count, total, or custom number. Great for dashboards — e.g. Total Products, Revenue This Month." },
+          { icon: "📊", title: "Metric", desc: "A KPI card showing a count, total, or custom number. Great for dashboards - e.g. Total Products, Revenue This Month." },
           { icon: "📋", title: "Table View", desc: "A full data grid showing all records in a table. Staff can add, edit, and delete rows directly from here." },
           { icon: "🗂️", title: "Kanban View", desc: "A drag-and-drop board grouped by a field like Status or Stage. Ideal for leads, orders, or tasks." },
           { icon: "🔍", title: "Filter Bar", desc: "Adds a search box and date filter above a table or kanban. Helps staff find records quickly." },
@@ -240,9 +240,9 @@ export function SectionPageBuilder() {
       <DocH2 id="page-tips">Tips & Tricks</DocH2>
       <DocList
         items={[
-          "Put a Filter Bar block above a Table View — they link automatically so searching works across the whole page.",
+          "Put a Filter Bar block above a Table View - they link automatically so searching works across the whole page.",
           "Use two Metric blocks at 50% width side by side for a clean KPI row at the top of a dashboard.",
-          "Name your pages clearly — your staff sees these names in the sidebar of the tenant app.",
+          "Name your pages clearly - your staff sees these names in the sidebar of the tenant app.",
           "Pages created by modules can be edited and customized. Your changes are kept even when the module updates.",
           "You can create blank pages from scratch for things like notice boards, calculators, or custom dashboards.",
         ]}

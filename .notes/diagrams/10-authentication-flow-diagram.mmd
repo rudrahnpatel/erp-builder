@@ -1,0 +1,15 @@
+flowchart TD
+    subgraph BuilderAuth ["🔐 Builder Auth (NextAuth)"]
+        LoginBuilder["Visit /login"] --> OAuth["Email/Password or Google SSO"]
+        OAuth --> VerifyBuilder{"Valid?"}
+        VerifyBuilder -->|Yes| SessionBuilder["Set NextAuth JWT Cookie"]
+    end
+
+    subgraph TenantAuth ["🔐 Tenant Auth (Custom)"]
+        LoginTenant["Visit /apps/slug/login"] --> CredsTenant["Username + Password"]
+        CredsTenant --> VerifyTenant{"Valid?"}
+        VerifyTenant -->|Yes| SessionTenant["Set 'tenant-token' JWT Cookie"]
+    end
+
+    SessionBuilder --> Workspace["Redirect → /workspace"]
+    SessionTenant --> ERP["Redirect → /apps/slug"]

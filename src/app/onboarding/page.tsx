@@ -152,10 +152,7 @@ export default function OnboardingPage() {
       {/* Top Bar */}
       <div className="h-14 border-b px-4 sm:px-6 flex items-center justify-between shrink-0 glass" style={{ borderColor: "var(--border-subtle)" }}>
         <div className="flex items-center gap-2.5">
-          <div className="h-8 w-8 rounded-lg flex items-center justify-center" style={{ background: "var(--primary-subtle)" }}>
-            <Building2 className="h-4 w-4" style={{ color: "var(--primary)" }} />
-          </div>
-          <span className="font-bold text-sm" style={{ color: "var(--foreground)" }}>Mosaic</span>
+          <img src="/logo/logo.png" alt="Logo" className="h-12 w-auto" />
         </div>
 
         {/* Step indicator */}

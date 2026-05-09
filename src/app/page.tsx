@@ -22,14 +22,14 @@ export default async function LandingPage() {
       {/* ─── Hero Section ─── */}
       <LandingHero />
 
-      {/* ─── How It Works (right after hero) ─── */}
-      <div id="how-it-works">
-        <HowItWorks />
-      </div>
-
       {/* ─── Features — GSAP puzzle animation ─── */}
       <div id="features">
         <PuzzleFeatures />
+      </div>
+
+      {/* ─── How It Works (right after hero) ─── */}
+      <div id="how-it-works">
+        <HowItWorks />
       </div>
 
       {/* ─── Why Us ─── */}
@@ -52,21 +52,7 @@ export default async function LandingPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
             <div className="flex items-center gap-2.5">
-              <div
-                className="h-7 w-7 rounded-lg flex items-center justify-center"
-                style={{ background: "var(--primary)" }}
-              >
-                <Building2
-                  className="h-3.5 w-3.5 text-white"
-                  aria-hidden="true"
-                />
-              </div>
-              <span
-                className="text-sm font-medium"
-                style={{ color: "var(--foreground-muted)" }}
-              >
-                Mosaic
-              </span>
+              <img src="/logo/logo.png" alt="Mosaic" className="h-10 w-auto grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300" />
               <span
                 className="text-xs ml-2"
                 style={{

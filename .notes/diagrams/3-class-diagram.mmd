@@ -1,0 +1,27 @@
+classDiagram
+    class PackDefinition {
+        +String id
+        +String name
+        +Array tables
+        +Array pageDefinitions
+        +install()
+    }
+    class Table {
+        +String name
+        +String icon
+        +Array fields
+        +create()
+    }
+    class Page {
+        +String title
+        +Array blocks
+        +render()
+    }
+    class PluginDefinition {
+        +String id
+        +Array configFields
+        +Array triggers
+        +execute()
+    }
+    PackDefinition "1" *-- "many" Table
+    PackDefinition "1" *-- "many" Page

@@ -1,0 +1,14 @@
+flowchart TD
+    INV["📦 Inventory Pack\n(base)"]
+    FIN["💰 Finance Pack"]
+    CRM["🤝 CRM Pack\n(standalone)"]
+    HR["👥 HR Pack\n(standalone)"]
+    MFG["🏭 Manufacturing Pack"]
+    FS["🚐 Field Sales Pack"]
+    SVC["🔧 Service Pack"]
+
+    INV -->|"Customers → Invoices"| FIN
+    INV -->|"Products, Godowns"| MFG
+    INV -->|"Products, Customers"| FS
+    INV -.->|"optional: Customers"| SVC
+    CRM -.->|"optional: link to Customers"| INV

@@ -1,0 +1,20 @@
+flowchart TD
+    subgraph Client ["Client Device"]
+        Browser["Web Browser (React)"]
+    end
+    
+    subgraph Cloud ["Vercel Serverless"]
+        Frontend["Next.js App Router (UI)"]
+        API["Next.js API Routes"]
+        Prisma["Prisma ORM Engine"]
+    end
+    
+    subgraph Database ["Neon Serverless DB"]
+        PostgreSQL[("PostgreSQL Database")]
+    end
+
+    Browser <-->|HTTPS| Frontend
+    Browser <-->|HTTPS / REST| API
+    Frontend <--> API
+    API <--> Prisma
+    Prisma <-->|Connection Pool| PostgreSQL
