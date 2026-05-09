@@ -19,23 +19,8 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { toast } from "sonner";
-import {
-  GripVertical,
-  Eye,
-  EyeOff,
-  Lock,
-  Building2,
-  Phone,
-  FileText,
-  User,
-  Hash,
-  Table2,
-  Calculator,
-  ScrollText,
-  PenLine,
-  Loader2,
-  RotateCcw,
-} from "lucide-react";
+import { RiDraggable, RiEyeLine, RiEyeOffLine, RiLockLine, RiBuilding4Line, RiFileTextLine, RiUserLine, RiHashtag, RiTableLine, RiCalculatorLine, RiPencilLine, RiLoader4Line } from "react-icons/ri";
+import { RiPhoneLine, RiFileListLine, RiRestartLine } from "react-icons/ri";
 
 //  Types 
 
@@ -79,16 +64,16 @@ const SECTION_META: Record<
   SectionId,
   { label: string; description: string; icon: React.ComponentType<{ className?: string }>; locked?: boolean; zone: "header" | "items" | "tail" }
 > = {
-  header:    { label: "Company Header",   description: "Logo, name & tagline",          icon: Building2,  zone: "header" },
-  contact:   { label: "Contact Info",     description: "Phone, email & website",         icon: Phone,      zone: "header" },
-  pan:       { label: "PAN / GST No.",    description: "Tax ID shown under contact",     icon: Hash,       zone: "header" },
-  meta:      { label: "Document Meta",    description: "Quotation No., Date, Valid Till",icon: FileText,   zone: "header" },
-  subject:   { label: "Subject Line",     description: "What the quotation is for",      icon: ScrollText, zone: "header" },
-  client:    { label: "Client Info",      description: "Bill To section",                icon: User,       zone: "header" },
-  items:     { label: "Items Table",      description: "Products / Services list",       icon: Table2,     zone: "items",  locked: true },
-  totals:    { label: "Totals",           description: "Subtotal, GST & Grand Total",    icon: Calculator, zone: "tail"   },
-  terms:     { label: "Terms & Conditions", description: "Payment terms & clauses",     icon: ScrollText, zone: "tail"   },
-  signature: { label: "Signature Block",  description: "Authorized signatory",           icon: PenLine,    zone: "tail"   },
+  header:    { label: "Company Header",   description: "Logo, name & tagline",          icon: RiBuilding4Line,  zone: "header" },
+  contact:   { label: "Contact Info",     description: "RiPhoneLine, email & website",         icon: RiPhoneLine,      zone: "header" },
+  pan:       { label: "PAN / GST No.",    description: "Tax ID shown under contact",     icon: RiHashtag,       zone: "header" },
+  meta:      { label: "Document Meta",    description: "Quotation No., Date, Valid Till",icon: RiFileTextLine,   zone: "header" },
+  subject:   { label: "Subject Line",     description: "What the quotation is for",      icon: RiFileListLine, zone: "header" },
+  client:    { label: "Client Info",      description: "Bill To section",                icon: RiUserLine,       zone: "header" },
+  items:     { label: "Items Table",      description: "Products / Services list",       icon: RiTableLine,     zone: "items",  locked: true },
+  totals:    { label: "Totals",           description: "Subtotal, GST & Grand Total",    icon: RiCalculatorLine, zone: "tail"   },
+  terms:     { label: "Terms & Conditions", description: "Payment terms & clauses",     icon: RiFileListLine, zone: "tail"   },
+  signature: { label: "Signature Block",  description: "Authorized signatory",           icon: RiPencilLine,    zone: "tail"   },
 };
 
 //  Sortable Section Card 
@@ -146,9 +131,9 @@ function SectionCard({
         }`}
       >
         {meta.locked ? (
-          <Lock className="h-4 w-4 text-gray-400" />
+          <RiLockLine className="h-4 w-4 text-gray-400" />
         ) : (
-          <GripVertical className="h-4 w-4" />
+          <RiDraggable className="h-4 w-4" />
         )}
       </div>
 
@@ -184,7 +169,7 @@ function SectionCard({
           }`}
           title={section.visible ? "Click to hide" : "Click to show"}
         >
-          {section.visible ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+          {section.visible ? <RiEyeLine className="h-4 w-4" /> : <RiEyeOffLine className="h-4 w-4" />}
         </button>
       )}
     </div>
@@ -327,7 +312,7 @@ export function QuotationLayoutEditor() {
   if (!loaded) {
     return (
       <div className="flex items-center justify-center py-16 text-gray-400">
-        <Loader2 className="h-5 w-5 animate-spin" />
+        <RiLoader4Line className="h-5 w-5 animate-spin" />
       </div>
     );
   }
@@ -391,7 +376,7 @@ export function QuotationLayoutEditor() {
               }}
             >
               {saving ? (
-                <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Saving…</>
+                <><RiLoader4Line className="h-3.5 w-3.5 animate-spin" /> Saving…</>
               ) : (
                 "Save Layout"
               )}
@@ -401,7 +386,7 @@ export function QuotationLayoutEditor() {
               className="flex items-center gap-2 px-3.5 py-2.5 text-sm font-medium rounded-xl border transition-colors text-gray-500 hover:text-gray-700 hover:bg-gray-50"
               style={{ border: "1px solid var(--border-subtle)" }}
             >
-              <RotateCcw className="h-3.5 w-3.5" />
+              <RiRestartLine className="h-3.5 w-3.5" />
               Reset
             </button>
           </div>

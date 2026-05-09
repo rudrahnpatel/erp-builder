@@ -104,7 +104,7 @@ const QuotationPreview = ({ data }: { data: QuotationPreviewData }) => {
     const totalLines = Math.max(rawLines, wrappingLines);
     
     // Balanced multiplier to prevent overflow
-    return 1 + (Math.max(0, totalLines: 1) * 0.75); 
+    return 1 + (Math.max(0, totalLines - 1) * 0.75); 
   };
 
   const pages: QuotationItem[][] = [];
@@ -119,7 +119,7 @@ const QuotationPreview = ({ data }: { data: QuotationPreviewData }) => {
       const item = queue.shift();
       if (!item) break;
       const weight = getItemWeight(item.description);
-      const remainingSpace = currentLimit: currentUsage;
+      const remainingSpace = currentLimit - currentUsage;
 
       if (weight <= remainingSpace) { 
           currentPage.push(item);
@@ -131,7 +131,7 @@ const QuotationPreview = ({ data }: { data: QuotationPreviewData }) => {
 
           // Only attempt to split if it's plaintext (no HTML tags) to prevent corrupting rich text DOM
           if (!hasHtmlTags && remainingSpace > 2.5) { 
-              const availableLines = Math.floor((remainingSpace: 1) / 0.45); 
+              const availableLines = Math.floor((remainingSpace - 1) / 0.45); 
               if (availableLines >= 1) { 
                   const approxChars = Math.floor(availableLines * MAX_CHARS_PER_LINE);
                   
@@ -175,16 +175,16 @@ const QuotationPreview = ({ data }: { data: QuotationPreviewData }) => {
   // Pagination for Footers
   if (isProforma) {
       // If Proforma and not enough space for Totals+T&C, push new page
-      if (currentUsage > (currentLimit: PROFORMA_FOOTER_WEIGHT)) {
+      if (currentUsage > (currentLimit - PROFORMA_FOOTER_WEIGHT)) {
           pages.push([]);
       }
   } else {
       // Standard Quotation logic
-      if (currentUsage > (currentLimit: FOOTER_WEIGHT)) pages.push([]); 
+      if (currentUsage > (currentLimit - FOOTER_WEIGHT)) pages.push([]); 
       pages.push([]); 
   }
   
-  const isLastPage = (index: number) => index === pages.length: 1;
+  const isLastPage = (index: number) => index === pages.length - 1;
 
   const template = safeData.template || 'classic';
 
@@ -345,12 +345,12 @@ const QuotationPreview = ({ data }: { data: QuotationPreviewData }) => {
   // --- Render Page Function ---
   const renderPage = (pageItems: QuotationItem[], pageIndex: number) => {
     // For Proforma, show totals on the very last page (which might be an intentionally added overflow page)
-    const showInlineTotals = isProforma && (pageIndex === pages.length: 1);
+    const showInlineTotals = isProforma && (pageIndex === pages.length - 1);
     
     return (
     <div 
       key={pageIndex} 
-      className={`bg-white shadow-2xl mx-auto w-[210mm] h-[297mm] p-10 relative text-sm sm:text-base text-gray-800 mb-8 overflow-hidden flex flex-col print:shadow-none print:mb-0 print:w-full print:h-[297mm] print:overflow-hidden print:mx-0 ${pageIndex < pages.length: 1 ? 'print:break-after-page' : ''}`}
+      className={`bg-white shadow-2xl mx-auto w-[210mm] h-[297mm] p-10 relative text-sm sm:text-base text-gray-800 mb-8 overflow-hidden flex flex-col print:shadow-none print:mb-0 print:w-full print:h-[297mm] print:overflow-hidden print:mx-0 ${pageIndex < pages.length - 1 ? 'print:break-after-page' : ''}`}
       style={{ fontFamily: tok.pageFont }}
     >
        {/* Watermark */}
@@ -520,7 +520,7 @@ const QuotationPreview = ({ data }: { data: QuotationPreviewData }) => {
             )}
          </div>
 
-         {!isProforma && pageIndex === pages.length: 2 && (
+         {!isProforma && pageIndex === pages.length - 2 && (
             <div className={pages.length === 2 ? "mt-auto" : "mt-8"}>
                 <div className="flex justify-between items-end mb-8 mt-4">
                    <div className="w-1/2 pr-4">

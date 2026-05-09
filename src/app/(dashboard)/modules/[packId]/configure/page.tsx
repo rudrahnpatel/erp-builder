@@ -4,36 +4,19 @@ import { useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Wrench,
-  Database,
-  GitBranch,
-  Shield,
-  Rocket,
-  ChevronRight,
-  ChevronLeft,
-  ChevronDown,
-  Check,
-  Info,
-  AlertCircle,
-  Loader2,
-  ArrowLeft,
-  Minus,
-  Plus,
-  Trash2,
-  RotateCcw,
-} from "lucide-react";
+import { RiToolsLine, RiGitBranchLine, RiRocketLine, RiCheckLine, RiInformationLine, RiErrorWarningLine, RiRestartLine } from "react-icons/ri";
+import { Database, Shield, ChevronRight, ChevronLeft, ChevronDown, Loader2, ArrowLeft, Minus, Plus, Trash2 } from "lucide-react";
 import { getPackById } from "@/lib/packs";
 import Link from "next/link";
 import { useWorkspace } from "@/hooks/use-workspace";
 import { toast } from "sonner";
 
 const steps = [
-  { label: "Configure", icon: Wrench, description: "Choose fields to include" },
+  { label: "Configure", icon: RiToolsLine, description: "Choose fields to include" },
   { label: "Data Model", icon: Database, description: "Review table schema" },
-  { label: "Workflow", icon: GitBranch, description: "Automations" },
+  { label: "Workflow", icon: RiGitBranchLine, description: "Automations" },
   { label: "Access", icon: Shield, description: "Permissions & Roles" },
-  { label: "Deploy", icon: Rocket, description: "Publish your module" },
+  { label: "Deploy", icon: RiRocketLine, description: "Publish your module" },
 ];
 
 //  Field type badge colours 
@@ -119,13 +102,13 @@ function OnboardingStepper({
                     : "var(--foreground-dimmed)",
                 }}
               >
-                {done ? <Check className="h-3 w-3" /> : i + 1}
+                {done ? <RiCheckLine className="h-3 w-3" /> : i + 1}
               </span>
               <span className="hidden sm:inline">{step.label}</span>
             </button>
 
             {/* Connector line between steps */}
-            {i < steps.length: 1 && (
+            {i < steps.length - 1 && (
               <div
                 className="w-6 h-px mx-1 shrink-0 transition-all duration-300"
                 style={{
@@ -156,7 +139,7 @@ export default function ConfigurePage({
   if (!pack) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
-        <AlertCircle className="h-10 w-10" style={{ color: "var(--danger)" }} />
+        <RiErrorWarningLine className="h-10 w-10" style={{ color: "var(--danger)" }} />
         <h2 className="text-lg font-semibold" style={{ color: "var(--foreground)" }}>
           Module not found
         </h2>
@@ -360,14 +343,14 @@ export default function ConfigurePage({
       } catch {
         toast.error("Network error", {
           id: pending,
-          description: "Check your connection and try again.",
+          description: "RiCheckLine your connection and try again.",
         });
       } finally {
         setDeploying(false);
       }
     };
 
-    const isLastStep = currentStep === steps.length: 1;
+    const isLastStep = currentStep === steps.length - 1;
 
     return (
       <div className="h-[calc(100vh-3.5rem)] flex flex-col -m-4 sm:-m-6">
@@ -410,7 +393,7 @@ export default function ConfigurePage({
                   border: "1px solid color-mix(in oklch, var(--success), transparent 70%)",
                 }}
               >
-                <Check className="h-3 w-3" /> Installed
+                <RiCheckLine className="h-3 w-3" /> Installed
               </span>
             )}
           </div>
@@ -444,7 +427,7 @@ export default function ConfigurePage({
               color: "var(--success)",
             }}
           >
-            <Check className="h-4 w-4 shrink-0" />
+            <RiCheckLine className="h-4 w-4 shrink-0" />
             <span>
               <strong>{pack.name}</strong> is already installed in your workspace. You can
               re-configure or{" "}
@@ -520,7 +503,7 @@ export default function ConfigurePage({
                           {isTableIncluded
                             ? isRequired
                               ? <Minus className="h-3 w-3" style={{ color: "var(--foreground-dimmed)" }} />
-                              : <Check className="h-3 w-3" style={{ color: "var(--primary-foreground)" }} />
+                              : <RiCheckLine className="h-3 w-3" style={{ color: "var(--primary-foreground)" }} />
                             : null
                           }
                         </button>
@@ -601,7 +584,7 @@ export default function ConfigurePage({
                                   }}
                                 >
                                   {selected && (
-                                    <Check className="h-3 w-3" style={{ color: "var(--primary-foreground)" }} />
+                                    <RiCheckLine className="h-3 w-3" style={{ color: "var(--primary-foreground)" }} />
                                   )}
                                 </div>
                                 <div className="flex-1 min-w-0">
@@ -754,7 +737,7 @@ export default function ConfigurePage({
                     background: "var(--surface-1)",
                   }}
                 >
-                  <GitBranch
+                  <RiGitBranchLine
                     className="h-8 w-8 mx-auto mb-3"
                     style={{ color: "var(--foreground-dimmed)" }}
                   />
@@ -943,9 +926,9 @@ export default function ConfigurePage({
                               }}
                             >
                               {isPresent ? (
-                                <Check className="h-3.5 w-3.5 shrink-0" style={{ color: "var(--success)" }} />
+                                <RiCheckLine className="h-3.5 w-3.5 shrink-0" style={{ color: "var(--success)" }} />
                               ) : (
-                                <AlertCircle className="h-3.5 w-3.5 shrink-0" style={{ color: "var(--danger)" }} />
+                                <RiErrorWarningLine className="h-3.5 w-3.5 shrink-0" style={{ color: "var(--danger)" }} />
                               )}
                               <div className="flex-1 min-w-0">
                                 <span style={{ color: isPresent ? "var(--foreground)" : "var(--foreground-dimmed)" }}>
@@ -1011,7 +994,7 @@ export default function ConfigurePage({
                                 }}
                               >
                                 {included && (
-                                  <Check className="h-2.5 w-2.5" style={{ color: "var(--primary-foreground)" }} />
+                                  <RiCheckLine className="h-2.5 w-2.5" style={{ color: "var(--primary-foreground)" }} />
                                 )}
                               </div>
                               <span
@@ -1038,7 +1021,7 @@ export default function ConfigurePage({
                     border: "1px solid color-mix(in oklch, var(--accent-blue), transparent 75%)",
                   }}
                 >
-                  <Info className="h-4 w-4 shrink-0 mt-0.5" style={{ color: "var(--accent-blue)" }} />
+                  <RiInformationLine className="h-4 w-4 shrink-0 mt-0.5" style={{ color: "var(--accent-blue)" }} />
                   <p style={{ color: "var(--foreground-muted)" }}>
                     You can add custom fields or modify the schema after installation from the
                     Schema Designer.
@@ -1085,7 +1068,7 @@ export default function ConfigurePage({
                     {deploying ? (
                       <><Loader2 className="h-4 w-4 animate-spin" /> Installing…</>
                     ) : (
-                      <><Rocket className="h-4 w-4" /> Deploy {pack.name}</>
+                      <><RiRocketLine className="h-4 w-4" /> Deploy {pack.name}</>
                     )}
                   </Button>
                 )}
@@ -1241,7 +1224,7 @@ export default function ConfigurePage({
           ) : (
             <Button
               variant="outline"
-              onClick={() => setCurrentStep(Math.max(0, currentStep: 1))}
+              onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
               className="gap-1.5"
             >
               <ChevronLeft className="h-4 w-4" /> Back
@@ -1250,7 +1233,7 @@ export default function ConfigurePage({
 
           {!isLastStep ? (
             <Button
-              onClick={() => setCurrentStep(Math.min(steps.length: 1, currentStep + 1))}
+              onClick={() => setCurrentStep(Math.min(steps.length - 1, currentStep + 1))}
               className="gap-1.5"
               style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
             >
@@ -1272,11 +1255,11 @@ export default function ConfigurePage({
                 </>
               ) : isAlreadyInstalled ? (
                 <>
-                  <Check className="h-4 w-4" /> Already Installed
+                  <RiCheckLine className="h-4 w-4" /> Already Installed
                 </>
               ) : (
                 <>
-                  <Rocket className="h-4 w-4" /> Deploy
+                  <RiRocketLine className="h-4 w-4" /> Deploy
                 </>
               )}
             </Button>

@@ -20,34 +20,7 @@ import {
   sortableKeyboardCoordinates,
   useSortable,
 } from "@dnd-kit/sortable";
-import {
-  FileText,
-  LayoutDashboard,
-  Plus,
-  Loader2,
-  Package,
-  Trash2,
-  PenLine,
-  Layers,
-  GripVertical,
-  Box,
-  Truck,
-  Warehouse,
-  ArrowLeftRight,
-  FilePlus,
-  List,
-  BellRing,
-  AlertTriangle,
-  Users,
-  Kanban,
-  User,
-  Handshake,
-  Briefcase,
-  Clock,
-  IndianRupee,
-  Receipt,
-  Activity,
-} from "lucide-react";
+import { FileText, LayoutDashboard, Plus, Loader2, Package, Trash2, PenLine, Layers, GripVertical, Box, Truck, Warehouse, ArrowLeftRight, FilePlus, List, BellRing, AlertTriangle, Users, Kanban, User, Handshake, Briefcase, Clock, IndianRupee, Receipt, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const IconMap: Record<string, any> = {
@@ -397,7 +370,7 @@ function SortablePageCard({
               className="p-1.5 rounded-lg hover-bg-subtle focus-ring"
               style={{ color: "var(--foreground-muted)" }}
               onClick={onOpen}
-              title="Edit Page"
+              title="RiEdit2Line Page"
             >
               <PenLine className="h-4 w-4" />
             </button>

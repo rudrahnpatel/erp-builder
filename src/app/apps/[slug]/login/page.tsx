@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LogIn, Eye, EyeOff, KeyRound, X } from "lucide-react";
+import { RiLoginBoxLine, RiEyeLine, RiEyeOffLine, RiKeyLine, RiCloseLine } from "react-icons/ri";
 
 const REMEMBERED_USERNAME_KEY = (slug: string) => `erpbuilder:tenant:${slug}:rememberedUsername`;
 
@@ -129,7 +129,7 @@ export default function TenantLoginPage() {
               style={{ color: "var(--foreground-dimmed)" }}
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
-              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              {showPassword ? <RiEyeOffLine className="h-4 w-4" /> : <RiEyeLine className="h-4 w-4" />}
             </button>
           </div>
         </div>
@@ -151,7 +151,7 @@ export default function TenantLoginPage() {
             className="inline-flex items-center gap-1 font-medium hover:underline focus-ring rounded"
             style={{ color: "var(--primary)" }}
           >
-            <KeyRound className="h-3.5 w-3.5" />
+            <RiKeyLine className="h-3.5 w-3.5" />
             Forgot password?
           </button>
         </div>
@@ -164,7 +164,7 @@ export default function TenantLoginPage() {
           {loading ? (
             <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           ) : (
-            <LogIn className="h-4 w-4" />
+            <RiLoginBoxLine className="h-4 w-4" />
           )}
           Sign In
         </Button>
@@ -197,7 +197,7 @@ export default function TenantLoginPage() {
                   color: "var(--primary)",
                 }}
               >
-                <KeyRound className="h-5 w-5" />
+                <RiKeyLine className="h-5 w-5" />
               </div>
               <button
                 type="button"
@@ -206,7 +206,7 @@ export default function TenantLoginPage() {
                 style={{ color: "var(--foreground-dimmed)" }}
                 aria-label="Close"
               >
-                <X className="h-4 w-4" />
+                <RiCloseLine className="h-4 w-4" />
               </button>
             </div>
             <h3 className="text-lg font-semibold mb-1.5" style={{ color: "var(--foreground)" }}>

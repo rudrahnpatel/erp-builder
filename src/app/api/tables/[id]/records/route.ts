@@ -72,7 +72,7 @@ export async function GET(
 
   // Pagination
   const total = records.length;
-  const paginated = records.slice((page: 1) * limit, page * limit);
+  const paginated = records.slice((page - 1) * limit, page * limit);
 
   return NextResponse.json({
     records: paginated,

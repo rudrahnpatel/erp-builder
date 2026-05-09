@@ -8,7 +8,7 @@ export async function GET() {
     const workspace = await getWorkspace();
     if (!workspace) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    // Check if tenantUser model is available (may be missing if Prisma client hasn't been regenerated yet)
+    // RiCheckLine if tenantUser model is available (may be missing if Prisma client hasn't been regenerated yet)
     const hasTenantUserModel = typeof (db as any).tenantUser !== "undefined";
 
     const [tables, pages, installedPacks, installedPlugins, tenantUsers] = await Promise.all([
@@ -44,7 +44,7 @@ export async function GET() {
     const tenantUserCount = tenantUsers.length;
     const hasTenantAdmin = tenantUsers.some((u: any) => u.role === "admin");
 
-    return NextResponse.json({
+    const body = {
       id: workspace.id,
       name: workspace.name,
       slug: workspace.slug,
@@ -82,7 +82,15 @@ export async function GET() {
         pluginId: p.pluginId,
         enabled: p.enabled,
       })),
-    });
+    };
+
+    const res = NextResponse.json(body);
+    // Allow browsers to serve stale data instantly and revalidate in background
+    res.headers.set(
+      "Cache-Control",
+      "private, s-maxage=10, stale-while-revalidate=60"
+    );
+    return res;
   } catch (error) {
     console.error("[WORKSPACE_GET_ERROR]", error);
     return NextResponse.json({ error: "Database unavailable." }, { status: 503 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, Filter } from "lucide-react";
+import { RiSearchLine, RiFilter3Line } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { useFilter } from "./FilterContext";
 
@@ -21,7 +21,7 @@ export function FilterBarView({
   return (
     <div className="flex items-center gap-3">
       <div className="flex-1 relative group w-full">
-        <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+        <RiSearchLine className="absolute left-3.5 top-2.5 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
         <input
           type="text"
           value={query}
@@ -41,7 +41,7 @@ export function FilterBarView({
         onClick={() => setQuery("")}
         disabled={readOnly || !query}
       >
-        <Filter className="h-4 w-4" /> {query ? "Clear" : "Filter"}
+        <RiFilter3Line className="h-4 w-4" /> {query ? "Clear" : "Filter"}
       </Button>
     </div>
   );

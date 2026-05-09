@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity } from "lucide-react";
+import { RiPulseLine } from "react-icons/ri";
 
 export function WorkspaceSkeleton() {
   return (

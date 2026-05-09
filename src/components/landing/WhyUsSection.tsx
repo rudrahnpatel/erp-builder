@@ -3,31 +3,31 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Zap, Globe, Shield, HeartHandshake } from "lucide-react";
+import { RiFlashlightLine, RiGlobalLine, RiShieldLine, RiHeartPulseLine } from "react-icons/ri";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const whyUs = [
   {
-    icon: Zap,
+    icon: RiFlashlightLine,
     title: "Live in minutes, not months",
     desc: "Install a module, configure schemas, deploy. Your custom ERP can be live before your first chai break.",
     accentVar: "--accent-blue",
   },
   {
-    icon: Globe,
+    icon: RiGlobalLine,
     title: "Built for India, not bolted on",
     desc: "GST compliance, INR-first invoicing, UPI payments, and Hindi language support are core features, not afterthoughts.",
     accentVar: "--accent-emerald",
   },
   {
-    icon: Shield,
+    icon: RiShieldLine,
     title: "You own your data. Period.",
     desc: "Your data stays in your workspace. No cross-tenant analytics, no selling your business graph to investors.",
     accentVar: "--accent-violet",
   },
   {
-    icon: HeartHandshake,
+    icon: RiHeartPulseLine,
     title: "No consultants required",
     desc: "We built this for business owners who know their business, not for consultants who charge by the hour to figure it out.",
     accentVar: "--accent-amber",

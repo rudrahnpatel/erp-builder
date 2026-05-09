@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 // Lightweight i18n helper. Not a full framework : just a typed string table
 // and a useLanguage() hook backed by localStorage. Add new keys to BOTH locales
@@ -102,14 +102,18 @@ export function useLanguage(): {
     return () => window.removeEventListener("erpbuilder:lang-change", onChange);
   }, []);
 
-  const setLang = (next: Lang) => {
+  const setLang = useCallback((next: Lang) => {
     setLangState(next);
     setStoredLang(next);
-  };
+  }, []);
 
-  const t = (key: TranslationKey): string => {
-    return (dict[lang] as Dict)[key] ?? (dict.en as Dict)[key] ?? key;
-  };
+  const t = useCallback(
+    (key: TranslationKey): string => {
+      return (dict[lang] as Dict)[key] ?? (dict.en as Dict)[key] ?? key;
+    },
+    [lang]
+  );
 
   return { lang, setLang, t };
 }
+

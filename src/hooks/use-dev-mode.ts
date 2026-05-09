@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSession } from "next-auth/react";
 
 // Lightweight developer-mode guard.
 // Dev mode is activated by entering the dev password in Settings → Developer.
@@ -10,24 +11,18 @@ import { useState, useEffect, useCallback } from "react";
 const STORAGE_KEY = "erpbuilder:dev-mode";
 const EVENT_KEY = "erpbuilder:dev-mode-change";
 
-/** The one and only dev password : hashed check is intentionally omitted
- *  because this is a front-end-only convenience gate, not a security boundary. */
-const DEV_PASSWORD = "bunmaska";
-
-export function validateDevPassword(input: string): boolean {
-  return input === DEV_PASSWORD;
-}
-
 export function useDevMode() {
-  const [isDevMode, setIsDevMode] = useState(false);
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === "admin";
+  const [isDevModeActive, setIsDevModeActive] = useState(false);
 
   useEffect(() => {
     const stored = window.localStorage.getItem(STORAGE_KEY);
-    setIsDevMode(stored === "true");
+    setIsDevModeActive(stored === "true");
 
     const onChange = (e: Event) => {
       const ce = e as CustomEvent<boolean>;
-      setIsDevMode(ce.detail);
+      setIsDevModeActive(ce.detail);
     };
     window.addEventListener(EVENT_KEY, onChange);
     return () => window.removeEventListener(EVENT_KEY, onChange);
@@ -35,15 +30,21 @@ export function useDevMode() {
 
   const activate = useCallback(() => {
     window.localStorage.setItem(STORAGE_KEY, "true");
-    setIsDevMode(true);
+    setIsDevModeActive(true);
     window.dispatchEvent(new CustomEvent(EVENT_KEY, { detail: true }));
   }, []);
 
   const deactivate = useCallback(() => {
     window.localStorage.removeItem(STORAGE_KEY);
-    setIsDevMode(false);
+    setIsDevModeActive(false);
     window.dispatchEvent(new CustomEvent(EVENT_KEY, { detail: false }));
   }, []);
 
-  return { isDevMode, activate, deactivate };
+  // Admin users are always in dev mode effectively, or we can use the manual toggle.
+  // We combine the explicit toggle with the admin role.
+  return { 
+    isDevMode: isAdmin || isDevModeActive, 
+    activate, 
+    deactivate 
+  };
 }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import useSWR from "swr";
-import { Table2, MoreHorizontal, Plus } from "lucide-react";
+import { RiTableLine, RiMoreLine, RiAddLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { RecordFormModal } from "./RecordFormModal";
@@ -45,7 +45,7 @@ export function TableView({ config, tableId }: { config: any; tableId?: string }
           background: "var(--surface-sunken)",
         }}
       >
-        <Table2 className="h-8 w-8 mb-3 opacity-40" />
+        <RiTableLine className="h-8 w-8 mb-3 opacity-40" />
         <p className="text-sm font-medium">No table configured or table not found.</p>
       </div>
     );
@@ -80,7 +80,7 @@ export function TableView({ config, tableId }: { config: any; tableId?: string }
               color: "var(--primary)",
             }}
           >
-            <Table2 className="h-4 w-4" />
+            <RiTableLine className="h-4 w-4" />
           </div>
           <div className="flex flex-col">
             <span className="text-base font-semibold tracking-tight leading-tight" style={{ color: "var(--foreground)" }}>
@@ -106,10 +106,10 @@ export function TableView({ config, tableId }: { config: any; tableId?: string }
               setIsFormOpen(true);
             }}
           >
-            <Plus className="h-3.5 w-3.5" /> Add Record
+            <RiAddLine className="h-3.5 w-3.5" /> Add Record
           </Button>
           <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg hover-bg-subtle border" style={{ borderColor: "var(--border-subtle)" }}>
-            <MoreHorizontal className="h-4 w-4" style={{ color: "var(--foreground-muted)" }} />
+            <RiMoreLine className="h-4 w-4" style={{ color: "var(--foreground-muted)" }} />
           </Button>
         </div>
       </div>
@@ -150,7 +150,7 @@ export function TableView({ config, tableId }: { config: any; tableId?: string }
                   style={{ color: "var(--foreground-muted)" }}
                 >
                   <div className="h-16 w-16 rounded-full bg-secondary/20 flex items-center justify-center mx-auto mb-4 border-2 border-dashed border-border/40">
-                    <Table2 className="h-7 w-7 opacity-20" />
+                    <RiTableLine className="h-7 w-7 opacity-20" />
                   </div>
                   <p className="text-lg font-bold text-foreground">No records yet</p>
                   <p className="text-sm mt-1 max-w-xs mx-auto" style={{ color: "var(--foreground-dimmed)" }}>
@@ -214,7 +214,7 @@ export function TableView({ config, tableId }: { config: any; tableId?: string }
                             copyAttendanceLink(row.id);
                           }}
                         >
-                          Copy Link
+                          RiFileCopyLine Link
                         </Button>
                       )}
                       <Button 
@@ -227,7 +227,7 @@ export function TableView({ config, tableId }: { config: any; tableId?: string }
                           setIsFormOpen(true);
                         }}
                       >
-                        Edit
+                        RiEdit2Line
                       </Button>
                     </div>
                   </td>

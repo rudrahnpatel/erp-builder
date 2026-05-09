@@ -3,7 +3,7 @@
 import { use } from "react";
 import useSWR from "swr";
 import { DevModeGate } from "@/components/layout/DevModeGate";
-import { Loader2, Package } from "lucide-react";
+import { RiLoader4Line, RiArchiveLine } from "react-icons/ri";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -59,11 +59,11 @@ export default function ModuleDetailLayout({
                   : "none",
               }}
             >
-              <Package className="h-5 w-5" />
+              <RiArchiveLine className="h-5 w-5" />
             </div>
             {isLoading ? (
               <div className="flex items-center gap-2">
-                <Loader2
+                <RiLoader4Line
                   className="h-5 w-5 animate-spin"
                   style={{ color: "var(--primary)" }}
                 />

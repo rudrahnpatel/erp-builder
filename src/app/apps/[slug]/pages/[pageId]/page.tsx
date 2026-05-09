@@ -3,16 +3,7 @@
 import { use } from "react";
 import useSWR from "swr";
 import Link from "next/link";
-import {
-  Loader2,
-  ArrowLeft,
-  Table2,
-  Filter,
-  BarChart3,
-  Search,
-  Plus,
-  Calendar,
-} from "lucide-react";
+import { RiLoader4Line, RiArrowLeftLine, RiTableLine, RiFilter3Line, RiBarChartLine, RiSearchLine, RiAddLine, RiCalendarLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { TableView } from "@/components/blocks/TableView";
 import { KanbanView } from "@/components/blocks/KanbanView";
@@ -142,7 +133,7 @@ export default function TenantCustomPage({
                 href={`/pages/${pageId}/edit`}
                 className="text-primary hover:underline mt-2 inline-block"
               >
-                Edit this page in composer
+                RiEdit2Line this page in composer
               </Link>
             </div>
           ) : (
@@ -180,7 +171,7 @@ export default function TenantCustomPage({
                   {block.type === "FILTER_BAR" && (
                     <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                       <div className="flex-1 relative group w-full">
-                        <Search
+                        <RiSearchLine
                           className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors"
                           style={{ color: "var(--foreground-dimmed)" }}
                         />
@@ -206,7 +197,7 @@ export default function TenantCustomPage({
                       {block.config?.includeDateRange && (
                         <div className="flex items-center gap-2 shrink-0">
                           <div className="relative">
-                            <Calendar className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5" style={{ color: "var(--foreground-dimmed)" }} />
+                            <RiCalendarLine className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5" style={{ color: "var(--foreground-dimmed)" }} />
                             <input
                               type="date"
                               className="pl-8 pr-2 py-2.5 text-sm rounded-xl outline-none"
@@ -219,7 +210,7 @@ export default function TenantCustomPage({
                           </div>
                           <span className="text-xs" style={{ color: "var(--foreground-dimmed)" }}>to</span>
                           <div className="relative">
-                            <Calendar className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5" style={{ color: "var(--foreground-dimmed)" }} />
+                            <RiCalendarLine className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5" style={{ color: "var(--foreground-dimmed)" }} />
                             <input
                               type="date"
                               className="pl-8 pr-2 py-2.5 text-sm rounded-xl outline-none"
@@ -241,7 +232,7 @@ export default function TenantCustomPage({
                           color: "var(--foreground-muted)",
                         }}
                       >
-                        <Filter className="h-4 w-4" /> Filter
+                        <RiFilter3Line className="h-4 w-4" /> RiFilter3Line
                       </Button>
                     </div>
                   )}
@@ -277,7 +268,7 @@ export default function TenantCustomPage({
                           background: "var(--surface-1)",
                         }}
                       >
-                        <Table2 className="h-8 w-8 mb-3 opacity-40" />
+                        <RiTableLine className="h-8 w-8 mb-3 opacity-40" />
                         <p className="text-sm font-medium">No table connected to this block.</p>
                       </div>
                     )
@@ -292,7 +283,7 @@ export default function TenantCustomPage({
                         color: "var(--foreground-muted)",
                       }}
                     >
-                      <BarChart3 className="h-10 w-10 mb-3 opacity-50" /> 
+                      <RiBarChartLine className="h-10 w-10 mb-3 opacity-50" /> 
                       <span className="font-medium">{displayLabel}</span>
                       <span className="text-xs mt-1 opacity-70">Requires data source connection</span>
                     </div>
@@ -310,7 +301,7 @@ export default function TenantCustomPage({
                           background: "var(--surface-1)",
                         }}
                       >
-                        <Plus className="h-8 w-8 mb-3 opacity-40" />
+                        <RiAddLine className="h-8 w-8 mb-3 opacity-40" />
                         <p className="text-sm font-medium">No table connected to this Kanban block.</p>
                       </div>
                     )
@@ -360,7 +351,7 @@ export default function TenantCustomPage({
                   {block.type === "custom-route" && (
                     <div className="p-10 border border-border/40 rounded-xl flex flex-col items-center justify-center bg-card text-center shadow-sm">
                       <div className="h-16 w-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: "color-mix(in oklch, var(--primary), transparent 85%)", color: "var(--primary)" }}>
-                        <ArrowLeft className="h-8 w-8 rotate-135" />
+                        <RiArrowLeftLine className="h-8 w-8 rotate-135" />
                       </div>
                       <h3 className="text-xl font-bold text-foreground mb-2">{displayLabel}</h3>
                       <p className="text-sm mb-6 max-w-sm text-muted-foreground">

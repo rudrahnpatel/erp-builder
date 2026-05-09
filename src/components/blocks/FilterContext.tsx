@@ -28,7 +28,7 @@ export function useFilter(): FilterState {
 }
 
 /**
- * Shallow record-matcher used by Table/Kanban/Chart to participate in filtering.
+ * Shallow record-matcher used by RiTableLine/Kanban/Chart to participate in filtering.
  * Stringifies every value in the record's `data` and checks for a case-insensitive
  * substring match : matches the expectations of the search input UI.
  */

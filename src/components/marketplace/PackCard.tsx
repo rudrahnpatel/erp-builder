@@ -4,24 +4,15 @@ import { PackDefinition } from "@/types/pack";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import {
-  Package,
-  Users,
-  Briefcase,
-  IndianRupee,
-  Download,
-  Check,
-  Settings2,
-  Trash2,
-  Sparkles,
-} from "lucide-react";
+import { RiArchiveLine, RiGroupLine, RiBriefcaseLine, RiMoneyRupeeCircleLine, RiDownloadLine, RiDeleteBinLine, RiSparklingLine } from "react-icons/ri";
+import { RiCheckLine, RiEqualizerLine } from "react-icons/ri";
 import { useState } from "react";
 
 const iconMap: Record<string, React.ReactNode> = {
-  package: <Package className="h-6 w-6" />,
-  users: <Users className="h-6 w-6" />,
-  briefcase: <Briefcase className="h-6 w-6" />,
-  "indian-rupee": <IndianRupee className="h-6 w-6" />,
+  package: <RiArchiveLine className="h-6 w-6" />,
+  users: <RiGroupLine className="h-6 w-6" />,
+  briefcase: <RiBriefcaseLine className="h-6 w-6" />,
+  "indian-rupee": <RiMoneyRupeeCircleLine className="h-6 w-6" />,
 };
 
 const colorMap: Record<string, { bg: string; text: string; glow: string }> = {
@@ -116,7 +107,7 @@ export function PackCard({
             color: colors.text,
           }}
         >
-          {iconMap[pack.icon] || <Package className="h-6 w-6" />}
+          {iconMap[pack.icon] || <RiArchiveLine className="h-6 w-6" />}
         </div>
         <Badge
           className="text-[10px] font-semibold px-2.5 py-0.5 border-0"
@@ -194,7 +185,7 @@ export function PackCard({
                 </>
               ) : (
                 <>
-                  <Sparkles className="h-4 w-4" />
+                  <RiSparklingLine className="h-4 w-4" />
                   Update to v{pack.version}
                 </>
               )}
@@ -208,7 +199,7 @@ export function PackCard({
                 border: "1px solid color-mix(in oklch, var(--success), transparent 70%)",
               }}
             >
-              <Check className="h-4 w-4" /> Installed
+              <RiCheckLine className="h-4 w-4" /> Installed
               {installedVersion && (
                 <span
                   className="text-[10px] mono tracking-[0.08em] opacity-70"
@@ -225,7 +216,7 @@ export function PackCard({
                 variant="outline"
                 className="w-full gap-2 font-medium"
               >
-                <Settings2 className="h-4 w-4" /> Configure
+                <RiEqualizerLine className="h-4 w-4" /> Configure
               </Button>
             </Link>
             <Button
@@ -237,7 +228,7 @@ export function PackCard({
               {unloading ? (
                 <div className="h-3.5 w-3.5 border-2 border-destructive/30 border-t-destructive rounded-full animate-spin" />
               ) : (
-                <Trash2 className="h-3.5 w-3.5" />
+                <RiDeleteBinLine className="h-3.5 w-3.5" />
               )}
             </Button>
           </div>
@@ -260,7 +251,7 @@ export function PackCard({
               </>
             ) : (
               <>
-                <Download className="h-4 w-4" /> Install
+                <RiDownloadLine className="h-4 w-4" /> Install
               </>
             )}
           </Button>

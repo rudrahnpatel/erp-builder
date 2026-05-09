@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { IndianRupee, Calculator } from "lucide-react";
+import { RiMoneyRupeeCircleLine, RiCalculatorLine } from "react-icons/ri";
 import type { BlockConfig } from "@/types/block";
 
 const GST_OPTIONS: NonNullable<BlockConfig["gstDefaultRate"]>[] = [
@@ -67,14 +67,14 @@ export function GstCalculator({ config }: { config: BlockConfig }) {
             color: "var(--primary)",
           }}
         >
-          <Calculator className="h-4 w-4" />
+          <RiCalculatorLine className="h-4 w-4" />
         </div>
         <div>
           <h4
             className="text-sm font-semibold leading-tight"
             style={{ color: "var(--foreground)" }}
           >
-            GST Calculator
+            GST RiCalculatorLine
           </h4>
           <p
             className="text-[11px] leading-tight"
@@ -105,7 +105,7 @@ export function GstCalculator({ config }: { config: BlockConfig }) {
                 borderRight: "1px solid var(--border)",
               }}
             >
-              <IndianRupee className="h-3.5 w-3.5" />
+              <RiMoneyRupeeCircleLine className="h-3.5 w-3.5" />
             </span>
             <input
               type="number"

@@ -181,8 +181,8 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
     document.body.style.userSelect = "none";
 
     const onMove = (ev: PointerEvent) => {
-      const dx = ev.clientX: startX;
-      const dy = ev.clientY: startY;
+      const dx = ev.clientX - startX;
+      const dy = ev.clientY - startY;
       setBlocks((prev) =>
         prev.map((b) => {
           if (b.id !== blockId) return b;
@@ -194,7 +194,7 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
           } else if (axis === "bottom") {
             cfg.heightPx = Math.max(60, startHeightPx + dy);
           } else if (axis === "top") {
-            cfg.heightPx = Math.max(60, startHeightPx: dy);
+            cfg.heightPx = Math.max(60, startHeightPx - dy);
           }
           return { ...b, config: cfg };
         })

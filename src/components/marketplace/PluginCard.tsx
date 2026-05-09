@@ -2,28 +2,10 @@
 
 import { PluginDefinition } from "@/types/plugin";
 import { Badge } from "@/components/ui/badge";
-import {
-  MessageCircle,
-  Fingerprint,
-  FileCheck,
-  Mail,
-  CalendarOff,
-  CreditCard,
-  Download,
-  Eye,
-} from "lucide-react";
-
-const iconMap: Record<string, React.ReactNode> = {
-  "message-circle": <MessageCircle className="h-6 w-6" />,
-  fingerprint: <Fingerprint className="h-6 w-6" />,
-  "file-check": <FileCheck className="h-6 w-6" />,
-  mail: <Mail className="h-6 w-6" />,
-  "calendar-off": <CalendarOff className="h-6 w-6" />,
-  "credit-card": <CreditCard className="h-6 w-6" />,
-};
+import { DynamicIcon } from "@/components/ui/DynamicIcon";
 
 const colorMap: Record<string, string> = {
-  "message-circle": "bg-green-50 text-green-600",
+  "whatsapp": "bg-green-50 text-green-600",
   fingerprint: "bg-blue-50 text-blue-600",
   "file-check": "bg-orange-50 text-orange-600",
   mail: "bg-purple-50 text-purple-600",
@@ -63,7 +45,7 @@ export function PluginCard({
             color: "var(--primary)"
           }}
         >
-          {iconMap[plugin.icon] || <MessageCircle className="h-6 w-6" />}
+          <DynamicIcon name={plugin.icon} className="h-6 w-6" />
         </div>
         <Badge
           variant={plugin.badge === "Free" ? "secondary" : "default"}
@@ -84,14 +66,14 @@ export function PluginCard({
       {/* Footer */}
       <div className="flex items-center justify-between pt-3 border-t" style={{ borderColor: "var(--border-subtle)" }}>
         <div className="flex items-center gap-1.5 text-xs" style={{ color: "var(--foreground-dimmed)" }}>
-          <Download className="h-3.5 w-3.5" />
+          <DynamicIcon name="download" className="h-3.5 w-3.5" />
           <span>{plugin.installs.toLocaleString()} installs</span>
         </div>
         <button
           onClick={() => onViewDetails?.(plugin.id)}
           className="text-sm font-semibold text-primary hover:opacity-80 flex items-center gap-1 transition-all pressable"
         >
-          <Eye className="h-3.5 w-3.5" />
+          <DynamicIcon name="eye" className="h-3.5 w-3.5" />
           View Details
         </button>
       </div>

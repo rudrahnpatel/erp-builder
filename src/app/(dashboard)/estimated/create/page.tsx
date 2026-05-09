@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import EstimatedPreview from '@/components/EstimatedPreview';
-import { Menu, Plus, Trash2, Printer, Save, ToggleLeft, ToggleRight, Share2, ArrowLeft } from 'lucide-react';
+import { RiMenuLine, RiAddLine, RiDeleteBinLine, RiPrinterLine, RiSaveLine, RiToggleLine, RiToggleFill, RiShareLine, RiArrowLeftLine } from "react-icons/ri";
 import { buildShareSlug } from '@/lib/shareSlug';
 import { useReactToPrint } from 'react-to-print';
 import { useWorkspace } from '@/hooks/use-workspace';
@@ -88,8 +88,8 @@ function CreateEstimateForm({ listUrl }: { listUrl?: string }) {
     }
   }, [workspace]);
 
-  // Load Data for Edit
-  // Load Data for Edit
+  // Load Data for RiEdit2Line
+  // Load Data for RiEdit2Line
   useEffect(() => {
     if (editId) {
       fetchEstimate(editId);
@@ -219,13 +219,13 @@ function CreateEstimateForm({ listUrl }: { listUrl?: string }) {
 
   return (
     <div className="flex h-screen bg-slate-50 font-sans">
-      {/* Mobile Menu Button */}
+      {/* Mobile RiMenuLine Button */}
       <div className="md:hidden fixed top-4 left-4 z-50">
         <button 
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className="p-2 bg-white rounded-lg shadow-md border border-slate-200 text-slate-600 hover:text-blue-600"
         >
-          <Menu className="w-6 h-6" />
+          <RiMenuLine className="w-6 h-6" />
         </button>
       </div>
 
@@ -239,7 +239,7 @@ function CreateEstimateForm({ listUrl }: { listUrl?: string }) {
                   className="p-2 bg-slate-50 text-slate-600 rounded-lg border border-slate-200 hover:text-blue-600 hover:border-blue-400 transition-all flex items-center gap-2"
                   title="Back to List"
                 >
-                  <ArrowLeft className="w-5 h-5" />
+                  <RiArrowLeftLine className="w-5 h-5" />
                   <span className="hidden md:inline font-medium text-sm">Back</span>
                 </button>
                 <div>
@@ -253,8 +253,8 @@ function CreateEstimateForm({ listUrl }: { listUrl?: string }) {
                   <span className={`text-sm font-medium ${showGst ? 'text-blue-700' : 'text-slate-500'}`}>GST</span>
                   <button onClick={() => setShowGst(!showGst)} className="focus:outline-none">
                     {showGst ? 
-                      <ToggleRight className="w-8 h-8 text-blue-600" /> : 
-                      <ToggleLeft className="w-8 h-8 text-slate-300" />
+                      <RiToggleFill className="w-8 h-8 text-blue-600" /> : 
+                      <RiToggleLine className="w-8 h-8 text-slate-300" />
                     }
                   </button>
                 </div>
@@ -264,7 +264,7 @@ function CreateEstimateForm({ listUrl }: { listUrl?: string }) {
                       onClick={saveEstimate} 
                       className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-900/20"
                   >
-                      <Save className="w-4 h-4" />
+                      <RiSaveLine className="w-4 h-4" />
                       <span className="text-sm font-medium">{saveStatus === 'saved' ? 'Saved!' : 'Save'}</span>
                   </button>
 
@@ -278,16 +278,16 @@ function CreateEstimateForm({ listUrl }: { listUrl?: string }) {
                           const shareUrl = `${window.location.origin}/estimate/${slug}`;
                           navigator.clipboard.writeText(shareUrl)
                               .then(() => alert('Share link copied!\n\n' + shareUrl))
-                              .catch(() => alert('Failed to copy link. Copy manually:\n' + shareUrl));
+                              .catch(() => alert('Failed to copy link. RiFileCopyLine manually:\n' + shareUrl));
                       }}
                       className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-lg shadow-green-900/20"
                   >
-                      <Share2 className="w-4 h-4" />
+                      <RiShareLine className="w-4 h-4" />
                       <span className="text-sm font-medium hidden md:inline">Share</span>
                   </button>
 
                   <button onClick={handlePrint} className="flex items-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-colors shadow-lg shadow-slate-900/20">
-                      <Printer className="w-4 h-4" />
+                      <RiPrinterLine className="w-4 h-4" />
                       <span className="text-sm font-medium">Print / PDF</span>
                   </button>
                 </div>
@@ -351,7 +351,7 @@ function CreateEstimateForm({ listUrl }: { listUrl?: string }) {
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Items</h2>
                         <button onClick={addItem} className="p-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors">
-                            <Plus className="w-4 h-4" />
+                            <RiAddLine className="w-4 h-4" />
                         </button>
                     </div>
                     
@@ -362,7 +362,7 @@ function CreateEstimateForm({ listUrl }: { listUrl?: string }) {
                                     onClick={() => removeItem(index)}
                                     className="absolute top-2 right-2 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
                                 >
-                                    <Trash2 className="w-4 h-4" />
+                                    <RiDeleteBinLine className="w-4 h-4" />
                                 </button>
 
                                 <div className="space-y-3">

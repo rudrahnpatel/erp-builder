@@ -33,7 +33,7 @@ export default async function AttendancePage({ params }: { params: Promise<{ tok
   const nameKey = Object.keys(empData).find(k => k.toLowerCase().replace(/\s/g, '') === "employeename");
   const employeeName = nameKey ? empData[nameKey] : (empData["Employee Name"] || empData["name"] || "Employee");
 
-  // Check today's status
+  // RiCheckLine today's status
   const todayDate = getISTDateMidnight();
   const attendanceRecord = await (db as any).attendanceRecord.findUnique({
     where: {

@@ -17,7 +17,7 @@ Framework:    Next.js 14 (App Router, TypeScript)
 Database:     PostgreSQL (Neon: serverless)
 ORM:          Prisma
 Styling:      Tailwind CSS + shadcn/ui
-Icons:        Lucide React
+Icons:        Lucide React8
 State:        Zustand (client-side block tree)
 Drag & Drop:  @dnd-kit/core + @dnd-kit/sortable
 Auth:         NextAuth.js (credentials provider, email + password)

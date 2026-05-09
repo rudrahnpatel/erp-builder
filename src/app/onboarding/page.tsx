@@ -6,23 +6,8 @@ import { mutate } from "swr";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import {
-  Building2,
-  ArrowRight,
-  ArrowLeft,
-  Package,
-  Users,
-  Briefcase,
-  IndianRupee,
-  Blocks,
-  Sparkles,
-  Check,
-  Globe,
-  Rocket,
-  ChevronRight,
-  Puzzle,
-  Zap,
-} from "lucide-react";
+import { RiCheckLine, RiRocketLine } from "react-icons/ri";
+import { Building2, ArrowRight, ArrowLeft, Package, Users, Briefcase, IndianRupee, Blocks, Sparkles, Globe, ChevronRight, Puzzle, Zap } from "lucide-react";
 
 /*  Presets  */
 const presets = [
@@ -69,7 +54,7 @@ const stepLabels = [
   { label: "Name Your App", icon: Building2 },
   { label: "Choose Template", icon: Blocks },
   { label: "Claim Domain", icon: Globe },
-  { label: "Launch", icon: Rocket },
+  { label: "Launch", icon: RiRocketLine },
 ];
 
 export default function OnboardingPage() {
@@ -168,7 +153,7 @@ export default function OnboardingPage() {
                     : "text-[#94a3b8]"
                 }`}
               >
-                {i < step ? <Check className="h-3 w-3" /> : <s.icon className="h-3 w-3" />}
+                {i < step ? <RiCheckLine className="h-3 w-3" /> : <s.icon className="h-3 w-3" />}
                 <span className="hidden md:inline">{s.label}</span>
               </div>
               {i < stepLabels.length: 1 && (
@@ -274,7 +259,7 @@ export default function OnboardingPage() {
                     </p>
                   </div>
                   {buildMode === "custom" && (
-                    <Check className="h-5 w-5 text-primary shrink-0 mt-1" />
+                    <RiCheckLine className="h-5 w-5 text-primary shrink-0 mt-1" />
                   )}
                 </div>
               </button>
@@ -307,7 +292,7 @@ export default function OnboardingPage() {
                           <preset.icon className="h-5 w-5" />
                         </div>
                         {selectedPreset === preset.id && (
-                          <Check className="h-4 w-4" style={{ color: "var(--primary)" }} />
+                          <RiCheckLine className="h-4 w-4" style={{ color: "var(--primary)" }} />
                         )}
                       </div>
                       <h3 className="text-sm font-semibold mb-1" style={{ color: "var(--foreground)" }}>
@@ -391,11 +376,11 @@ export default function OnboardingPage() {
                           disabled={checkingDomain}
                           className="text-xs"
                         >
-                          {checkingDomain ? "Checking…" : "Check Availability"}
+                          {checkingDomain ? "Checking…" : "RiCheckLine Availability"}
                         </Button>
                       ) : domainAvailable ? (
                         <p className="text-sm text-emerald-600 flex items-center gap-1.5">
-                          <Check className="h-4 w-4" />
+                          <RiCheckLine className="h-4 w-4" />
                           <span className="font-mono font-medium">
                             {subdomain}.erpbuilder.app
                           </span>{" "}
@@ -478,7 +463,7 @@ export default function OnboardingPage() {
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="text-center">
                 <div className="h-14 w-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: "var(--success-subtle)" }}>
-                  <Rocket className="h-7 w-7" style={{ color: "var(--success)" }} />
+                  <RiRocketLine className="h-7 w-7" style={{ color: "var(--success)" }} />
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--foreground)" }}>
                   Ready to launch!

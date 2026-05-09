@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { signIn, getProviders } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, User, Lock, Mail, Briefcase } from "lucide-react";
+import { RiLoader4Line, RiUserLine, RiLockLine, RiMailLine, RiBriefcaseLine } from "react-icons/ri";
 import { toast } from "sonner";
 
 const WaveBackground = () => (
@@ -188,7 +188,7 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
               >
                 <div className="h-20 w-20 rounded-full bg-gradient-to-br from-[#1e40af] to-[#3b82f6] p-1 shadow-lg mb-4 flex items-center justify-center">
                   <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
-                    <User className="h-8 w-8 text-[#2563eb]" />
+                    <RiUserLine className="h-8 w-8 text-[#2563eb]" />
                   </div>
                 </div>
 
@@ -197,7 +197,7 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
 
                 <form onSubmit={handleLoginSubmit} className="w-full max-w-[300px]">
                   <div className="relative w-full border-b border-gray-300 pb-2 mb-6 flex items-center gap-4">
-                    <User className="h-[18px] w-[18px] text-gray-400" />
+                    <RiUserLine className="h-[18px] w-[18px] text-gray-400" />
                     <input
                       type="email"
                       placeholder="Email"
@@ -209,7 +209,7 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
                     />
                   </div>
                   <div className="relative w-full border-b border-gray-300 pb-2 mb-6 flex items-center gap-4">
-                    <Lock className="h-[18px] w-[18px] text-gray-400" />
+                    <RiLockLine className="h-[18px] w-[18px] text-gray-400" />
                     <input
                       type="password"
                       placeholder="Password"
@@ -228,7 +228,7 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
                     <button
                       type="submit"
                       className="rounded-full px-8 py-2.5 shadow-lg bg-gradient-to-r from-[#1e40af] to-[#3b82f6] hover:opacity-90 transition-opacity text-white text-sm font-medium" disabled={loading || !isLogin}>
-                      {loading && isLogin ? <Loader2 className="mr-2 h-3 w-3 animate-spin" /> : null}
+                      {loading && isLogin ? <RiLoader4Line className="mr-2 h-3 w-3 animate-spin" /> : null}
                       Login
                     </button>
                   </div>
@@ -246,7 +246,7 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
                             signIn("google", { callbackUrl: "/workspace" });
                           }}
                         >
-                          {googleLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <GoogleMark />}
+                          {googleLoading ? <RiLoader4Line className="h-4 w-4 animate-spin" /> : <GoogleMark />}
                           Google
                         </button>
                         <button
@@ -272,7 +272,7 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
               >
                 <div className="h-16 w-16 rounded-full bg-gradient-to-br from-[#06b6d4] to-[#2563eb] p-1 shadow-lg mb-3 flex items-center justify-center">
                   <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
-                    <User className="h-6 w-6 text-[#06b6d4]" />
+                    <RiUserLine className="h-6 w-6 text-[#06b6d4]" />
                   </div>
                 </div>
 
@@ -281,7 +281,7 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
 
                 <form onSubmit={handleRegisterSubmit} className="w-full max-w-[300px]">
                   <div className="relative w-full border-b border-gray-300 pb-2 mb-5 flex items-center gap-4">
-                    <User className="h-[18px] w-[18px] text-gray-400" />
+                    <RiUserLine className="h-[18px] w-[18px] text-gray-400" />
                     <input
                       placeholder="Full Name"
                       value={name}
@@ -292,7 +292,7 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
                     />
                   </div>
                   <div className="relative w-full border-b border-gray-300 pb-2 mb-5 flex items-center gap-4">
-                    <Mail className="h-[18px] w-[18px] text-gray-400" />
+                    <RiMailLine className="h-[18px] w-[18px] text-gray-400" />
                     <input
                       type="email"
                       placeholder="Email"
@@ -304,7 +304,7 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
                     />
                   </div>
                   <div className="relative w-full border-b border-gray-300 pb-2 mb-5 flex items-center gap-4">
-                    <Briefcase className="h-[18px] w-[18px] text-gray-400" />
+                    <RiBriefcaseLine className="h-[18px] w-[18px] text-gray-400" />
                     <input
                       placeholder="Workspace Name"
                       value={workspaceName}
@@ -315,7 +315,7 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
                     />
                   </div>
                   <div className="relative w-full border-b border-gray-300 pb-2 mb-5 flex items-center gap-4">
-                    <Lock className="h-[18px] w-[18px] text-gray-400" />
+                    <RiLockLine className="h-[18px] w-[18px] text-gray-400" />
                     <input
                       type="password"
                       placeholder="Password"
@@ -331,7 +331,7 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
                     <button
                       type="submit"
                       className="rounded-full px-8 py-2.5 shadow-lg bg-gradient-to-r from-[#06b6d4] to-[#2563eb] hover:opacity-90 transition-opacity text-white text-sm font-medium" disabled={loading || isLogin}>
-                      {loading && !isLogin ? <Loader2 className="mr-2 h-3 w-3 animate-spin" /> : null}
+                      {loading && !isLogin ? <RiLoader4Line className="mr-2 h-3 w-3 animate-spin" /> : null}
                       Sign Up
                     </button>
                   </div>

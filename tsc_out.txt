@@ -1,0 +1,12 @@
+src/components/blocks/FilterBar.tsx(5,24): error TS2305: Module '"react-icons/ri"' has no exported member 'Filter'.
+src/components/blocks/FilterBar.tsx(24,10): error TS2304: Cannot find name 'RiFilter3Line'.
+src/components/blocks/FilterBarView.tsx(3,24): error TS2305: Module '"react-icons/ri"' has no exported member 'Filter'.
+src/components/blocks/FilterBarView.tsx(44,10): error TS2304: Cannot find name 'RiFilter3Line'.
+src/components/blocks/ImageBlock.tsx(3,10): error TS2305: Module '"react-icons/ri"' has no exported member 'Image'.
+src/components/blocks/ImageBlock.tsx(35,10): error TS2304: Cannot find name 'RiImageLine'.
+src/components/landing/HowItWorks.tsx(7,70): error TS2305: Module '"react-icons/ri"' has no exported member 'Table'.
+src/components/landing/HowItWorks.tsx(131,36): error TS2304: Cannot find name 'RiTableLine'.
+src/components/layout/CommandPalette.tsx(7,174): error TS2305: Module '"react-icons/ri"' has no exported member 'Delete'.
+src/components/layout/CommandPalette.tsx(59,82): error TS2304: Cannot find name 'RiDeleteBinLine'.
+src/components/layout/CommandPalette.tsx(150,37): error TS2304: Cannot find name 'Search'.
+src/components/workspace/WorkspaceSkeleton.tsx(3,10): error TS2305: Module '"react-icons/ri"' has no exported member 'Activity'.

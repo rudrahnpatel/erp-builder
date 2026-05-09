@@ -3,7 +3,7 @@
 import { use, useState } from "react";
 import useSWR from "swr";
 import Link from "next/link";
-import { Table2, Plus, Search, Layers, Loader2, ArrowLeft } from "lucide-react";
+import { RiTableLine, RiAddLine, RiSearchLine, RiStackLine, RiLoader4Line, RiArrowLeftLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -122,13 +122,13 @@ export default function TenantTableView({
             href={`/apps/${slug}`}
             className="text-muted-foreground hover:text-foreground transition-colors mr-2"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <RiArrowLeftLine className="h-4 w-4" />
           </Link>
           <div
             className="h-8 w-8 rounded-lg flex items-center justify-center"
             style={{ background: "var(--primary-subtle)", color: "var(--primary)" }}
           >
-            <Table2 className="h-4 w-4" />
+            <RiTableLine className="h-4 w-4" />
           </div>
           <div>
             <h1
@@ -147,7 +147,7 @@ export default function TenantTableView({
         </div>
         <div className="flex items-center gap-2">
           <div className="relative">
-            <Search
+            <RiSearchLine
               className="h-3.5 w-3.5 absolute left-2.5 top-1/2 -translate-y-1/2"
               style={{ color: "var(--foreground-muted)" }}
             />
@@ -167,7 +167,7 @@ export default function TenantTableView({
             onClick={() => setIsAdding(true)}
             className="gap-1.5 text-xs h-8"
           >
-            <Plus className="h-3.5 w-3.5" /> Add Record
+            <RiAddLine className="h-3.5 w-3.5" /> Add Record
           </Button>
         </div>
       </div>
@@ -187,7 +187,7 @@ export default function TenantTableView({
             }}
           >
             <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
-              <Plus className="h-4 w-4 text-primary" /> New Record
+              <RiAddLine className="h-4 w-4 text-primary" /> New Record
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {fields.map((field) => (
@@ -308,7 +308,7 @@ export default function TenantTableView({
                           size="sm"
                           className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
                         >
-                          Edit
+                          RiEdit2Line
                         </Button>
                       </td>
                     </tr>
@@ -326,7 +326,7 @@ export default function TenantTableView({
             }}
           >
             <span className="flex items-center gap-1.5">
-              <Layers className="h-3 w-3 text-primary" /> {fields.length} Columns
+              <RiStackLine className="h-3 w-3 text-primary" /> {fields.length} Columns
             </span>
             <span>Showing {records.length} records</span>
           </div>

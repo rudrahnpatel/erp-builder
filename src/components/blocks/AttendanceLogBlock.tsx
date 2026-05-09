@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import useSWR from "swr";
-import { Download, MapPin, Loader2, X, Calendar as CalendarIcon, Users } from "lucide-react";
+import { RiDownloadLine, RiMapPinLine, RiLoader4Line, RiCloseLine, RiCalendarLine, RiGroupLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -35,7 +35,7 @@ export function AttendanceLogBlock({ config }: { config?: any }) {
 
   const exportCSV = () => {
     if (!data?.records) return;
-    const headers = ["Date", "Employee Name", "Status", "Check-in Time", "Check-out Time", "Duration (mins)", "Remark"];
+    const headers = ["Date", "Employee Name", "Status", "RiCheckLine-in Time", "RiCheckLine-out Time", "Duration (mins)", "Remark"];
     const rows = data.records.map((r: any) => [
       new Date(r.date).toLocaleDateString(),
       r.employeeName,
@@ -69,7 +69,7 @@ export function AttendanceLogBlock({ config }: { config?: any }) {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
         <div className="space-y-2">
           <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-            <Users className="h-3 w-3" /> Employee
+            <RiGroupLine className="h-3 w-3" /> Employee
           </label>
           <select 
             className="w-full bg-surface-2 text-foreground rounded-xl h-11 px-4 border border-border/60 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer appearance-none shadow-sm"
@@ -86,21 +86,21 @@ export function AttendanceLogBlock({ config }: { config?: any }) {
 
         <div className="space-y-2">
           <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-            <CalendarIcon className="h-3 w-3" /> Start Date
+            <RiCalendarLine className="h-3 w-3" /> Start Date
           </label>
           <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="h-11 rounded-xl bg-surface-2 border-border/60 text-foreground focus:ring-primary/20" />
         </div>
 
         <div className="space-y-2">
           <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-            <CalendarIcon className="h-3 w-3" /> End Date
+            <RiCalendarLine className="h-3 w-3" /> End Date
           </label>
           <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="h-11 rounded-xl bg-surface-2 border-border/60 text-foreground focus:ring-primary/20" />
         </div>
 
         <div className="pb-0.5">
           <Button onClick={exportCSV} className="w-full h-11 rounded-xl font-bold gap-2 shadow-md hover:shadow-lg transition-all pressable bg-surface-1 text-foreground border border-border/60 hover:bg-surface-3" variant="outline">
-            <Download className="h-4 w-4" /> Export Report
+            <RiDownloadLine className="h-4 w-4" /> Export Report
           </Button>
         </div>
       </div>
@@ -124,7 +124,7 @@ export function AttendanceLogBlock({ config }: { config?: any }) {
               {isLoading ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-20 text-center">
-                    <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary opacity-50" />
+                    <RiLoader4Line className="h-8 w-8 animate-spin mx-auto mb-4 text-primary opacity-50" />
                     <p className="text-muted-foreground font-medium animate-pulse">Syncing attendance records...</p>
                   </td>
                 </tr>
@@ -132,7 +132,7 @@ export function AttendanceLogBlock({ config }: { config?: any }) {
                 <tr>
                   <td colSpan={7} className="px-6 py-20 text-center text-muted-foreground">
                     <div className="h-12 w-12 rounded-full bg-muted/20 flex items-center justify-center mx-auto mb-4">
-                      <CalendarIcon className="h-6 w-6 opacity-40" />
+                      <RiCalendarLine className="h-6 w-6 opacity-40" />
                     </div>
                     <p className="font-medium">No records found</p>
                     <p className="text-xs opacity-60">Adjust your date filters or select another employee.</p>
@@ -154,13 +154,13 @@ export function AttendanceLogBlock({ config }: { config?: any }) {
                     <td className="px-6 py-4 text-right">
                       <div className="flex gap-1 justify-end">
                         {record.checkInLat && (
-                          <Button size="sm" variant="ghost" className="h-8 px-2 text-[10px] font-bold text-primary hover:bg-primary/10 rounded-lg transition-all" onClick={() => setMapModal({ isOpen: true, lat: record.checkInLat, lng: record.checkInLng, type: "Check-in" })}>
-                            <MapPin className="h-3 w-3 mr-1" /> IN
+                          <Button size="sm" variant="ghost" className="h-8 px-2 text-[10px] font-bold text-primary hover:bg-primary/10 rounded-lg transition-all" onClick={() => setMapModal({ isOpen: true, lat: record.checkInLat, lng: record.checkInLng, type: "RiCheckLine-in" })}>
+                            <RiMapPinLine className="h-3 w-3 mr-1" /> IN
                           </Button>
                         )}
                         {record.checkOutLat && (
-                          <Button size="sm" variant="ghost" className="h-8 px-2 text-[10px] font-bold text-warning hover:bg-warning/10 rounded-lg transition-all" onClick={() => setMapModal({ isOpen: true, lat: record.checkOutLat, lng: record.checkOutLng, type: "Check-out" })}>
-                            <MapPin className="h-3 w-3 mr-1" /> OUT
+                          <Button size="sm" variant="ghost" className="h-8 px-2 text-[10px] font-bold text-warning hover:bg-warning/10 rounded-lg transition-all" onClick={() => setMapModal({ isOpen: true, lat: record.checkOutLat, lng: record.checkOutLng, type: "RiCheckLine-out" })}>
+                            <RiMapPinLine className="h-3 w-3 mr-1" /> OUT
                           </Button>
                         )}
                       </div>
@@ -180,7 +180,7 @@ export function AttendanceLogBlock({ config }: { config?: any }) {
             <div className="flex items-center justify-between px-8 py-5 border-b border-border/40 bg-surface-1">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
-                   <MapPin className="h-5 w-5 text-primary" />
+                   <RiMapPinLine className="h-5 w-5 text-primary" />
                 </div>
                 <div>
                   <h3 className="font-bold text-lg text-foreground">{mapModal.type} Location</h3>
@@ -188,7 +188,7 @@ export function AttendanceLogBlock({ config }: { config?: any }) {
                 </div>
               </div>
               <Button variant="ghost" size="icon" onClick={() => setMapModal(null)} className="rounded-full h-10 w-10 hover:bg-muted text-muted-foreground transition-all active:scale-90">
-                <X className="h-5 w-5" />
+                <RiCloseLine className="h-5 w-5" />
               </Button>
             </div>
             <div className="p-0 bg-muted/20 h-[500px] relative">

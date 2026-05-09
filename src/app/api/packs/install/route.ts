@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     const { packId, selectedTables = {}, selectedFields = {}, selectedPages = {} } = await req.json();
     if (!packId) return NextResponse.json({ error: "packId is required" }, { status: 400 });
 
-    // Check if already installed
+    // RiCheckLine if already installed
     const existing = await db.installedPack.findUnique({
       where: { packId_workspaceId: { packId, workspaceId: workspace.id } },
     });

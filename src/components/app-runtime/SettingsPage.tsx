@@ -4,18 +4,8 @@ import React, { useEffect, useState } from "react";
 import useSWR from "swr";
 import { toast } from "sonner";
 import { QuotationLayoutEditor } from "@/components/QuotationLayoutEditor";
-import {
-  Settings as SettingsIcon,
-  Users,
-  SlidersHorizontal,
-  UserPlus,
-  ShieldCheck,
-  Loader2,
-  Trash2,
-  X,
-  Building2,
-  LayoutDashboard,
-} from "lucide-react";
+import { RiSettings4Line, RiGroupLine, RiShieldCheckLine, RiLoader4Line, RiDeleteBinLine, RiCloseLine, RiBuilding4Line, RiDashboardLine } from "react-icons/ri";
+import { RiListSettingsLine, RiUserAddLine } from "react-icons/ri";
 
 const fetcher = (url: string) =>
   fetch(url).then(async (r) => {
@@ -32,12 +22,12 @@ type TenantUser = {
 
 type TabKey = "general" | "preferences" | "company" | "layout" | "users";
 
-const TABS: Array<{ key: TabKey; label: string; icon: typeof SettingsIcon }> = [
-  { key: "general", label: "General", icon: SettingsIcon },
-  { key: "company", label: "Company", icon: Building2 },
-  { key: "layout", label: "Layout", icon: LayoutDashboard },
-  { key: "preferences", label: "Preferences", icon: SlidersHorizontal },
-  { key: "users", label: "Users", icon: Users },
+const TABS: Array<{ key: TabKey; label: string; icon: typeof RiSettings4Line }> = [
+  { key: "general", label: "General", icon: RiSettings4Line },
+  { key: "company", label: "Company", icon: RiBuilding4Line },
+  { key: "layout", label: "Layout", icon: RiDashboardLine },
+  { key: "preferences", label: "Preferences", icon: RiListSettingsLine },
+  { key: "users", label: "RiGroupLine", icon: RiGroupLine },
 ];
 
 export function SettingsPage({
@@ -204,7 +194,7 @@ function GeneralTab({
   return (
     <Card
       title="Workspace"
-      description="Basic information about this ERP. Edit these from the builder."
+      description="Basic information about this ERP. RiEdit2Line these from the builder."
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Workspace Name" value={workspaceName} />
@@ -275,7 +265,7 @@ function CompanyProfileTab() {
   if (!loaded) {
     return (
       <div className="flex items-center justify-center py-16" style={{ color: "var(--foreground-muted)" }}>
-        <Loader2 className="h-5 w-5 animate-spin" />
+        <RiLoader4Line className="h-5 w-5 animate-spin" />
       </div>
     );
   }
@@ -285,7 +275,7 @@ function CompanyProfileTab() {
     { key: "tagline", label: "Tagline", placeholder: "e.g. Built for the future" },
     { key: "logo", label: "Logo URL", placeholder: "https://yoursite.com/logo.png", colSpan: true },
     { key: "address", label: "Address", placeholder: "123 Main St, City, State, Country", colSpan: true },
-    { key: "phone", label: "Phone", placeholder: "+91 98765 43210" },
+    { key: "phone", label: "RiPhoneLine", placeholder: "+91 98765 43210" },
     { key: "email", label: "Email", placeholder: "contact@acme.com", type: "email" },
     { key: "website", label: "Website", placeholder: "https://acme.com" },
     { key: "pan", label: "Tax ID / PAN / GST", placeholder: "ABCDE1234F" },
@@ -335,9 +325,9 @@ function CompanyProfileTab() {
         }}
       >
         {saving ? (
-          <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Saving…</>
+          <><RiLoader4Line className="h-3.5 w-3.5 animate-spin" /> Saving…</>
         ) : (
-          <><Building2 className="h-3.5 w-3.5" /> Save Company Profile</>
+          <><RiBuilding4Line className="h-3.5 w-3.5" /> Save Company Profile</>
         )}
       </button>
     </Card>
@@ -411,7 +401,7 @@ function UsersTab() {
                 "0 2px 8px color-mix(in oklch, var(--primary), transparent 65%)",
             }}
           >
-            <UserPlus className="h-3.5 w-3.5" />
+            <RiUserAddLine className="h-3.5 w-3.5" />
             Invite User
           </button>
         </div>
@@ -421,7 +411,7 @@ function UsersTab() {
             className="flex items-center justify-center py-8"
             style={{ color: "var(--foreground-muted)" }}
           >
-            <Loader2 className="h-5 w-5 animate-spin" />
+            <RiLoader4Line className="h-5 w-5 animate-spin" />
           </div>
         )}
 
@@ -463,7 +453,7 @@ function UsersTab() {
                   }}
                 >
                   {u.role === "admin" ? (
-                    <ShieldCheck className="h-4 w-4" />
+                    <RiShieldCheckLine className="h-4 w-4" />
                   ) : (
                     u.username.charAt(0).toUpperCase()
                   )}
@@ -514,7 +504,7 @@ function UsersTab() {
                       e.currentTarget.style.background = "transparent";
                     }}
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
+                    <RiDeleteBinLine className="h-3.5 w-3.5" />
                   </button>
                 )}
               </div>
@@ -628,7 +618,7 @@ function InviteUserModal({
             style={{ color: "var(--foreground-muted)" }}
             aria-label="Close"
           >
-            <X className="h-4 w-4" />
+            <RiCloseLine className="h-4 w-4" />
           </button>
         </div>
 
@@ -729,11 +719,11 @@ function InviteUserModal({
           >
             {submitting ? (
               <>
-                <Loader2 className="h-3.5 w-3.5 animate-spin" /> Creating…
+                <RiLoader4Line className="h-3.5 w-3.5 animate-spin" /> Creating…
               </>
             ) : (
               <>
-                <UserPlus className="h-3.5 w-3.5" /> Add User
+                <RiUserAddLine className="h-3.5 w-3.5" /> Add User
               </>
             )}
           </button>

@@ -2,7 +2,7 @@
 
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { Sun, Moon, Monitor } from "lucide-react";
+import { RiSunLine, RiMoonLine, RiComputerLine } from "react-icons/ri";
 
 export function ThemeToggle() {
   const { theme, setTheme, resolvedTheme } = useTheme();
@@ -36,8 +36,8 @@ export function ThemeToggle() {
         hover:bg-[var(--surface-3)] transition-all duration-200 group"
       title={`Theme: ${theme}`}
     >
-      {/* Sun icon */}
-      <Sun
+      {/* RiSunLine icon */}
+      <RiSunLine
         className={`h-4 w-4 absolute transition-all duration-300 ${
           theme === "light"
             ? "opacity-100 rotate-0 scale-100"
@@ -45,8 +45,8 @@ export function ThemeToggle() {
         }`}
         style={{ color: "var(--foreground-muted)" }}
       />
-      {/* Moon icon */}
-      <Moon
+      {/* RiMoonLine icon */}
+      <RiMoonLine
         className={`h-4 w-4 absolute transition-all duration-300 ${
           theme === "dark"
             ? "opacity-100 rotate-0 scale-100"
@@ -55,7 +55,7 @@ export function ThemeToggle() {
         style={{ color: "var(--foreground-muted)" }}
       />
       {/* System icon */}
-      <Monitor
+      <RiComputerLine
         className={`h-4 w-4 absolute transition-all duration-300 ${
           theme === "system"
             ? "opacity-100 rotate-0 scale-100"
