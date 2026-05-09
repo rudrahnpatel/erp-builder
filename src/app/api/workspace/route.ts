@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getWorkspace } from "@/lib/get-workspace";
 
-// GET /api/workspace — workspace summary for dashboard
+// GET /api/workspace : workspace summary for dashboard
 export async function GET() {
   try {
     const workspace = await getWorkspace();

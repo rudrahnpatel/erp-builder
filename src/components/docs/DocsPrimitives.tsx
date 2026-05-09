@@ -2,7 +2,7 @@
 
 import { ReactNode } from "react";
 
-/* ─── Prose primitives ─── */
+/*  Prose primitives  */
 
 export function DocH1({ children }: { children: ReactNode }) {
   return (
@@ -91,7 +91,7 @@ export function DocSteps({ steps }: { steps: { title: string; desc: string }[] }
   );
 }
 
-export function DocCards({ items }: { items: { icon: string; title: string; desc: string }[] }) {
+export function DocCards({ items }: { items: { icon: ReactNode; title: string; desc: string }[] }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
       {items.map((item) => (

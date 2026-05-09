@@ -24,7 +24,7 @@ const instrumentSerif = Instrument_Serif({
 
 export const metadata: Metadata = {
   title: {
-    default: "Mosaic — Business ERP for Indian SMEs",
+    default: "Mosaic : Business ERP for Indian SMEs",
     template: "%s · Mosaic",
   },
   description:

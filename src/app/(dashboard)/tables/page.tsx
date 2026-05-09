@@ -188,7 +188,7 @@ export default function TablesPage() {
         </Button>
       </header>
 
-      {/* ── Inline Create Row ── */}
+      {/*  Inline Create Row  */}
       {showCreateInput && (
         <div
           className="flex items-center gap-3 px-5 py-3.5 rounded-xl animate-fade-in-up"
@@ -238,7 +238,7 @@ export default function TablesPage() {
         </div>
       )}
 
-      {/* ── Search (shown when tables exist) ── */}
+      {/*  Search (shown when tables exist)  */}
       {tables.length > 0 && (
         <div
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all"
@@ -267,7 +267,7 @@ export default function TablesPage() {
         </div>
       )}
 
-      {/* ── Tables Grid ── */}
+      {/*  Tables Grid  */}
       {filteredTables.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 stagger-children">
           {filteredTables.map((table) => (
@@ -349,7 +349,7 @@ export default function TablesPage() {
                   </div>
                 </div>
 
-                {/* Table name — inline rename */}
+                {/* Table name : inline rename */}
                 {renamingId === table.id ? (
                   <div
                     className="flex items-center gap-2 mb-1"

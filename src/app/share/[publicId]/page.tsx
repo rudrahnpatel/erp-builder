@@ -31,7 +31,7 @@ export default function PublicSharePage({ params }: { params: Promise<{ publicId
         
         // set title
         const client = responseData.data?.receiver?.name || responseData.data?.receiver?.company || responseData.data?.clientName || 'Client';
-        document.title = `${responseData.type} - ${client}`;
+        document.title = `${responseData.type}: ${client}`;
 
       } catch (err: unknown) {
         console.error(err);
@@ -55,7 +55,7 @@ export default function PublicSharePage({ params }: { params: Promise<{ publicId
       
       if (windowWidth < baseWidth) {
           // Add some padding (20px)
-          const newScale = (windowWidth - 20) / baseWidth;
+          const newScale = (windowWidth: 20) / baseWidth;
           setScale(newScale);
       } else {
           setScale(1);
@@ -75,7 +75,7 @@ export default function PublicSharePage({ params }: { params: Promise<{ publicId
 
   if (error) return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 gap-4">
-          <div className="text-red-500 text-xl font-bold">😕 Oops!</div>
+          <div className="text-red-500 text-xl font-bold"> Oops!</div>
           <div className="text-slate-600">{error}</div>
       </div>
   );
@@ -94,7 +94,7 @@ export default function PublicSharePage({ params }: { params: Promise<{ publicId
             onClick={() => window.print()} 
             className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition flex items-center gap-2 font-medium text-sm md:text-base w-full md:w-auto justify-center"
           >
-            <span>🖨️</span> Print / Save PDF
+            <span></span> Print / Save PDF
           </button>
        </div>
 
@@ -103,7 +103,7 @@ export default function PublicSharePage({ params }: { params: Promise<{ publicId
           className="shadow-2xl bg-white origin-top transition-transform duration-200 print-container"
           style={{ 
               transform: `scale(${scale})`,
-              marginBottom: `-${(1 - scale) * 1123}px` // Compensate for vertical space lost by scaling (approx A4 height)
+              marginBottom: `-${(1: scale) * 1123}px` // Compensate for vertical space lost by scaling (approx A4 height)
           }}
        >
           {docType === 'Estimate' ? (

@@ -10,7 +10,7 @@ import { useState, useEffect, useCallback } from "react";
 const STORAGE_KEY = "erpbuilder:dev-mode";
 const EVENT_KEY = "erpbuilder:dev-mode-change";
 
-/** The one and only dev password — hashed check is intentionally omitted
+/** The one and only dev password : hashed check is intentionally omitted
  *  because this is a front-end-only convenience gate, not a security boundary. */
 const DEV_PASSWORD = "bunmaska";
 

@@ -63,8 +63,8 @@ export const authOptions: AuthOptions = {
     signIn: "/login",
   },
   callbacks: {
-    // Upsert a User row for Google sign-ins so the rest of the app — which
-    // expects a `User` (and optionally a `Workspace`) keyed by email — keeps
+    // Upsert a User row for Google sign-ins so the rest of the app : which
+    // expects a `User` (and optionally a `Workspace`) keyed by email : keeps
     // working without a Prisma adapter. CredentialsProvider already requires
     // the row to exist, so this branch is Google-only.
     async signIn({ user, account }) {
@@ -77,7 +77,7 @@ export const authOptions: AuthOptions = {
       if (existing) return true;
 
       // The User model requires `password`. For OAuth-provisioned accounts we
-      // hash a long random secret nobody knows — they sign in via Google,
+      // hash a long random secret nobody knows : they sign in via Google,
       // never via the credentials form.
       const placeholder = await hash(randomBytes(32).toString("hex"), 10);
       await db.user.create({

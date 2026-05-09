@@ -235,7 +235,7 @@ function DeployedVisual() {
             color: "var(--foreground-dimmed)",
           }}
         >
-          🔒 acme.mosaic.app
+           acme.mosaic.app
         </div>
       </div>
       {/* Mini dashboard */}
@@ -287,7 +287,7 @@ function DeployedVisual() {
               className="text-[10px] font-medium mb-1.5"
               style={{ color: "var(--foreground)" }}
             >
-              Welcome back 👋
+              Welcome back 
             </div>
             <div className="grid grid-cols-3 gap-1.5">
               {[
@@ -508,7 +508,7 @@ export function HowItWorks() {
             })}
           </div>
 
-          {/* Visual preview — sticky on desktop */}
+          {/* Visual preview : sticky on desktop */}
           <div className="lg:sticky lg:top-20">
             <div className="relative min-h-[320px]">
               {visuals.map((visual, i) => (

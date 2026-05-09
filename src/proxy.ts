@@ -6,11 +6,11 @@ import { getToken } from "next-auth/jwt";
  * Next.js 16 Proxy (renamed from Middleware).
  *
  * Responsibility: subdomain → tenant rewrite.
- *   - <slug>.erpbuilder.app/<path>   →  /apps/<slug>/<path>   (runtime ERP)
- *   - <slug>.localhost:3000/<path>   →  /apps/<slug>/<path>   (dev: browsers
+ *  : <slug>.erpbuilder.app/<path>   →  /apps/<slug>/<path>   (runtime ERP)
+ *  : <slug>.localhost:3000/<path>   →  /apps/<slug>/<path>   (dev: browsers
  *                                       auto-resolve *.localhost to 127.0.0.1)
- *   - erpbuilder.app / www.* / apex  →  untouched (builder dashboard)
- *   - localhost:3000 / 127.0.0.1     →  untouched
+ *  : erpbuilder.app / www.* / apex  →  untouched (builder dashboard)
+ *  : localhost:3000 / 127.0.0.1     →  untouched
  *
  * The direct path /apps/<slug>/... also keeps working on the apex domain,
  * which is useful for preview links from the builder and for dev when you
@@ -19,11 +19,11 @@ import { getToken } from "next-auth/jwt";
  * Docs: node_modules/next/dist/docs/01-app/01-getting-started/16-proxy.md
  */
 
-// Hostnames that are never treated as a tenant subdomain — the "www" subdomain
+// Hostnames that are never treated as a tenant subdomain : the "www" subdomain
 // and the common localhost forms all route to the builder apex.
 const RESERVED_SUBDOMAINS = new Set(["www", "app"]);
 
-// Apex hosts — anything matching one of these is the apex, and requests to it
+// Apex hosts : anything matching one of these is the apex, and requests to it
 // should fall through to the builder routes untouched.
 const APEX_HOSTS = new Set([
   "erpbuilder.app",
@@ -133,7 +133,7 @@ export async function proxy(request: NextRequest) {
 
   if (!hostSlug) return NextResponse.next();
 
-  // Already rewritten or hitting the API / static assets — let it through.
+  // Already rewritten or hitting the API / static assets : let it through.
   if (
     path.startsWith("/apps/") ||
     path.startsWith("/api/") ||

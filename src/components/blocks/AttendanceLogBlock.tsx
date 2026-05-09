@@ -61,11 +61,11 @@ export function AttendanceLogBlock({ config }: { config?: any }) {
     document.body.removeChild(link);
   };
 
-  if (error) return <div className="p-6 text-destructive font-medium bg-destructive/10 rounded-xl border border-destructive/20">⚠️ Failed to load attendance records</div>;
+  if (error) return <div className="p-6 text-destructive font-medium bg-destructive/10 rounded-xl border border-destructive/20"> Failed to load attendance records</div>;
 
   return (
     <div className="space-y-8 animate-fade-in-up">
-      {/* Filter Section - Integrated look, not a separate card if possible */}
+      {/* Filter Section: Integrated look, not a separate card if possible */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
         <div className="space-y-2">
           <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
@@ -141,16 +141,16 @@ export function AttendanceLogBlock({ config }: { config?: any }) {
               ) : (
                 data?.records?.map((record: any) => (
                   <tr key={record.id} className="hover:bg-muted/10 transition-colors group">
-                    <td className="px-6 py-4 font-semibold text-foreground" suppressHydrationWarning>{mounted ? new Date(record.date).toLocaleDateString("en-IN", { day: '2-digit', month: 'short' }) : "—"}</td>
+                    <td className="px-6 py-4 font-semibold text-foreground" suppressHydrationWarning>{mounted ? new Date(record.date).toLocaleDateString("en-IN", { day: '2-digit', month: 'short' }) : ":"}</td>
                     <td className="px-6 py-4 font-medium text-foreground">{record.employeeName}</td>
                     <td className="px-6 py-4 text-center">
                       <Badge variant={record.status === "Working" ? "secondary" : record.status === "Completed" ? "default" : "destructive"} className="rounded-md font-bold text-[10px] px-2 py-0.5 shadow-sm">
                         {record.status}
                       </Badge>
                     </td>
-                    <td className="px-6 py-4 text-foreground/80 font-medium" suppressHydrationWarning>{mounted && record.checkInTime ? new Date(record.checkInTime).toLocaleTimeString("en-IN", {hour: '2-digit', minute:'2-digit', hour12: true}) : "—"}</td>
-                    <td className="px-6 py-4 text-foreground/80 font-medium" suppressHydrationWarning>{mounted && record.checkOutTime ? new Date(record.checkOutTime).toLocaleTimeString("en-IN", {hour: '2-digit', minute:'2-digit', hour12: true}) : "—"}</td>
-                    <td className="px-6 py-4 font-bold text-foreground/70">{record.durationMinutes ? `${Math.floor(record.durationMinutes / 60)}h ${record.durationMinutes % 60}m` : "—"}</td>
+                    <td className="px-6 py-4 text-foreground/80 font-medium" suppressHydrationWarning>{mounted && record.checkInTime ? new Date(record.checkInTime).toLocaleTimeString("en-IN", {hour: '2-digit', minute:'2-digit', hour12: true}) : ":"}</td>
+                    <td className="px-6 py-4 text-foreground/80 font-medium" suppressHydrationWarning>{mounted && record.checkOutTime ? new Date(record.checkOutTime).toLocaleTimeString("en-IN", {hour: '2-digit', minute:'2-digit', hour12: true}) : ":"}</td>
+                    <td className="px-6 py-4 font-bold text-foreground/70">{record.durationMinutes ? `${Math.floor(record.durationMinutes / 60)}h ${record.durationMinutes % 60}m` : ":"}</td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex gap-1 justify-end">
                         {record.checkInLat && (

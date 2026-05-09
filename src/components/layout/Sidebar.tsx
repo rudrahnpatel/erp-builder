@@ -39,7 +39,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
 
 
 
-  // Core nav — categorized
+  // Core nav : categorized
   const navSections = [
     {
       label: null,
@@ -82,7 +82,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
         borderColor: "var(--sidebar-border)",
       }}
     >
-      {/* ── Logo / Workspace Identity ── */}
+      {/*  Logo / Workspace Identity  */}
       <div
         className="h-[60px] flex items-center px-3 border-b shrink-0"
         style={{ borderColor: "var(--sidebar-border)" }}
@@ -128,7 +128,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
         )}
       </div>
 
-      {/* ── Navigation ── */}
+      {/*  Navigation  */}
       <div className="flex-1 overflow-y-auto py-3">
         {navSections.map((section, si) => (
           <div key={si} className={si > 0 ? "mt-4" : ""}>
@@ -195,7 +195,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
         ))}
       </div>
 
-      {/* ── Open My ERP (runtime) ── */}
+      {/*  Open My ERP (runtime)  */}
       {workspace?.slug && (
         <div className="px-2.5 py-2">
             <Link
@@ -219,7 +219,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
         </div>
       )}
 
-      {/* ── Bottom Section ── */}
+      {/*  Bottom Section  */}
       <div
         className="px-2.5 py-2.5 border-t space-y-0.5"
         style={{ borderColor: "var(--sidebar-border)" }}

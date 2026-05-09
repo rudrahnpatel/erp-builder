@@ -4,9 +4,9 @@
  * any admin tooling that manipulates workspace slugs.
  *
  * Rules:
- *   - lowercase a-z, 0-9, hyphen
- *   - 3..32 characters
- *   - no leading/trailing hyphen, no consecutive hyphens
+ *  : lowercase a-z, 0-9, hyphen
+ *  : 3..32 characters
+ *  : no leading/trailing hyphen, no consecutive hyphens
  */
 
 const MIN_LEN = 3;

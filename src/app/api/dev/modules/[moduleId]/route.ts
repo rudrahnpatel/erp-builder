@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getWorkspace } from "@/lib/get-workspace";
 
-// GET /api/dev/modules/[moduleId] — get full module detail
+// GET /api/dev/modules/[moduleId] : get full module detail
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ moduleId: string }> }
@@ -24,7 +24,7 @@ export async function GET(
   }
 }
 
-// PATCH /api/dev/modules/[moduleId] — update module metadata
+// PATCH /api/dev/modules/[moduleId] : update module metadata
 export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ moduleId: string }> }
@@ -58,7 +58,7 @@ export async function PATCH(
   }
 }
 
-// DELETE /api/dev/modules/[moduleId] — delete a module
+// DELETE /api/dev/modules/[moduleId] : delete a module
 export async function DELETE(
   _req: Request,
   { params }: { params: Promise<{ moduleId: string }> }

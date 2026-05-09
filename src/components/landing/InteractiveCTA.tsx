@@ -197,7 +197,7 @@ export function InteractiveCTA() {
                 className="flex items-center justify-center gap-4 mt-6 text-xs flex-wrap"
                 style={{ color: "var(--foreground-dimmed)" }}
               >
-                {["No credit card", "Free tier", "Made in India 🇮🇳"].map(
+                {["No credit card", "Free tier", "Made in India "].map(
                   (t) => (
                     <span key={t} className="flex items-center gap-1.5">
                       <CheckCircle2 className="h-3 w-3" aria-hidden="true" />{" "}

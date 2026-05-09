@@ -4,7 +4,7 @@ import { getWorkspace } from "@/lib/get-workspace";
 import { getPackByIdAsync } from "@/lib/packs";
 import { Prisma } from "@prisma/client";
 
-// POST /api/packs/reinstall-page — re-add a single missing page from a pack
+// POST /api/packs/reinstall-page : re-add a single missing page from a pack
 export async function POST(req: Request) {
   try {
     const workspace = await getWorkspace();

@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { getWorkspace } from "@/lib/get-workspace";
 
-// GET /api/workspace/tenant-users — list all tenant users for the current workspace
+// GET /api/workspace/tenant-users : list all tenant users for the current workspace
 export async function GET() {
   const workspace = await getWorkspace();
   if (!workspace) {
@@ -19,7 +19,7 @@ export async function GET() {
   return NextResponse.json(users);
 }
 
-// POST /api/workspace/tenant-users — create a new tenant user
+// POST /api/workspace/tenant-users : create a new tenant user
 export async function POST(req: Request) {
   const workspace = await getWorkspace();
   if (!workspace) {

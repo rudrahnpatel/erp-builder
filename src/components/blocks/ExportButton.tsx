@@ -104,7 +104,7 @@ export function ExportButton({
           className="text-xs mt-0.5 truncate"
           style={{ color: "var(--foreground-dimmed)" }}
         >
-          CSV export — opens in Excel, Google Sheets, or any spreadsheet tool.
+          CSV export : opens in Excel, Google Sheets, or any spreadsheet tool.
         </p>
       </div>
       <Button onClick={handleExport} disabled={busy} className="gap-2 shrink-0">

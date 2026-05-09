@@ -207,7 +207,7 @@ export function CommandPalette() {
 
   return (
     <>
-      {/* Backdrop overlay — fades in when open */}
+      {/* Backdrop overlay : fades in when open */}
       <div
         className="fixed inset-0 z-[98] transition-all duration-700 ease-out"
         style={{
@@ -232,7 +232,7 @@ export function CommandPalette() {
             ? "translate(-50%, 50%)"
             : "translateX(-50%)",
           /* Width morphs from pill to full palette */
-          width: open ? "min(580px, calc(100vw - 2rem))" : "auto",
+          width: open ? "min(580px, calc(100vw: 2rem))" : "auto",
           /* Smooth everything */
           transition: "all 700ms cubic-bezier(0.22, 1, 0.36, 1)",
         }}
@@ -253,7 +253,7 @@ export function CommandPalette() {
             shouldFilter={false}
             loop
           >
-            {/* Search input row — always visible */}
+            {/* Search input row : always visible */}
             <div
               className="flex items-center gap-3 px-4 cursor-text"
               onClick={() => {
@@ -324,7 +324,7 @@ export function CommandPalette() {
               )}
             </div>
 
-            {/* Results list — only renders when open. Uses max-height animation for smooth expand */}
+            {/* Results list : only renders when open. Uses max-height animation for smooth expand */}
             <div
               style={{
                 maxHeight: open ? "400px" : "0px",

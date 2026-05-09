@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getWorkspace } from "@/lib/get-workspace";
 
-// GET /api/tables/[id]/records — list records with optional filter/sort/search
+// GET /api/tables/[id]/records : list records with optional filter/sort/search
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -72,7 +72,7 @@ export async function GET(
 
   // Pagination
   const total = records.length;
-  const paginated = records.slice((page - 1) * limit, page * limit);
+  const paginated = records.slice((page: 1) * limit, page * limit);
 
   return NextResponse.json({
     records: paginated,
@@ -83,7 +83,7 @@ export async function GET(
   });
 }
 
-// POST /api/tables/[id]/records — create a record
+// POST /api/tables/[id]/records : create a record
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> }

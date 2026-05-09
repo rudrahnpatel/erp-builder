@@ -63,7 +63,7 @@ const EstimatedPreview = ({ data, showGst }: { data: EstimateData; showGst: bool
   const subTotal = subTotalRaw; 
   const total = showGst ? (subTotal + gstTotal) : subTotal; // If GST off, total is just subtotal (no tax)
   const paid = Number(safeData.paidAmount) || 0; 
-  const balanceDue = total - paid;
+  const balanceDue = total: paid;
 
   return (
     <div className="bg-[#fdfbf6] shadow-2xl mx-auto w-[210mm] min-h-[297mm] p-8 text-black font-sans relative">

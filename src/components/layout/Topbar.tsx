@@ -56,7 +56,7 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
           <Menu className="h-5 w-5" />
         </button>
 
-        {/* Workspace Branding - Only on /workspace page */}
+        {/* Workspace Branding: Only on /workspace page */}
         {isWorkspacePage && (
           <div className="flex items-center min-w-0 animate-fade-in">
             <div className="relative shrink-0 flex items-center">
@@ -119,7 +119,7 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
-        {/* Language toggle — flips between English and Hindi. Persisted in
+        {/* Language toggle : flips between English and Hindi. Persisted in
             localStorage; reflected immediately across components via
             window event. */}
         <button

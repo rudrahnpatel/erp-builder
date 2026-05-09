@@ -68,7 +68,7 @@ export const inventoryPack: PackDefinition = {
       ],
     },
 
-    // ─── 2. Suppliers ─────────────────────────────────────────────────────────
+    //  2. Suppliers 
     {
       name: "Suppliers",
       icon: "truck",
@@ -90,7 +90,7 @@ export const inventoryPack: PackDefinition = {
       ],
     },
 
-    // ─── 3. Customers ─────────────────────────────────────────────────────────
+    //  3. Customers 
     {
       name: "Customers",
       icon: "users",
@@ -136,7 +136,7 @@ export const inventoryPack: PackDefinition = {
       ],
     },
 
-    // ─── 4. Products (Catalog) ────────────────────────────────────────────────
+    //  4. Products (Catalog) 
     // Listed last so its RELATION fields can resolve to Suppliers + Customers
     // during a fresh install.
     {
@@ -197,7 +197,7 @@ export const inventoryPack: PackDefinition = {
     },
 
     /* ===== COMMENTED OUT PREVIOUS TABLES =====
-    // ─── 1. Products ──────────────────────────────────────────────────────────
+    //  1. Products 
     {
       name: "Products",
       icon: "box",
@@ -287,7 +287,7 @@ export const inventoryPack: PackDefinition = {
       ],
     },
 
-    // ─── 2. Suppliers ─────────────────────────────────────────────────────────
+    //  2. Suppliers 
     {
       name: "Suppliers",
       icon: "truck",
@@ -364,7 +364,7 @@ export const inventoryPack: PackDefinition = {
       ],
     },
 
-    // ─── 3. Godowns ───────────────────────────────────────────────────────────
+    //  3. Godowns 
     // Promoted from a hard-coded SINGLE_SELECT to a proper relational table.
     // Enables dynamic addition and location-level stock reports.
     {
@@ -430,7 +430,7 @@ export const inventoryPack: PackDefinition = {
       ],
     },
 
-    // ─── 4. Stock Movements ───────────────────────────────────────────────────
+    //  4. Stock Movements 
     {
       name: "Stock Movements",
       icon: "arrow-left-right",
@@ -466,7 +466,7 @@ export const inventoryPack: PackDefinition = {
       ],
     },
 
-    // ─── 5. Purchase Orders ───────────────────────────────────────────────────
+    //  5. Purchase Orders 
     {
       name: "Purchase Orders",
       icon: "file-plus",
@@ -511,7 +511,7 @@ export const inventoryPack: PackDefinition = {
       ],
     },
 
-    // ─── 6. Purchase Order Items ──────────────────────────────────────────────
+    //  6. Purchase Order Items 
     {
       name: "Purchase Order Items",
       icon: "list",
@@ -540,7 +540,7 @@ export const inventoryPack: PackDefinition = {
       ],
     },
 
-    // ─── 7. Stock Alerts ──────────────────────────────────────────────────────
+    //  7. Stock Alerts 
     {
       name: "Stock Alerts",
       icon: "bell-ring",

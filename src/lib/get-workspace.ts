@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 
 /**
  * Look up a workspace by its URL slug (the `<slug>` in /apps/<slug> or
- * <slug>.erpbuilder.app). This is the runtime path — end users of a merchant's
+ * <slug>.erpbuilder.app). This is the runtime path : end users of a merchant's
  * ERP don't authenticate against the builder's session; they land directly
  * on their tenant's app via the slug. Returns null when the slug is unknown.
  */

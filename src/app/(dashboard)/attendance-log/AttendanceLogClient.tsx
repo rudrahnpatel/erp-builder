@@ -149,16 +149,16 @@ export default function AttendanceLogClient() {
               ) : (
                 data?.records?.map((record: any) => (
                   <tr key={record.id} className="table-row-hover transition-colors">
-                    <td className="px-6 py-4 font-semibold" style={{ color: "var(--foreground)" }} suppressHydrationWarning>{mounted ? new Date(record.date).toLocaleDateString() : "—"}</td>
+                    <td className="px-6 py-4 font-semibold" style={{ color: "var(--foreground)" }} suppressHydrationWarning>{mounted ? new Date(record.date).toLocaleDateString() : ":"}</td>
                     <td className="px-6 py-4 font-semibold" style={{ color: "var(--foreground)" }}>{record.employeeName}</td>
                     <td className="px-6 py-4">
                       <Badge variant={record.status === "Working" ? "secondary" : record.status === "Completed" ? "default" : "destructive"}>
                         {record.status}
                       </Badge>
                     </td>
-                    <td className="px-6 py-4" style={{ color: "var(--foreground-muted)" }} suppressHydrationWarning>{mounted && record.checkInTime ? new Date(record.checkInTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "—"}</td>
-                    <td className="px-6 py-4" style={{ color: "var(--foreground-muted)" }} suppressHydrationWarning>{mounted && record.checkOutTime ? new Date(record.checkOutTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "—"}</td>
-                    <td className="px-6 py-4 font-mono font-bold" style={{ color: "var(--foreground)" }}>{record.durationMinutes ? `${Math.floor(record.durationMinutes / 60)}h ${record.durationMinutes % 60}m` : "—"}</td>
+                    <td className="px-6 py-4" style={{ color: "var(--foreground-muted)" }} suppressHydrationWarning>{mounted && record.checkInTime ? new Date(record.checkInTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : ":"}</td>
+                    <td className="px-6 py-4" style={{ color: "var(--foreground-muted)" }} suppressHydrationWarning>{mounted && record.checkOutTime ? new Date(record.checkOutTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : ":"}</td>
+                    <td className="px-6 py-4 font-mono font-bold" style={{ color: "var(--foreground)" }}>{record.durationMinutes ? `${Math.floor(record.durationMinutes / 60)}h ${record.durationMinutes % 60}m` : ":"}</td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
                         {record.checkInLat && (
@@ -171,7 +171,7 @@ export default function AttendanceLogClient() {
                             <MapPin className="h-3.5 w-3.5 mr-1" /> Out
                           </Button>
                         )}
-                        {!record.checkInLat && !record.checkOutLat && <span className="opacity-30 pl-2">—</span>}
+                        {!record.checkInLat && !record.checkOutLat && <span className="opacity-30 pl-2">:</span>}
                       </div>
                     </td>
                   </tr>

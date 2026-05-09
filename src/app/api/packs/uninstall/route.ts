@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getWorkspace } from "@/lib/get-workspace";
 
-// POST /api/packs/uninstall — remove a pack and all its tables/pages
+// POST /api/packs/uninstall : remove a pack and all its tables/pages
 export async function POST(req: Request) {
   const workspace = await getWorkspace();
   if (!workspace) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

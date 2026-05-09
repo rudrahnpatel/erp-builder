@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getWorkspace } from "@/lib/get-workspace";
 
-// PATCH /api/tables/[id]/records/[recordId] — update a record
+// PATCH /api/tables/[id]/records/[recordId] : update a record
 export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string; recordId: string }> }
@@ -32,7 +32,7 @@ export async function PATCH(
   return NextResponse.json(updated);
 }
 
-// DELETE /api/tables/[id]/records/[recordId] — delete a record
+// DELETE /api/tables/[id]/records/[recordId] : delete a record
 export async function DELETE(
   _req: Request,
   { params }: { params: Promise<{ id: string; recordId: string }> }

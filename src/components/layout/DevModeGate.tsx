@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 /**
- * Gate component — wraps pages/tables routes and redirects to /settings
+ * Gate component : wraps pages/tables routes and redirects to /settings
  * if the user hasn't activated developer mode.
  */
 export function DevModeGate({ children }: { children: React.ReactNode }) {

@@ -115,7 +115,7 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
   return (
     <div className="w-full max-w-[1000px] h-[600px] flex rounded-[2rem] overflow-hidden shadow-2xl relative bg-white">
 
-      {/* ─── LEFT PANEL: Graphic & Inactive Tabs (50%) ─── */}
+      {/*  LEFT PANEL: Graphic & Inactive Tabs (50%)  */}
       <div className="w-[50%] h-full relative bg-[#0077ff]">
         <WaveBackground />
 
@@ -160,7 +160,7 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
         </div>
       </div>
 
-      {/* ─── THE LIQUID SLIDING TOGGLE TAB ─── */}
+      {/*  THE LIQUID SLIDING TOGGLE TAB  */}
       <motion.div
         initial={false}
         animate={{ top: isLogin ? 200 : 280 }}
@@ -172,7 +172,7 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
         </span>
       </motion.div>
 
-      {/* ─── RIGHT PANEL: Forms (50%) ─── */}
+      {/*  RIGHT PANEL: Forms (50%)  */}
       <div className="w-[50%] h-full relative z-20 bg-white/95 backdrop-blur-3xl border border-white/60 rounded-[2rem] shadow-lg flex flex-col items-center justify-center">
 
         <div className="w-full h-full px-8 sm:px-12 flex flex-col justify-center relative">

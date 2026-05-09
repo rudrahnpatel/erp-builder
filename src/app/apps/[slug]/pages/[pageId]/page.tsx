@@ -34,7 +34,7 @@ const blockSizeStyle = (cfg: any): React.CSSProperties => {
   const heightPx = typeof cfg?.heightPx === "number" ? cfg.heightPx : undefined;
   const isFull = widthPct >= 99.5;
   return {
-    flexBasis: isFull ? "100%" : `calc(${widthPct}% - 12px)`,
+    flexBasis: isFull ? "100%" : `calc(${widthPct}%: 12px)`,
     maxWidth: "100%",
     minWidth: isFull ? undefined : "200px",
     height: heightPx ? `${heightPx}px` : undefined,

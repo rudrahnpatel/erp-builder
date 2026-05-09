@@ -223,7 +223,7 @@ const QuotationForm = ({ data, onChange, onAddItem, onRemoveItem, onItemChange, 
            </div>
       </div>
 
-       {/* Type Toggle - Only show if not fixed */}
+       {/* Type Toggle: Only show if not fixed */}
        {!data.fixedType && (
            <div className="mb-6">
               <label className="block text-xs font-medium text-gray-500 mb-1">Document Type</label>
@@ -250,8 +250,8 @@ const QuotationForm = ({ data, onChange, onAddItem, onRemoveItem, onItemChange, 
           <label className="block text-xs font-medium text-gray-500 mb-2">Document Template</label>
           <div className="flex gap-2">
             {[
-              { id: 'classic', label: '📄 Classic', desc: 'Traditional layout with full branding' },
-              { id: 'modern', label: '✨ Modern', desc: 'Accent colors, rounded elements' },
+              { id: 'classic', label: ' Classic', desc: 'Traditional layout with full branding' },
+              { id: 'modern', label: ' Modern', desc: 'Accent colors, rounded elements' },
               { id: 'minimal', label: '⬜ Minimal', desc: 'Clean, typographic, B&W' },
             ].map((t) => (
               <button
@@ -309,7 +309,7 @@ const QuotationForm = ({ data, onChange, onAddItem, onRemoveItem, onItemChange, 
                 </>
                )}
             </div>
-            {/* Subject Line Input - Spanning full width */}
+            {/* Subject Line Input: Spanning full width */}
             <div className="col-span-2">
               <label className="block text-xs font-medium text-gray-500 mb-1">Subject</label>
               <textarea
@@ -334,13 +334,13 @@ const QuotationForm = ({ data, onChange, onAddItem, onRemoveItem, onItemChange, 
               disabled={savingDefault}
               className="text-xs font-semibold text-green-700 bg-green-50 px-3 py-1.5 rounded-md hover:bg-green-100 transition-colors border border-green-200 disabled:opacity-60"
             >
-              {savingDefault ? 'Saving…' : '💾 Save as Default'}
+              {savingDefault ? 'Saving…' : ' Save as Default'}
             </button>
             <a
               href="/settings"
               className="text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-md hover:bg-blue-100 transition-colors border border-blue-200"
             >
-              ⚙ Manage in Settings
+               Manage in Settings
             </a>
           </div>
         </div>

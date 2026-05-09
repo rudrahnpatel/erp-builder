@@ -19,30 +19,43 @@ export default async function LandingPage() {
       className="relative"
       style={{ background: "var(--background)" }}
     >
-      {/* ─── Hero Section ─── */}
+      {/*  Hero Section  */}
       <LandingHero />
 
+<<<<<<< HEAD
       {/* ─── Features — GSAP puzzle animation ─── */}
+=======
+      {/*  How It Works (right after hero)  */}
+      <div id="how-it-works">
+        <HowItWorks />
+      </div>
+
+      {/*  Features : GSAP puzzle animation  */}
+>>>>>>> 81abcc974ae9b58018fed0a924167eca9ae4b168
       <div id="features">
         <PuzzleFeatures />
       </div>
 
+<<<<<<< HEAD
       {/* ─── How It Works (right after hero) ─── */}
       <div id="how-it-works">
         <HowItWorks />
       </div>
 
       {/* ─── Why Us ─── */}
+=======
+      {/*  Why Us  */}
+>>>>>>> 81abcc974ae9b58018fed0a924167eca9ae4b168
       <div id="why-us">
         <WhyUsSection />
       </div>
 
-      {/* ─── CTA — Interactive ─── */}
+      {/*  CTA : Interactive  */}
       <div id="cta">
         <InteractiveCTA />
       </div>
 
-      {/* ─── Footer ─── */}
+      {/*  Footer  */}
       <footer
         style={{
           borderTop: "1px solid var(--border-subtle)",

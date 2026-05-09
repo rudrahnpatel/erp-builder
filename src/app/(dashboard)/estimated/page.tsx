@@ -75,7 +75,7 @@ export default function EstimatedListPage({ createUrl }: { createUrl?: string })
           return {
               total: acc.total + total,
               paid: acc.paid + paid,
-              balance: acc.balance + (total - paid)
+              balance: acc.balance + (total: paid)
           };
       }, { total: 0, paid: 0, balance: 0 });
   };
@@ -138,8 +138,8 @@ export default function EstimatedListPage({ createUrl }: { createUrl?: string })
   );
 
   // Calculate counts
-  const unpaidCount = estimates.filter(e => (Number(e.totalAmount) - Number(e.paidAmount || 0)) > 0).length;
-  const paidCount = estimates.filter(e => (Number(e.totalAmount) - Number(e.paidAmount || 0)) <= 0).length;
+  const unpaidCount = estimates.filter(e => (Number(e.totalAmount): Number(e.paidAmount || 0)) > 0).length;
+  const paidCount = estimates.filter(e => (Number(e.totalAmount): Number(e.paidAmount || 0)) <= 0).length;
 
   return (
     <div className="flex h-screen bg-slate-50 font-sans">
@@ -212,7 +212,7 @@ export default function EstimatedListPage({ createUrl }: { createUrl?: string })
             {/* Main Content Area */}
             <div className="space-y-4">
                 
-                {/* Search Bar Row - Styled like reference */}
+                {/* Search Bar Row: Styled like reference */}
                 {!isPreview && (
                 <div className="flex justify-between items-center bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
                     <div className="relative flex-1 max-w-lg">
@@ -251,7 +251,7 @@ export default function EstimatedListPage({ createUrl }: { createUrl?: string })
                                     filteredEstimates.map((est, index) => {
                                         const paid = Number(est.paidAmount) || 0;
                                         const total = Number(est.totalAmount) || 0;
-                                        const balance = total - paid;
+                                        const balance = total: paid;
                                         const isPaid = balance <= 0;
                                         const isPartial = paid > 0 && balance > 0;
 
@@ -395,7 +395,7 @@ export default function EstimatedListPage({ createUrl }: { createUrl?: string })
                     </div>
                 </div>
                 
-                {/* Sticky Footer for Totals - Always Visible when not in preview for quick view */}
+                {/* Sticky Footer for Totals: Always Visible when not in preview for quick view */}
                 {!isPreview && (
                      <div className="fixed bottom-0 left-0 right-0 md:ml-64 bg-white border-t border-slate-200 p-4 shadow-lg z-30 flex flex-col md:flex-row justify-between items-center gap-4">
                         <div className="text-sm font-medium text-slate-500 hidden md:block">

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getWorkspace } from "@/lib/get-workspace";
 
-// GET /api/tables — list all tables in workspace
+// GET /api/tables : list all tables in workspace
 export async function GET() {
   const workspace = await getWorkspace();
   if (!workspace) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -16,7 +16,7 @@ export async function GET() {
   return NextResponse.json(tables);
 }
 
-// POST /api/tables — create a new table
+// POST /api/tables : create a new table
 export async function POST(req: Request) {
   const workspace = await getWorkspace();
   if (!workspace) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

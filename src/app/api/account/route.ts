@@ -4,7 +4,7 @@ import { compare } from "bcryptjs";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 
-// DELETE /api/account — permanently delete the signed-in user, their workspace,
+// DELETE /api/account : permanently delete the signed-in user, their workspace,
 // and all workspace-scoped data (cascades through Table/Page/InstalledPack/
 // InstalledPlugin via Prisma onDelete: Cascade).
 export async function DELETE(req: Request) {

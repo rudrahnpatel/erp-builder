@@ -66,7 +66,7 @@ export default function AttendanceClient({
         }
       },
       () => {
-        setMessage("⚠️ Location permission denied. Please enable location and try again.");
+        setMessage(" Location permission denied. Please enable location and try again.");
         setLoading(false);
       },
       { timeout: 10000 }
@@ -101,7 +101,7 @@ export default function AttendanceClient({
         <div className="px-8 py-8 space-y-8">
           {/* Greeting */}
           <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold text-foreground tracking-tight">Hello, {employeeName} 👋</h1>
+            <h1 className="text-2xl font-bold text-foreground tracking-tight">Hello, {employeeName} </h1>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-muted/50 border border-border/50">
               <span className={`h-2 w-2 rounded-full ${s.dot}`} />
               <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{s.label}</span>
@@ -163,7 +163,7 @@ export default function AttendanceClient({
           {/* Status message */}
           {message && (
             <div className={`text-sm font-medium rounded-2xl px-5 py-4 text-center animate-in fade-in slide-in-from-bottom-2 duration-300 ${
-              message.includes("⚠️") || message.includes("error") || message.includes("denied") 
+              message.includes("") || message.includes("error") || message.includes("denied") 
               ? "bg-destructive/10 text-destructive border border-destructive/20" 
               : "bg-primary/10 text-primary border border-primary/20"
             }`}>

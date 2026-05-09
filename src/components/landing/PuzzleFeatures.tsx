@@ -155,7 +155,6 @@ export function PuzzleFeatures() {
             }}
           >
 
-
             <div className="flex items-start justify-between mb-6">
               <div
                 className="h-11 w-11 rounded-xl flex items-center justify-center"

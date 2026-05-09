@@ -160,7 +160,7 @@ export default function WorkspacePage() {
 
   return (
     <div className="space-y-8 max-w-6xl mx-auto animate-fade-in-up">
-      {/* ── Hero / Welcome ── */}
+      {/*  Hero / Welcome  */}
       <section
         className="relative overflow-hidden rounded-2xl p-6 sm:p-8"
         style={{
@@ -199,7 +199,7 @@ export default function WorkspacePage() {
             className="mt-2 text-sm sm:text-base max-w-lg"
             style={{ color: "var(--foreground-muted)", lineHeight: "1.6" }}
           >
-            {workspace.name} — your Mosaic workspace.
+            {workspace.name} : your Mosaic workspace.
           </p>
           {workspace.slug && (
             <div className="mt-5 flex flex-wrap items-center gap-3">
@@ -235,7 +235,7 @@ export default function WorkspacePage() {
         />
       </section>
 
-      {/* ── Stats Grid ── */}
+      {/*  Stats Grid  */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 stagger-children">
         {stats.map((stat) => (
           <Link
@@ -283,7 +283,7 @@ export default function WorkspacePage() {
         ))}
       </div>
 
-      {/* ── Quick Actions ── */}
+      {/*  Quick Actions  */}
       <div>
         <h2
           className="text-sm font-semibold mb-4"
@@ -329,7 +329,7 @@ export default function WorkspacePage() {
         </div>
       </div>
 
-      {/* ── Installed Module Quick Access ── */}
+      {/*  Installed Module Quick Access  */}
       {workspace.installedPacks?.includes("quotation") && (
         <div>
           <div className="flex items-center justify-between mb-4">
@@ -434,7 +434,7 @@ export default function WorkspacePage() {
         </div>
       )}
 
-      {/* ── Bottom Section: Activity + Module Topology ── */}
+      {/*  Bottom Section: Activity + Module Topology  */}
       <div className="grid gap-5 lg:grid-cols-5">
         {/* Activity Timeline */}
         <div className="lg:col-span-3">

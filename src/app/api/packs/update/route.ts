@@ -4,7 +4,7 @@ import { getWorkspace } from "@/lib/get-workspace";
 import { getPackByIdAsync } from "@/lib/packs";
 import { FieldType, Prisma } from "@prisma/client";
 
-// POST /api/packs/update — sync an installed pack to the latest registry version.
+// POST /api/packs/update : sync an installed pack to the latest registry version.
 // Strictly ADDITIVE: adds missing tables, missing fields on existing tables, and
 // missing pages. Never touches user records, renames, or removes data. Fields the
 // user hid or renamed are left alone; we only add by `packFieldKey`.
@@ -50,7 +50,7 @@ export async function POST(req: Request) {
         }
       }
 
-      // ── 1. Add tables that don't exist yet ───────────────────────────────
+      //  1. Add tables that don't exist yet 
       for (const tableDef of pack.tables) {
         if (tableIdByKey[tableDef.name]) continue; // already there
 
@@ -105,7 +105,7 @@ export async function POST(req: Request) {
         }
       }
 
-      // ── 2. Add missing fields to existing tables ─────────────────────────
+      //  2. Add missing fields to existing tables 
       for (const tableDef of pack.tables) {
         const tableId = tableIdByKey[tableDef.name];
         if (!tableId) continue;
@@ -158,7 +158,7 @@ export async function POST(req: Request) {
         }
       }
 
-      // ── 3. Add missing pages ─────────────────────────────────────────────
+      //  3. Add missing pages 
       const existingPages = await tx.page.findMany({
         where: { workspaceId: workspace.id, packSource: packId },
         select: { packPageKey: true },
@@ -203,7 +203,7 @@ export async function POST(req: Request) {
         addedPages.push(pageDef.title);
       }
 
-      // ── 4. Stamp the new version ─────────────────────────────────────────
+      //  4. Stamp the new version 
       await tx.installedPack.update({
         where: { packId_workspaceId: { packId, workspaceId: workspace.id } },
         data: { packVersion: pack.version },
@@ -224,7 +224,7 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         message: nothing
-          ? `Pack "${pack.name}" version stamped to ${pack.version} — no additions needed`
+          ? `Pack "${pack.name}" version stamped to ${pack.version} : no additions needed`
           : `Pack "${pack.name}" updated to ${pack.version}`,
         fromVersion: installed.packVersion,
         toVersion: pack.version,

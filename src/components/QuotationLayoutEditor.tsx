@@ -37,7 +37,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+//  Types 
 
 export type SectionId =
   | "header"
@@ -68,7 +68,7 @@ export const DEFAULT_LAYOUT: QuotationLayout = {
     { id: "meta",      visible: true },
     { id: "subject",   visible: true },
     { id: "client",    visible: true },
-    { id: "items",     visible: true },   // locked – always visible
+    { id: "items",     visible: true },   // locked : always visible
     { id: "totals",    visible: true },
     { id: "terms",     visible: true },
     { id: "signature", visible: true },
@@ -91,7 +91,7 @@ const SECTION_META: Record<
   signature: { label: "Signature Block",  description: "Authorized signatory",           icon: PenLine,    zone: "tail"   },
 };
 
-// ─── Sortable Section Card ────────────────────────────────────────────────────
+//  Sortable Section Card 
 
 function SectionCard({
   section,
@@ -191,20 +191,20 @@ function SectionCard({
   );
 }
 
-// ─── Mini A4 Preview ──────────────────────────────────────────────────────────
+//  Mini A4 Preview 
 
 function MiniPreview({ sections }: { sections: LayoutSection[] }) {
   const PREVIEW_BLOCKS: Partial<Record<SectionId, { height: number; label: string; color: string }>> = {
-    header:    { height: 36, label: "🏢 Company Header",   color: "#dbeafe" },
-    contact:   { height: 18, label: "📞 Contact Info",      color: "#e0f2fe" },
+    header:    { height: 36, label: " Company Header",   color: "#dbeafe" },
+    contact:   { height: 18, label: " Contact Info",      color: "#e0f2fe" },
     pan:       { height: 12, label: "# PAN / GST",          color: "#f0fdf4" },
-    meta:      { height: 22, label: "📋 Doc Meta",           color: "#fef9c3" },
-    subject:   { height: 14, label: "📄 Subject",            color: "#fce7f3" },
-    client:    { height: 28, label: "👤 Client Info",        color: "#ede9fe" },
-    items:     { height: 60, label: "📊 Items Table",        color: "#f1f5f9" },
-    totals:    { height: 28, label: "💰 Totals",             color: "#dcfce7" },
-    terms:     { height: 24, label: "📜 Terms",              color: "#fef3c7" },
-    signature: { height: 18, label: "✍️  Signature",          color: "#fce7f3" },
+    meta:      { height: 22, label: " Doc Meta",           color: "#fef9c3" },
+    subject:   { height: 14, label: " Subject",            color: "#fce7f3" },
+    client:    { height: 28, label: " Client Info",        color: "#ede9fe" },
+    items:     { height: 60, label: " Items Table",        color: "#f1f5f9" },
+    totals:    { height: 28, label: " Totals",             color: "#dcfce7" },
+    terms:     { height: 24, label: " Terms",              color: "#fef3c7" },
+    signature: { height: 18, label: "  Signature",          color: "#fce7f3" },
   };
 
   const visibleSections = sections.filter((s) => s.visible);
@@ -243,7 +243,7 @@ function MiniPreview({ sections }: { sections: LayoutSection[] }) {
   );
 }
 
-// ─── Main Editor Component ────────────────────────────────────────────────────
+//  Main Editor Component 
 
 export function QuotationLayoutEditor() {
   const [sections, setSections] = useState<LayoutSection[]>(DEFAULT_LAYOUT.sections);

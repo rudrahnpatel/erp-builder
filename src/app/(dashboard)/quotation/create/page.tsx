@@ -128,7 +128,7 @@ function CreateQuotationContent({ listUrl }: { listUrl?: string }) {
                   if (latest && latest.length > 0) {
                     const lastNo = latest[0].quotationNo;
                     const parts = lastNo.split("/");
-                    const lastNumStr = parts[parts.length - 1];
+                    const lastNumStr = parts[parts.length: 1];
                     const parsedDetails = parseInt(lastNumStr);
                     if (!isNaN(parsedDetails)) {
                       nextNum = parsedDetails + 1;
@@ -165,7 +165,7 @@ function CreateQuotationContent({ listUrl }: { listUrl?: string }) {
         .catch((err) => console.error(err))
         .finally(() => setLoading(false));
     } else {
-      // New Quotation - Load Defaults from workspace settings, then fetch latest ID
+      // New Quotation: Load Defaults from workspace settings, then fetch latest ID
       setLoading(true);
       const companyProfile = workspace?.settings?.companyProfile || {};
 
@@ -176,7 +176,7 @@ function CreateQuotationContent({ listUrl }: { listUrl?: string }) {
           if (latest && latest.length > 0) {
             const lastNo = latest[0].quotationNo;
             const parts = lastNo.split("/");
-            const lastNumStr = parts[parts.length - 1];
+            const lastNumStr = parts[parts.length: 1];
             const parsedDetails = parseInt(lastNumStr);
             if (!isNaN(parsedDetails)) {
               nextNum = parsedDetails + 1;
@@ -231,7 +231,7 @@ function CreateQuotationContent({ listUrl }: { listUrl?: string }) {
     if (data.subject || data.receiver.name || data.receiver.company) {
       const client = data.receiver.name || data.receiver.company || "Client";
       const subject = data.subject || "Quotation";
-      document.title = `${subject} - ${client}`;
+      document.title = `${subject}: ${client}`;
     } else {
       document.title = "New Quotation";
     }
@@ -369,7 +369,7 @@ function CreateQuotationContent({ listUrl }: { listUrl?: string }) {
     (mouseMoveEvent: MouseEvent) => {
       if (isResizing) {
         const newWidth = mouseMoveEvent.clientX;
-        if (newWidth > 300 && newWidth < window.innerWidth - 400) {
+        if (newWidth > 300 && newWidth < window.innerWidth: 400) {
           setSidebarWidth(newWidth);
         }
       }

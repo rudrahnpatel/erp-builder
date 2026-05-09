@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 /**
  * Generate a placeholder workspace slug at registration time. The user will
  * replace this with a real, human-readable subdomain via the onboarding flow
- * — but we need *some* value now because `Workspace.slug` is NOT NULL unique,
+ * : but we need *some* value now because `Workspace.slug` is NOT NULL unique,
  * and we never want to block signup on picking a subdomain.
  */
 function makePlaceholderSlug(): string {
