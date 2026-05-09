@@ -11,21 +11,13 @@ export function SectionGettingStarted() {
     <section>
       <DocH1>Help & Documentation</DocH1>
       <DocP>
-<<<<<<< HEAD
         Welcome! This guide will help you set up and use your custom ERP -
-=======
-        Welcome! This guide will help you set up and use your custom ERP :
->>>>>>> 81abcc974ae9b58018fed0a924167eca9ae4b168
         from installing your first module to inviting your team.
       </DocP>
 
       <DocH2 id="what-is-mosaic">What is Mosaic?</DocH2>
       <DocP>
-<<<<<<< HEAD
         Mosaic is an <strong>ERP builder</strong> - it lets you assemble a
-=======
-        Mosaic is an <strong>ERP builder</strong> : it lets you assemble a
->>>>>>> 81abcc974ae9b58018fed0a924167eca9ae4b168
         business management system tailored to exactly what your business needs.
         Instead of paying for a rigid, expensive ERP software, you pick and
         install only the modules you need, then customize the pages your team
@@ -46,31 +38,19 @@ export function SectionGettingStarted() {
           {
             icon: <Blocks className="h-5 w-5" />,
             title: "Plugins",
-<<<<<<< HEAD
             desc: "Add-ons that connect your ERP to the outside world - generate PDF invoices, send SMS alerts, export to Tally, and more.",
-=======
-            desc: "Add ons that connect your ERP to the outside world : generate PDF invoices, send SMS alerts, export to Tally, and more.",
->>>>>>> 81abcc974ae9b58018fed0a924167eca9ae4b168
           },
           {
             icon: <Users className="h-5 w-5" />,
             title: "Tenant Access",
-<<<<<<< HEAD
             desc: "Give your staff their own login. They use the finished ERP - they never see the builder side.",
-=======
-            desc: "Give your staff their own login. They use the finished ERP : they never see the builder side.",
->>>>>>> 81abcc974ae9b58018fed0a924167eca9ae4b168
           },
         ]}
       />
 
       <DocDivider />
 
-<<<<<<< HEAD
       <DocH2 id="two-user-types">Builder vs Tenant - Who is Who?</DocH2>
-=======
-      <DocH2 id="two-user-types">Builder vs Tenant : Who is Who?</DocH2>
->>>>>>> 81abcc974ae9b58018fed0a924167eca9ae4b168
       <DocP>
         Mosaic has two kinds of people. Understanding this is the most
         important thing before you start.
@@ -78,59 +58,33 @@ export function SectionGettingStarted() {
       <DocCards
         items={[
           {
-<<<<<<< HEAD
-            icon: "🏗️",
+            icon: <User className="h-5 w-5" />,
             title: "You - the Builder",
             desc: "You set everything up. You install modules, design pages, create fields, and manage staff accounts. You work inside /workspace.",
           },
           {
-            icon: "👨‍💼",
-            title: "Your Staff - Tenant Users",
-=======
-            icon: <User className="h-5 w-5" />,
-            title: "You : the Builder",
-            desc: "You set everything up. You install modules, design pages, create fields, and manage staff accounts. You work inside /workspace.",
-          },
-          {
             icon: <Users className="h-5 w-5" />,
-            title: "Your Staff : Tenant Users",
->>>>>>> 81abcc974ae9b58018fed0a924167eca9ae4b168
+            title: "Your Staff - Tenant Users",
             desc: "They log in at a separate URL and just use the ERP you built. They add records, view dashboards, and do their daily work. They never see the builder.",
           },
         ]}
       />
       <DocCallout type="info">
-<<<<<<< HEAD
         Your staff logs in at <strong>/apps/your-workspace-name/login</strong> - not the main login page. You create their accounts in Settings → Tenant Users.
-=======
-        Your staff logs in at <strong>/apps/your-workspace-name/login</strong> : not the main login page. You create their accounts in Settings → Tenant Users.
->>>>>>> 81abcc974ae9b58018fed0a924167eca9ae4b168
       </DocCallout>
 
       <DocDivider />
 
-<<<<<<< HEAD
       <DocH2 id="quick-start">Quick Start - Up and running in 5 minutes</DocH2>
-=======
-      <DocH2 id="quick-start">Quick Start : Up and running in 5 minutes</DocH2>
->>>>>>> 81abcc974ae9b58018fed0a924167eca9ae4b168
       <DocSteps
         steps={[
           {
             title: "Create your account",
-<<<<<<< HEAD
             desc: 'Go to /register and sign up. Give your workspace a name - something like "Acme Traders" or your business name.',
           },
           {
             title: "Install a Module",
             desc: 'Click "Modules" in the left sidebar. Browse the available modules and click Install on the one that fits your business - Inventory is a great starting point.',
-=======
-            desc: 'Go to /register and sign up. Give your workspace a name : something like "Acme Traders" or your business name.',
-          },
-          {
-            title: "Install a Module",
-            desc: 'Click "Modules" in the left sidebar. Browse the available modules and click Install on the one that fits your business : Inventory is a great starting point.',
->>>>>>> 81abcc974ae9b58018fed0a924167eca9ae4b168
           },
           {
             title: "See what was created",
@@ -138,11 +92,7 @@ export function SectionGettingStarted() {
           },
           {
             title: "Open your ERP",
-<<<<<<< HEAD
             desc: 'Click "Open My ERP" at the bottom of the sidebar. This opens the tenant view - what your staff will see. You can use it yourself too!',
-=======
-            desc: 'Click "Open My ERP" at the bottom of the sidebar. This opens the tenant view : what your staff will see. You can use it yourself too!',
->>>>>>> 81abcc974ae9b58018fed0a924167eca9ae4b168
           },
           {
             title: "Invite your staff",
@@ -162,11 +112,7 @@ export function SectionModules() {
       <DocP>
         Modules (also called Packs) are pre built bundles that add a complete
         set of tables and pages to your workspace in one click. Think of them
-<<<<<<< HEAD
         like apps you install on your phone - each one adds new functionality.
-=======
-        like apps you install on your phone : each one adds new functionality.
->>>>>>> 81abcc974ae9b58018fed0a924167eca9ae4b168
       </DocP>
       <DocCallout type="tip">
         You can install multiple modules together. For example, Inventory + Finance gives you products, stock, suppliers, and invoicing all linked up automatically.
@@ -189,11 +135,7 @@ export function SectionModules() {
           },
           {
             title: "Start using it",
-<<<<<<< HEAD
             desc: "Go to Pages - you'll see the new pages created. Open your ERP to see the live version your staff will use.",
-=======
-            desc: "Go to Pages : you'll see the new pages created. Open your ERP to see the live version your staff will use.",
->>>>>>> 81abcc974ae9b58018fed0a924167eca9ae4b168
           },
         ]}
       />
@@ -253,11 +195,7 @@ export function SectionPageBuilder() {
       <DocP>
         Every page your staff sees is built in the Page Composer. You drag
         blocks onto a canvas, configure each one, and hit Publish. It's
-<<<<<<< HEAD
         similar to building a slide in PowerPoint - but the blocks are live
-=======
-        similar to building a slide in PowerPoint : but the blocks are live
->>>>>>> 81abcc974ae9b58018fed0a924167eca9ae4b168
         and connected to your data.
       </DocP>
       <DocSteps
@@ -276,63 +214,36 @@ export function SectionPageBuilder() {
           },
           {
             title: "Publish the page",
-<<<<<<< HEAD
             desc: "Click the Publish button at the top. Your changes go live immediately - refresh the tenant view to see them.",
-=======
-            desc: "Click the Publish button at the top. Your changes go live immediately : refresh the tenant view to see them.",
->>>>>>> 81abcc974ae9b58018fed0a924167eca9ae4b168
           },
         ]}
       />
       <DocCallout type="tip">
-<<<<<<< HEAD
         Width snaps to preset fractions - ¼, ½, ¾, or full width. Two half-width blocks sit side-by-side automatically, letting you build multi-column layouts.
-=======
-        Width snaps to preset fractions : ¼, ½, ¾, or full width. Two half-width blocks sit side-by-side automatically, letting you build multi-column layouts.
->>>>>>> 81abcc974ae9b58018fed0a924167eca9ae4b168
       </DocCallout>
 
       <DocH2 id="block-types">What Each Block Does</DocH2>
       <DocCards
         items={[
-<<<<<<< HEAD
-          { icon: "📊", title: "Metric", desc: "A KPI card showing a count, total, or custom number. Great for dashboards - e.g. Total Products, Revenue This Month." },
-          { icon: "📋", title: "Table View", desc: "A full data grid showing all records in a table. Staff can add, edit, and delete rows directly from here." },
-          { icon: "🗂️", title: "Kanban View", desc: "A drag-and-drop board grouped by a field like Status or Stage. Ideal for leads, orders, or tasks." },
-          { icon: "🔍", title: "Filter Bar", desc: "Adds a search box and date filter above a table or kanban. Helps staff find records quickly." },
-          { icon: "📝", title: "Form", desc: "A clean form for adding new records. Auto-generated from your table's fields." },
-          { icon: "⬇️", title: "Export Button", desc: "One-click CSV download of any table's data. Opens correctly in Excel with Indian Rupee formatting." },
-          { icon: "🧮", title: "GST Calculator", desc: "An inline GST calculator. Configure it for CGST+SGST (intrastate) or IGST (interstate)." },
-          { icon: "📈", title: "Chart", desc: "A bar chart connected to your table data to visualize totals and trends." },
-          { icon: "🖼️", title: "Image", desc: "Add your company logo or a banner image to any page." },
-          { icon: "✍️", title: "Text", desc: "A heading and description block for labelling sections of a page." },
-=======
-          { icon: <LayoutDashboard className="h-5 w-5" />, title: "Metric", desc: "A KPI card showing a count, total, or custom number. Great for dashboards : e.g. Total Products, Revenue This Month." },
+          { icon: <LayoutDashboard className="h-5 w-5" />, title: "Metric", desc: "A KPI card showing a count, total, or custom number. Great for dashboards - e.g. Total Products, Revenue This Month." },
           { icon: <LayoutTemplate className="h-5 w-5" />, title: "Table View", desc: "A full data grid showing all records in a table. Staff can add, edit, and delete rows directly from here." },
-          { icon: <LayoutDashboard className="h-5 w-5" />, title: "Kanban View", desc: "A drag and drop board grouped by a field like Status or Stage. Ideal for leads, orders, or tasks." },
+          { icon: <LayoutDashboard className="h-5 w-5" />, title: "Kanban View", desc: "A drag-and-drop board grouped by a field like Status or Stage. Ideal for leads, orders, or tasks." },
           { icon: <Settings className="h-5 w-5" />, title: "Filter Bar", desc: "Adds a search box and date filter above a table or kanban. Helps staff find records quickly." },
-          { icon: <LayoutTemplate className="h-5 w-5" />, title: "Form", desc: "A clean form for adding new records. Auto generated from your table's fields." },
-          { icon: <LayoutDashboard className="h-5 w-5" />, title: "Export Button", desc: "One click CSV download of any table's data. Opens correctly in Excel with Indian Rupee formatting." },
+          { icon: <LayoutTemplate className="h-5 w-5" />, title: "Form", desc: "A clean form for adding new records. Auto-generated from your table's fields." },
+          { icon: <LayoutDashboard className="h-5 w-5" />, title: "Export Button", desc: "One-click CSV download of any table's data. Opens correctly in Excel with Indian Rupee formatting." },
           { icon: <Settings className="h-5 w-5" />, title: "GST Calculator", desc: "An inline GST calculator. Configure it for CGST+SGST (intrastate) or IGST (interstate)." },
           { icon: <LayoutDashboard className="h-5 w-5" />, title: "Chart", desc: "A bar chart connected to your table data to visualize totals and trends." },
           { icon: <Settings className="h-5 w-5" />, title: "Image", desc: "Add your company logo or a banner image to any page." },
           { icon: <Settings className="h-5 w-5" />, title: "Text", desc: "A heading and description block for labelling sections of a page." },
->>>>>>> 81abcc974ae9b58018fed0a924167eca9ae4b168
         ]}
       />
 
       <DocH2 id="page-tips">Tips & Tricks</DocH2>
       <DocList
         items={[
-<<<<<<< HEAD
           "Put a Filter Bar block above a Table View - they link automatically so searching works across the whole page.",
           "Use two Metric blocks at 50% width side by side for a clean KPI row at the top of a dashboard.",
           "Name your pages clearly - your staff sees these names in the sidebar of the tenant app.",
-=======
-          "Put a Filter Bar block above a Table View : they link automatically so searching works across the whole page.",
-          "Use two Metric blocks at 50% width side by side for a clean KPI row at the top of a dashboard.",
-          "Name your pages clearly : your staff sees these names in the sidebar of the tenant app.",
->>>>>>> 81abcc974ae9b58018fed0a924167eca9ae4b168
           "Pages created by modules can be edited and customized. Your changes are kept even when the module updates.",
           "You can create blank pages from scratch for things like notice boards, calculators, or custom dashboards.",
         ]}
