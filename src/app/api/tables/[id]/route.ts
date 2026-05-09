@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { getWorkspace } from "@/lib/get-workspace";
 import { OverrideType, Prisma } from "@prisma/client";
 
-// GET /api/tables/[id] — get single table with fields
+// GET /api/tables/[id] : get single table with fields
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -26,7 +26,7 @@ export async function GET(
   return NextResponse.json(table);
 }
 
-// PATCH /api/tables/[id] — update table name/icon
+// PATCH /api/tables/[id] : update table name/icon
 // For pack-sourced tables: renaming creates a RENAME_TABLE override delta
 // so the canonical pack definition is never modified.
 export async function PATCH(
@@ -60,7 +60,7 @@ export async function PATCH(
           data: {
             installedPackId: installedPack.id,
             overrideType: OverrideType.RENAME_TABLE,
-            targetKey: table.packTableKey, // canonical table key — stable reference
+            targetKey: table.packTableKey, // canonical table key : stable reference
             payload: { displayName: name } as Prisma.InputJsonValue,
           },
         });
@@ -73,7 +73,7 @@ export async function PATCH(
   return NextResponse.json(updated);
 }
 
-// DELETE /api/tables/[id] — delete table + cascade fields/records
+// DELETE /api/tables/[id] : delete table + cascade fields/records
 export async function DELETE(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }

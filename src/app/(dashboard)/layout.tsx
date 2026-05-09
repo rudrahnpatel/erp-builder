@@ -57,7 +57,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         <Sidebar onClose={() => setSidebarOpen(false)} />
       </div>
 
-      {/* ── Main content ── */}
+      {/*  Main content  */}
       <div className="flex flex-col flex-1 overflow-hidden min-w-0">
         <Topbar onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
         <main

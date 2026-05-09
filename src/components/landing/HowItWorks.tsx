@@ -36,7 +36,7 @@ const steps = [
   {
     step: "02",
     title: "Pick your modules & plugins",
-    desc: "Browse our marketplace — install Inventory, CRM, HR, Finance, or any combination. Add plugins like WhatsApp, GST, Razorpay.",
+    desc: "Browse our marketplace : install Inventory, CRM, HR, Finance, or any combination. Add plugins like WhatsApp, GST, Razorpay.",
     icon: Blocks,
     accentVar: "--accent-emerald",
     // Visual: marketplace grid
@@ -45,7 +45,7 @@ const steps = [
   {
     step: "03",
     title: "Build & deploy your ERP",
-    desc: "Configure schemas, compose pages, wire up plugins — then deploy. Your team gets a live ERP at yourname.mosaic.app.",
+    desc: "Configure schemas, compose pages, wire up plugins : then deploy. Your team gets a live ERP at yourname.mosaic.app.",
     icon: Rocket,
     accentVar: "--accent-violet",
     // Visual: dashboard deployed
@@ -86,7 +86,7 @@ function LoginVisual() {
         className="text-xs mb-5"
         style={{ color: "var(--foreground-dimmed)" }}
       >
-        Get started in 30 seconds — it&apos;s free.
+        Get started in 30 seconds : it&apos;s free.
       </p>
       {/* Mock form fields */}
       <div className="space-y-3">
@@ -246,7 +246,7 @@ function DeployedVisual() {
             color: "var(--foreground-dimmed)",
           }}
         >
-          🔒 acme.mosaic.app
+           acme.mosaic.app
         </div>
       </div>
       {/* Mini dashboard */}
@@ -303,7 +303,7 @@ function DeployedVisual() {
               className="text-[10px] font-medium mb-1.5"
               style={{ color: "var(--foreground)" }}
             >
-              Welcome back 👋
+              Welcome back 
             </div>
             <div className="grid grid-cols-3 gap-1.5">
               {[
@@ -524,7 +524,7 @@ export function HowItWorks() {
             })}
           </div>
 
-          {/* Visual preview — sticky on desktop */}
+          {/* Visual preview : sticky on desktop */}
           <div className="lg:sticky lg:top-20">
             <div className="relative">
               {visuals.map((visual, i) => (

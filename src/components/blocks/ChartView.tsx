@@ -117,7 +117,7 @@ export function ChartView({
   const buckets = new Map<string, { sum: number; count: number }>();
   for (const r of records) {
     const raw = r.data?.[groupField.id];
-    const key = raw == null || raw === "" ? "—" : String(raw);
+    const key = raw == null || raw === "" ? ":" : String(raw);
     let b = buckets.get(key);
     if (!b) {
       b = { sum: 0, count: 0 };

@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { getWorkspace } from "@/lib/get-workspace";
 import { FieldType, OverrideType, Prisma } from "@prisma/client";
 
-// ─── GET /api/tables/[id]/fields ─────────────────────────────────────────────
+//  GET /api/tables/[id]/fields 
 // Returns all fields for a table.
 // Pack-sourced tables: hidden fields are excluded by default.
 // Pass ?includeHidden=1 to get everything (used by the schema editor).
@@ -33,7 +33,7 @@ export async function GET(
   return NextResponse.json(fields);
 }
 
-// ─── POST /api/tables/[id]/fields ────────────────────────────────────────────
+//  POST /api/tables/[id]/fields 
 // Adds a new field to a table.
 //
 // For pack-sourced tables: the field is materialized as a Field row with
@@ -128,14 +128,14 @@ export async function POST(
   return NextResponse.json(result, { status: 201 });
 }
 
-// ─── PATCH /api/tables/[id]/fields ───────────────────────────────────────────
+//  PATCH /api/tables/[id]/fields 
 // Updates a field.
 //
 // For pack-sourced fields (isCustom:false):
-//  - Renaming → RENAME_FIELD override
-//  - Changing SINGLE_SELECT options → CHANGE_FIELD_OPTIONS override
-//  - hidden:true → HIDE_FIELD override (soft-delete)
-//  - type changes are blocked (structural integrity of the canonical schema)
+// : Renaming → RENAME_FIELD override
+// : Changing SINGLE_SELECT options → CHANGE_FIELD_OPTIONS override
+// : hidden:true → HIDE_FIELD override (soft-delete)
+// : type changes are blocked (structural integrity of the canonical schema)
 //
 // For custom fields (isCustom:true): all changes are applied directly, no override needed.
 export async function PATCH(
@@ -156,9 +156,9 @@ export async function PATCH(
   const field = await db.field.findFirst({ where: { id: fieldId, tableId: id } });
   if (!field) return NextResponse.json({ error: "Field not found" }, { status: 404 });
 
-  // ── Pack-sourced field (canonical, not user-created) ──────────────────────
+  //  Pack-sourced field (canonical, not user-created) 
   if (!field.isCustom && table.packSource && table.packTableKey) {
-    // Block type changes — would break existing record data
+    // Block type changes : would break existing record data
     if (type && type !== field.type) {
       return NextResponse.json(
         { error: "Cannot change the type of a pre-built pack field. Add a new custom field instead." },
@@ -227,7 +227,7 @@ export async function PATCH(
         });
       }
 
-      // Required flag — allowed without override (metadata-only)
+      // Required flag : allowed without override (metadata-only)
       if (required !== undefined) updateData.required = required;
 
       const updatedField = await tx.field.update({ where: { id: fieldId }, data: updateData });
@@ -250,8 +250,8 @@ export async function PATCH(
     return NextResponse.json(updated);
   }
 
-  // ── Custom field (user-created, isCustom:true) ────────────────────────────
-  // No override needed — the Field row IS the source of truth for custom fields.
+  //  Custom field (user-created, isCustom:true) 
+  // No override needed : the Field row IS the source of truth for custom fields.
   const updated = await db.field.update({
     where: { id: fieldId },
     data: {
@@ -267,10 +267,10 @@ export async function PATCH(
   return NextResponse.json(updated);
 }
 
-// ─── DELETE /api/tables/[id]/fields ──────────────────────────────────────────
+//  DELETE /api/tables/[id]/fields 
 // Deletes a field.
 //
-// Pack-sourced fields (isCustom:false) CANNOT be deleted — they would break the
+// Pack-sourced fields (isCustom:false) CANNOT be deleted : they would break the
 // canonical schema reference and could corrupt existing record data.
 // Use PATCH with { hidden: true } to soft-hide them instead.
 //
@@ -325,7 +325,7 @@ export async function DELETE(
             overrideType: OverrideType.ADD_FIELD,
             targetKey: table.packTableKey,
             // Match the specific field by checking payload name
-            // (Prisma doesn't support JSON path filters in deleteMany — delete all ADD_FIELD overrides
+            // (Prisma doesn't support JSON path filters in deleteMany : delete all ADD_FIELD overrides
             //  for this field name as a best-effort cleanup)
           },
         });

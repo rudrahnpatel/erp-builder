@@ -26,7 +26,7 @@ function validateIndianPhone(raw: string): string | null {
 
 function validateEmail(raw: string): string | null {
   if (!raw) return null;
-  // Lightweight check — server is the real authority. Only block obvious junk.
+  // Lightweight check : server is the real authority. Only block obvious junk.
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw)) {
     return "Enter a valid email address";
   }

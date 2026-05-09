@@ -18,7 +18,7 @@ export function FilterProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// Safe to call outside a provider — returns a no-op state. Useful so blocks
+// Safe to call outside a provider : returns a no-op state. Useful so blocks
 // can optionally participate in filtering when a FilterBar is on the page,
 // without crashing in contexts where there isn't one (e.g. the composer preview).
 export function useFilter(): FilterState {
@@ -30,7 +30,7 @@ export function useFilter(): FilterState {
 /**
  * Shallow record-matcher used by Table/Kanban/Chart to participate in filtering.
  * Stringifies every value in the record's `data` and checks for a case-insensitive
- * substring match — matches the expectations of the search input UI.
+ * substring match : matches the expectations of the search input UI.
  */
 export function matchesQuery(record: any, query: string): boolean {
   if (!query) return true;

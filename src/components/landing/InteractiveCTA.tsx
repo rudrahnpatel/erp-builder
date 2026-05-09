@@ -165,8 +165,8 @@ export function InteractiveCTA() {
                 className="text-base mt-4 max-w-xl leading-relaxed"
                 style={{ color: "var(--foreground-muted)" }}
               >
-                Book a 15-minute call or start building right now. We&apos;ll
-                walk you through every feature — and if it&apos;s not for you,
+                Book a 15 minute call or start building right now. We&apos;ll
+                walk you through every feature : and if it&apos;s not for you,
                 no hard feelings.
               </p>
 
@@ -197,7 +197,7 @@ export function InteractiveCTA() {
                 className="flex items-center gap-4 mt-6 text-xs flex-wrap"
                 style={{ color: "var(--foreground-dimmed)" }}
               >
-                {["No credit card", "Free tier", "Made in India 🇮🇳"].map(
+                {["No credit card", "Free tier", "Made in India "].map(
                   (t) => (
                     <span key={t} className="flex items-center gap-1.5">
                       <CheckCircle2 className="h-3 w-3" aria-hidden="true" />{" "}

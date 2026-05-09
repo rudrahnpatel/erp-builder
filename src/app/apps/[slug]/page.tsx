@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { getWorkspaceBySlug } from "@/lib/get-workspace";
 
 /**
- * Home of a tenant's runtime ERP. Not the builder dashboard — this is what
+ * Home of a tenant's runtime ERP. Not the builder dashboard : this is what
  * end users (staff of the merchant) see when they open the app.
  */
 export default async function TenantHome({

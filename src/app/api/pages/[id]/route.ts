@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getWorkspace } from "@/lib/get-workspace";
 
-// GET /api/pages/[id] — get a page with its block tree
+// GET /api/pages/[id] : get a page with its block tree
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -32,7 +32,7 @@ export async function GET(
   return NextResponse.json(page);
 }
 
-// PATCH /api/pages/[id] — update page title, icon, or blocks
+// PATCH /api/pages/[id] : update page title, icon, or blocks
 export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> }

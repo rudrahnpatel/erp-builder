@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getWorkspace } from "@/lib/get-workspace";
 
-// GET /api/dev/modules/[moduleId]/tables — list tables scoped to this module
+// GET /api/dev/modules/[moduleId]/tables : list tables scoped to this module
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ moduleId: string }> }
@@ -44,7 +44,7 @@ export async function GET(
   }
 }
 
-// POST /api/dev/modules/[moduleId]/tables — create a table scoped to this module
+// POST /api/dev/modules/[moduleId]/tables : create a table scoped to this module
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ moduleId: string }> }

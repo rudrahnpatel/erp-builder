@@ -35,7 +35,7 @@ export function MetricCard({
   const value =
     typeof liveCount === "number"
       ? liveCount.toLocaleString("en-IN")
-      : config.metricValue || "—";
+      : config.metricValue || ":";
 
   const TrendIcon =
     trend && /\+|up|▲/i.test(trend)

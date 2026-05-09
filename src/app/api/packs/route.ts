@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { getWorkspace } from "@/lib/get-workspace";
 import { getAllPacksAsync } from "@/lib/packs";
 
-// GET /api/packs — list all available packs + installed status
+// GET /api/packs : list all available packs + installed status
 export async function GET() {
   const workspace = await getWorkspace();
   if (!workspace) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

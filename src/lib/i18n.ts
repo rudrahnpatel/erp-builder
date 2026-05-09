@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-// Lightweight i18n helper. Not a full framework — just a typed string table
+// Lightweight i18n helper. Not a full framework : just a typed string table
 // and a useLanguage() hook backed by localStorage. Add new keys to BOTH locales
 // (TypeScript will enforce parity via the shared `Dict` type).
 //

@@ -4,9 +4,9 @@
  * any admin tooling that manipulates workspace slugs.
  *
  * Rules:
- *   - lowercase a-z, 0-9, hyphen
- *   - 3..32 characters
- *   - no leading/trailing hyphen, no consecutive hyphens
+ *  : lowercase a-z, 0-9, hyphen
+ *  : 3..32 characters
+ *  : no leading/trailing hyphen, no consecutive hyphens
  */
 
 const MIN_LEN = 3;
@@ -62,8 +62,8 @@ export function slugProblem(raw: string): string | null {
   if (!raw) return "Pick a subdomain first.";
   const cleaned = normalizeSlug(raw);
   if (!cleaned) {
-    if (raw.length < MIN_LEN) return `Too short — at least ${MIN_LEN} characters.`;
-    if (raw.length > MAX_LEN) return `Too long — at most ${MAX_LEN} characters.`;
+    if (raw.length < MIN_LEN) return `Too short : at least ${MIN_LEN} characters.`;
+    if (raw.length > MAX_LEN) return `Too long : at most ${MAX_LEN} characters.`;
     return "Only lowercase letters, numbers, and hyphens.";
   }
   if (RESERVED_SLUGS.has(cleaned)) return "That subdomain is reserved.";

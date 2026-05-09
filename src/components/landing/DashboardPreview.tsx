@@ -42,7 +42,7 @@ export function DashboardPreview() {
             border: "1px solid var(--border-subtle)",
           }}
         >
-          {/* ── Top Bar ── */}
+          {/*  Top Bar  */}
           <div
             className="flex items-center justify-between px-3 py-2"
             style={{ borderBottom: "1px solid var(--border-subtle)" }}
@@ -117,7 +117,7 @@ export function DashboardPreview() {
             </div>
           </div>
 
-          {/* ── Body: Sidebar + Main ── */}
+          {/*  Body: Sidebar + Main  */}
           <div className="flex">
             {/* Sidebar */}
             <div
@@ -215,7 +215,7 @@ export function DashboardPreview() {
               </div>
             </div>
 
-            {/* ── Main Content ── */}
+            {/*  Main Content  */}
             <div
               className="flex-1 min-w-0 p-3 md:p-4"
               style={{ background: "var(--surface-sunken)" }}

@@ -2,7 +2,7 @@ import { PackDefinition } from "@/types/pack";
 import { inventoryPack, crmPack, hrPack, financePack, quotationPack, supportPack } from "./registry";
 import { db } from "@/lib/db";
 
-// Central pack registry — add new packs here
+// Central pack registry : add new packs here
 export const packRegistry: Record<string, PackDefinition> = {
   [inventoryPack.id]: inventoryPack,
   // Finance pack is what the Razorpay plugin reconciles payments into.
@@ -17,7 +17,7 @@ export const packRegistry: Record<string, PackDefinition> = {
   [supportPack.id]: supportPack,
 };
 
-// ── Synchronous lookups (built-in packs only) ───────────────────────────
+//  Synchronous lookups (built-in packs only) 
 
 export function getPackById(packId: string): PackDefinition | undefined {
   return packRegistry[packId];
@@ -27,7 +27,7 @@ export function getAllPacks(): PackDefinition[] {
   return Object.values(packRegistry);
 }
 
-// ── Async lookups (built-in + DB-authored modules) ──────────────────────
+//  Async lookups (built-in + DB-authored modules) 
 // Used by install/update APIs so they can resolve both hardcoded packs AND
 // developer-authored modules stored in the ModuleDefinition table.
 
@@ -55,7 +55,7 @@ function moduleRowToPack(row: {
   };
 }
 
-/** Look up a pack by ID — checks built-in registry first, then DB */
+/** Look up a pack by ID : checks built-in registry first, then DB */
 export async function getPackByIdAsync(packId: string): Promise<PackDefinition | undefined> {
   // DB-authored module overrides built-in if published
   const row = await db.moduleDefinition.findUnique({ where: { packId } });
@@ -68,7 +68,7 @@ export async function getPackByIdAsync(packId: string): Promise<PackDefinition |
   return undefined;
 }
 
-/** Return all packs — built-in + published DB modules */
+/** Return all packs : built-in + published DB modules */
 export async function getAllPacksAsync(): Promise<PackDefinition[]> {
   const builtins = Object.values(packRegistry);
   const dbModules = await db.moduleDefinition.findMany({

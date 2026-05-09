@@ -86,9 +86,9 @@ const IconMap: Record<string, any> = {
  * Clean end-user shell for a tenant's runtime ERP at /apps/<slug>/...
  *
  * Deliberately different from the builder dashboard Sidebar:
- *   - no marketplace/plugin/schema chrome
- *   - nav is driven entirely by the tenant's installed tables + custom pages
- *   - "Back to builder" is the only cross-link, tucked in the corner
+ *  : no marketplace/plugin/schema chrome
+ *  : nav is driven entirely by the tenant's installed tables + custom pages
+ *  : "Back to builder" is the only cross-link, tucked in the corner
  */
 export type AppShellWorkspace = {
   name: string;
@@ -213,7 +213,7 @@ export function AppShell({
       className="flex h-screen w-full overflow-hidden"
       style={{ background: "var(--background)" }}
     >
-      {/* Noise overlay — breaks digital flatness */}
+      {/* Noise overlay : breaks digital flatness */}
       <div className="noise-overlay" aria-hidden="true" />
 
       {/* Overlay */}
@@ -229,7 +229,7 @@ export function AppShell({
         />
       )}
 
-      {/* Sidebar — hidden by default, slide-in on toggle */}
+      {/* Sidebar : hidden by default, slide-in on toggle */}
       <aside
         className={`fixed inset-y-0 left-0 z-50 w-[248px] flex flex-col border-r transform transition-transform duration-300 ease-[var(--ease-out-expo)] ${
           sidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"
@@ -388,7 +388,7 @@ export function AppShell({
 
       {/* Main */}
       <div className="flex flex-col flex-1 overflow-hidden">
-        {/* Top bar — always visible to allow sidebar toggle */}
+        {/* Top bar : always visible to allow sidebar toggle */}
         <div
           className="h-[56px] flex items-center px-4 border-b shrink-0 gap-3"
           style={{

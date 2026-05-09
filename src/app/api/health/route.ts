@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 
-// Lightweight keepalive — prevents Neon serverless Postgres from going to sleep
+// Lightweight keepalive : prevents Neon serverless Postgres from going to sleep
 export async function GET() {
   try {
     await db.$queryRaw`SELECT 1`;

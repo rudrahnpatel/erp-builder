@@ -99,7 +99,7 @@ export function DocsSidebar({
         </div>
       </div>
 
-      {/* Nav — scrollbar hidden */}
+      {/* Nav : scrollbar hidden */}
       <nav className="flex-1 overflow-y-auto py-4 px-3 docs-sidebar-nav">
         {DOC_SECTIONS.map((section) => (
           <div key={section.title} className="mb-5">

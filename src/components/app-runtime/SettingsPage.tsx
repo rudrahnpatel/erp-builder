@@ -355,7 +355,7 @@ function PreferencesTab() {
           border: "1px dashed var(--border-subtle)",
         }}
       >
-        Preferences will appear here soon — theme, date format, currency, and more.
+        Preferences will appear here soon : theme, date format, currency, and more.
       </div>
     </Card>
   );

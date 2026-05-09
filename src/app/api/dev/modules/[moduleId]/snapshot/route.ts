@@ -30,7 +30,7 @@ export async function POST(
     const body = await req.json().catch(() => ({}));
     const publish = body.publish === true;
 
-    // ── 1. Snapshot tables ────────────────────────────────────────────────
+    //  1. Snapshot tables 
     // Find all workspace tables tagged with this module's packId
     const tables = await db.table.findMany({
       where: { workspaceId: workspace.id, packSource: mod.packId },
@@ -97,7 +97,7 @@ export async function POST(
       };
     });
 
-    // ── 2. Snapshot pages ─────────────────────────────────────────────────
+    //  2. Snapshot pages 
     const pages = await db.page.findMany({
       where: { workspaceId: workspace.id, packSource: mod.packId },
       orderBy: { order: "asc" },
@@ -143,11 +143,11 @@ export async function POST(
       };
     });
 
-    // ── 3. Bump version ───────────────────────────────────────────────────
+    //  3. Bump version 
     const [major, minor, patch] = mod.version.split(".").map(Number);
     const newVersion = `${major}.${minor}.${(patch || 0) + 1}`;
 
-    // ── 4. Update the module definition ───────────────────────────────────
+    //  4. Update the module definition 
     const updated = await db.moduleDefinition.update({
       where: { id: moduleId },
       data: {

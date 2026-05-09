@@ -37,7 +37,7 @@ export const DEFAULT_WORKSPACE_PAGES: DefaultPageSeed[] = [
 ];
 
 /**
- * Seed any missing built-in pages into a workspace. Safe to call repeatedly —
+ * Seed any missing built-in pages into a workspace. Safe to call repeatedly :
  * only creates pages whose `packPageKey` isn't already present for this workspace.
  * New pages are appended after the current max page order.
  */

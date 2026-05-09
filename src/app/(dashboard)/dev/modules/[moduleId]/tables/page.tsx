@@ -377,7 +377,7 @@ export default function ModuleTablesPage({
                   </div>
                 </div>
 
-                {/* Table name — inline rename */}
+                {/* Table name : inline rename */}
                 {renamingId === table.id ? (
                   <div
                     className="flex items-center gap-2 mb-1"

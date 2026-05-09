@@ -113,7 +113,7 @@ export function LandingHero() {
 
   return (
     <section className="relative overflow-hidden">
-      {/* ── Background Video ── */}
+      {/*  Background Video  */}
       <video
         autoPlay
         muted
@@ -138,7 +138,7 @@ export function LandingHero() {
         }}
       />
 
-      {/* ── Navbar ── */}
+      {/*  Navbar  */}
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
@@ -172,7 +172,7 @@ export function LandingHero() {
             </span>
           </Link>
 
-          {/* Nav links — hidden on mobile */}
+          {/* Nav links : hidden on mobile */}
           <div className="hidden md:flex items-center gap-8">
             {[
               { label: "Home", href: "/" },
@@ -212,7 +212,7 @@ export function LandingHero() {
         </nav>
       </header>
 
-      {/* ── Hero Content ── */}
+      {/*  Hero Content  */}
       <div className="relative z-10 flex flex-col items-center w-full px-4 sm:px-6 pt-32 sm:pt-40 pb-0">
   
 
@@ -248,9 +248,9 @@ export function LandingHero() {
             fontFamily: "var(--font-body)",
           }}
         >
-          Install module packs, configure schemas, compose pages — deploy a
+          Install module packs, configure schemas, compose pages : deploy a
           custom ERP tailored to your business. No consultants. No
-          quarter-long implementations. No code.
+          quarter long implementations. No code.
         </motion.p>
 
         {/* CTA Buttons */}

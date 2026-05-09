@@ -318,7 +318,7 @@ export default function ModulePagesPage({
   );
 }
 
-// ─── Sortable Page Card ───────────────────────────────────────────────────────
+//  Sortable Page Card 
 
 function SortablePageCard({
   page,

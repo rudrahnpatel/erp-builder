@@ -4,7 +4,7 @@ import { getWorkspace } from "@/lib/get-workspace";
 import { getPackByIdAsync } from "@/lib/packs";
 import { FieldType, Prisma } from "@prisma/client";
 
-// POST /api/packs/install — install a module pack into the workspace
+// POST /api/packs/install : install a module pack into the workspace
 export async function POST(req: Request) {
   try {
     const workspace = await getWorkspace();
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
       // Track created table IDs by name (for RELATION field resolution)
       const tableIdMap: Record<string, string> = {};
 
-      // 1. Create all tables + fields — tagged with pack provenance
+      // 1. Create all tables + fields : tagged with pack provenance
       for (let tIdx = 0; tIdx < pack.tables.length; tIdx++) {
         const tableDef = pack.tables[tIdx];
         const isTableRequired = tIdx === 0 || !pack.tables[tIdx].fields.some(f => f.required);
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
             name: tableDef.name,
             icon: tableDef.icon,
             packSource: packId,
-            packTableKey: tableDef.name, // canonical key — never changes even if user renames table
+            packTableKey: tableDef.name, // canonical key : never changes even if user renames table
             isCustom: false,             // created by pack, not by user
             workspaceId: workspace.id,
           },
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
 
         tableIdMap[tableDef.name] = table.id;
 
-        // Create fields — each tagged with its canonical key
+        // Create fields : each tagged with its canonical key
         const fieldIdMap: Record<string, string> = {};
         for (let i = 0; i < tableDef.fields.length; i++) {
           const fieldDef = tableDef.fields[i];
@@ -80,7 +80,7 @@ export async function POST(req: Request) {
               required: fieldDef.required || false,
               order: i,
               tableId: table.id,
-              packFieldKey: fieldDef.name, // canonical key — never changes
+              packFieldKey: fieldDef.name, // canonical key : never changes
               isCustom: false,             // created by pack, not by user
               isHidden: false,
             },
@@ -133,7 +133,7 @@ export async function POST(req: Request) {
             icon: pageDef.icon,
             blocks: resolvedBlocks as unknown as Prisma.InputJsonValue,
             packSource: packId,
-            packPageKey: pageDef.key, // canonical key — survives renames
+            packPageKey: pageDef.key, // canonical key : survives renames
             order: i,
             workspaceId: workspace.id,
           },
@@ -141,7 +141,7 @@ export async function POST(req: Request) {
         createdPages.push(page);
       }
 
-      // 4. Mark as installed — record the canonical pack version at install time
+      // 4. Mark as installed : record the canonical pack version at install time
       await tx.installedPack.create({
         data: {
           packId,

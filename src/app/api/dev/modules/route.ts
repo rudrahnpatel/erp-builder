@@ -4,7 +4,7 @@ import { getWorkspace } from "@/lib/get-workspace";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-// GET /api/dev/modules — list modules authored by the current dev
+// GET /api/dev/modules : list modules authored by the current dev
 export async function GET() {
   try {
     const workspace = await getWorkspace();
@@ -37,7 +37,7 @@ export async function GET() {
   }
 }
 
-// POST /api/dev/modules — create a new module
+// POST /api/dev/modules : create a new module
 export async function POST(req: Request) {
   try {
     const workspace = await getWorkspace();

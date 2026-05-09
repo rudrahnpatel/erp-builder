@@ -17,7 +17,7 @@ const features = [
     icon: Blocks,
     eyebrow: "01 · Modules",
     title: "A marketplace, not a template dump",
-    desc: "Inventory, CRM, HR & payroll, finance — each pack ships with schemas, pages and sensible defaults. Install in one click, then bend it to your business.",
+    desc: "Inventory, CRM, HR & payroll, finance : each pack ships with schemas, pages and sensible defaults. Install in one click, then bend it to your business.",
     accentVar: "--accent-blue",
     // Comes from left
     from: { x: -120, y: -60, rotation: -8 },
@@ -26,7 +26,7 @@ const features = [
     icon: Database,
     eyebrow: "02 · Schema",
     title: "Schema designer that respects your data",
-    desc: "Tables, relations, validations — visually. No hand-written migrations, no re-deploys, no downtime.",
+    desc: "Tables, relations, validations : visually. No hand-written migrations, no re-deploys, no downtime.",
     accentVar: "--accent-emerald",
     // Comes from top
     from: { x: 60, y: -120, rotation: 6 },
@@ -43,7 +43,7 @@ const features = [
   {
     icon: Puzzle,
     eyebrow: "04 · Plugins",
-    title: "WhatsApp, GST, Razorpay — already wired",
+    title: "WhatsApp, GST, Razorpay : already wired",
     desc: "Send invoices over WhatsApp. Generate GST-compliant PDFs. Accept payments on Razorpay. Zero code, zero glue.",
     accentVar: "--accent-violet",
     // Comes from right
@@ -156,7 +156,7 @@ export function PuzzleFeatures() {
               opacity: 0,
             }}
           >
-            {/* Puzzle connector notch — decorative */}
+            {/* Puzzle connector notch : decorative */}
             {i < features.length - 1 && (
               <div
                 className="absolute -right-2.5 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full z-10 hidden lg:block"

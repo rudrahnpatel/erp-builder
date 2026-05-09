@@ -151,7 +151,7 @@ export default function SchemaDesignerPage({ params }: { params: Promise<{ table
           <span>Schema</span>
         </div>
         <div className="flex items-center gap-2">
-          {/* Draft indicator — clear visual whether there are unsaved changes
+          {/* Draft indicator : clear visual whether there are unsaved changes
               and exactly what's pending. */}
           <div
             className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium mono"
@@ -279,7 +279,7 @@ export default function SchemaDesignerPage({ params }: { params: Promise<{ table
             })}
           </div>
 
-          {/* Field list — only visible for the Data Schema section. The
+          {/* Field list : only visible for the Data Schema section. The
               Automations and Permissions sections render their own bodies in
               the right pane below. */}
           {section === "schema" && <div className="px-4 py-3 space-y-2">
@@ -434,7 +434,7 @@ export default function SchemaDesignerPage({ params }: { params: Promise<{ table
                     >
                       {fields.map((field) => {
                         const value =
-                          (row as Record<string, string>)[field.name] || "—";
+                          (row as Record<string, string>)[field.name] || ":";
                         return (
                           <td
                             key={field.id}
@@ -526,7 +526,7 @@ export default function SchemaDesignerPage({ params }: { params: Promise<{ table
   );
 }
 
-// Lightweight scaffold of the Automations panel — gives the user a clear
+// Lightweight scaffold of the Automations panel : gives the user a clear
 // picture of what's coming and lets them stage rules locally so the page
 // stops looking like a dead end. Persistence requires backend automation
 // runtime which is out of scope for this pass.
@@ -579,7 +579,7 @@ function AutomationsPanel({ tableName }: { tableName?: string }) {
             style={{ color: "var(--foreground-muted)" }}
           >
             Send WhatsApp messages, SMS, or emails when records on{" "}
-            <strong>{tableName || "this table"}</strong> change. Pick a starting point below — full visual rule builder is rolling out in the next milestone.
+            <strong>{tableName || "this table"}</strong> change. Pick a starting point below : full visual rule builder is rolling out in the next milestone.
           </p>
         </div>
         <span
@@ -701,7 +701,7 @@ function PermissionsPanel({ tableName }: { tableName?: string }) {
     { name: "Owner", description: "Full read & write, can manage roles.", read: true, write: true, manage: true },
     { name: "Manager", description: "Can read everything, write most fields, but can't change schema.", read: true, write: true, manage: false },
     { name: "Staff", description: "Can read, can write only the records they own.", read: true, write: false, manage: false },
-    { name: "Viewer", description: "Read-only access — useful for auditors and external partners.", read: true, write: false, manage: false },
+    { name: "Viewer", description: "Read-only access : useful for auditors and external partners.", read: true, write: false, manage: false },
   ];
   return (
     <div className="max-w-3xl mx-auto">
@@ -722,7 +722,7 @@ function PermissionsPanel({ tableName }: { tableName?: string }) {
         style={{ color: "var(--foreground-muted)" }}
       >
         Default role matrix for <strong>{tableName || "this table"}</strong>.
-        Per-role overrides ship in the next milestone — for now, every record
+        Per-role overrides ship in the next milestone : for now, every record
         is governed by these defaults.
       </p>
       <div

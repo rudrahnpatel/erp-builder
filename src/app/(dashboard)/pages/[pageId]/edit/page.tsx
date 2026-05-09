@@ -57,7 +57,7 @@ const blockPalette = [
 
 const KANBAN_COLS = ["To Do", "In Progress", "Review", "Done"];
 
-/* ── 6-column grid system ── */
+/*  6-column grid system  */
 const GRID_COLUMNS = 6;
 
 const blockGridStyle = (cfg: any): React.CSSProperties => {
@@ -181,8 +181,8 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
     document.body.style.userSelect = "none";
 
     const onMove = (ev: PointerEvent) => {
-      const dx = ev.clientX - startX;
-      const dy = ev.clientY - startY;
+      const dx = ev.clientX: startX;
+      const dy = ev.clientY: startY;
       setBlocks((prev) =>
         prev.map((b) => {
           if (b.id !== blockId) return b;
@@ -194,7 +194,7 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
           } else if (axis === "bottom") {
             cfg.heightPx = Math.max(60, startHeightPx + dy);
           } else if (axis === "top") {
-            cfg.heightPx = Math.max(60, startHeightPx - dy);
+            cfg.heightPx = Math.max(60, startHeightPx: dy);
           }
           return { ...b, config: cfg };
         })
@@ -335,7 +335,7 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
   const defaultKanbanCards = (blockId: string): KanbanCard[] => [
     { id: `kc_default_${blockId}_1`, title: "Review Supplier Quotes", tag: "Procurement", col: "To Do" },
     { id: `kc_default_${blockId}_2`, title: "Update Stock Levels", tag: "Inventory", col: "In Progress" },
-    { id: `kc_default_${blockId}_3`, title: "Quality Check — Batch 12", tag: "QC", col: "Review" },
+    { id: `kc_default_${blockId}_3`, title: "Quality Check : Batch 12", tag: "QC", col: "Review" },
     { id: `kc_default_${blockId}_4`, title: "Dispatch Order #9921", tag: "Logistics", col: "Done" },
   ];
 
@@ -627,7 +627,7 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
                         />
                       </div>
 
-                      {/* Block Size — 6-column grid */}
+                      {/* Block Size : 6-column grid */}
                       {(() => {
                         const b = blocks.find((x) => x.id === selectedBlock);
                         const colSpan = typeof b?.config?.colSpan === "number" ? b!.config!.colSpan : GRID_COLUMNS;
@@ -732,7 +732,7 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
                         if (!needsTable) return null;
                         const helperText =
                           b?.type === "METRIC"
-                            ? "Optional — bind a table to show a live record count instead of a static value."
+                            ? "Optional : bind a table to show a live record count instead of a static value."
                             : b?.type === "EXPORT_BUTTON"
                             ? "Records from this table will be downloaded as CSV."
                             : b?.type === "FILTER_BAR"
@@ -803,7 +803,7 @@ export default function PageComposerPage({ params }: { params: Promise<{ pageId:
                                 onChange={(e) => update({ metricValue: e.target.value })}
                                 className="w-full text-sm px-3.5 py-2.5 rounded-xl bg-card border border-border/60 text-foreground outline-none focus:ring-2 focus:ring-primary/20"
                               />
-                              <p className="text-[10px] text-muted-foreground/70">Ignored when a table is bound above — live count takes over.</p>
+                              <p className="text-[10px] text-muted-foreground/70">Ignored when a table is bound above : live count takes over.</p>
                             </div>
                             <div className="space-y-1.5">
                               <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Trend Caption</label>
@@ -1189,7 +1189,7 @@ function SortableCanvasBlock({
       }`}
       style={style}
     >
-      {/* Full block drag handle area - behind content to allow interaction with inputs */}
+      {/* Full block drag handle area: behind content to allow interaction with inputs */}
       {!preview && !isResizing && (
         <div {...attributes} {...listeners} className="absolute inset-0 z-0 cursor-grab active:cursor-grabbing rounded-2xl" />
       )}
@@ -1261,7 +1261,7 @@ function SortableCanvasBlock({
         </div>
       )}
 
-      {/* Block content - z-10 so it sits above drag listener */}
+      {/* Block content: z-10 so it sits above drag listener */}
       <div className="p-6 relative z-10 pointer-events-auto w-full h-full max-w-full overflow-hidden flex flex-col min-w-0">
         {block.type === "SPACE" && (
           <div className={`w-full h-full min-h-[60px] ${!preview ? "border-2 border-dashed rounded-xl flex items-center justify-center bg-secondary/5" : ""}`}

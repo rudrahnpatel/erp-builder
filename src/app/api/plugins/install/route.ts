@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { getWorkspace } from "@/lib/get-workspace";
 import { allPlugins } from "@/lib/plugins/registry";
 
-// POST /api/plugins/install — install a plugin with default config
+// POST /api/plugins/install : install a plugin with default config
 export async function POST(req: Request) {
   const workspace = await getWorkspace();
   if (!workspace) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

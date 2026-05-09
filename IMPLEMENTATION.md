@@ -1,22 +1,20 @@
-# ERP Builder Platform — Implementation Spec for Antigravity
+# ERP Builder Platform: Implementation Spec for Antigravity
 
 > Feed this file + the `screens/` folder to Antigravity as context.
 
----
 
 ## What We Are Building
 
-A **no-code ERP builder platform** where Indian SMEs assemble their own ERP by installing module packs (Inventory, CRM, Attendance, etc.) and plugins (WhatsApp notifications, Razorpay payments, GST invoicing). Think **WooCommerce for ERP** — users don't code, they configure.
+A **no-code ERP builder platform** where Indian SMEs assemble their own ERP by installing module packs (Inventory, CRM, Attendance, etc.) and plugins (WhatsApp notifications, Razorpay payments, GST invoicing). Think **WooCommerce for ERP**: users don't code, they configure.
 
 **This is the BUILDER, not the built ERP.** Every screen is a configuration/setup interface.
 
----
 
 ## Tech Stack
 
 ```
 Framework:    Next.js 14 (App Router, TypeScript)
-Database:     PostgreSQL (Neon — serverless)
+Database:     PostgreSQL (Neon: serverless)
 ORM:          Prisma
 Styling:      Tailwind CSS + shadcn/ui
 Icons:        Lucide React
@@ -27,27 +25,25 @@ Charts:       Recharts (for chart blocks)
 Deploy:       Vercel
 ```
 
----
 
 ## Design System
 
-- **Font:** Inter (all weights)
-- **Primary color:** `#005bbf` (blue)
-- **Background:** `#f8f9fa` (warm off-white)
-- **Cards:** `#ffffff` on `#f1f4f6` backgrounds (tonal separation, no hard borders)
-- **Text:** `#2b3437` (never pure black)
-- **Border style:** Ghost borders only — `outline_variant` at 15% opacity
-- **No emojis anywhere.** Use Lucide line icons.
-- **Indian context:** Use INR, Indian names, GST references in sample data
+* **Font:** Inter (all weights)
+* **Primary color:** `#005bbf` (blue)
+* **Background:** `#f8f9fa` (warm off-white)
+* **Cards:** `#ffffff` on `#f1f4f6` backgrounds (tonal separation, no hard borders)
+* **Text:** `#2b3437` (never pure black)
+* **Border style:** Ghost borders only: `outline_variant` at 15% opacity
+* **No emojis anywhere.** Use Lucide line icons.
+* **Indian context:** Use INR, Indian names, GST references in sample data
 
 Reference screenshots in `screens/` folder:
-- `01-module-marketplace.png` — Module pack cards grid
-- `02-schema-designer.png` — Split-view field editor + live table preview
-- `03-page-composer.png` — Block palette + canvas + properties panel
-- `04-plugin-marketplace.png` — Plugin cards (WhatsApp, Attendance, GST, etc.)
-- `05-attendance-module-builder.png` — Module configuration wizard with live preview
+* `01-module-marketplace.png`: Module pack cards grid
+* `02-schema-designer.png`: Split-view field editor + live table preview
+* `03-page-composer.png`: Block palette + canvas + properties panel
+* `04-plugin-marketplace.png`: Plugin cards (WhatsApp, Attendance, GST, etc.)
+* `05-attendance-module-builder.png`: Module configuration wizard with live preview
 
----
 
 ## Database Schema (Prisma)
 
@@ -161,7 +157,6 @@ model InstalledPlugin {
 }
 ```
 
----
 
 ## App Structure
 
@@ -176,7 +171,7 @@ src/
     (dashboard)/
       layout.tsx                # Sidebar + topbar shell
       workspace/
-        page.tsx                # Workspace home — installed modules, quick actions
+        page.tsx                # Workspace home: installed modules, quick actions
       modules/
         page.tsx                # Module Marketplace (see 01-module-marketplace.png)
         [packId]/
@@ -252,7 +247,6 @@ src/
     block.ts                    # Block, BlockType, BlockConfig types
 ```
 
----
 
 ## Module Pack Format
 
@@ -337,7 +331,6 @@ export const inventoryPack: PackDefinition = {
 };
 ```
 
----
 
 ## Plugin Format
 
@@ -367,54 +360,52 @@ export const whatsappPlugin: PluginDefinition = {
 };
 ```
 
----
 
 ## Key Pages to Build (with screen references)
 
 ### 1. Module Marketplace (`/modules`)
 **Reference:** `screens/01-module-marketplace.png`
-- Grid of `PackCard` components
-- Search bar + category filter tabs (All, Operations, Sales, Finance, HR)
-- Each card: icon, name, description, field/page count, "Free"/"Pro" badge, "Install" button
-- Install button opens confirmation dialog, then runs pack install
+* Grid of `PackCard` components
+* Search bar + category filter tabs (All, Operations, Sales, Finance, HR)
+* Each card: icon, name, description, field/page count, "Free"/"Pro" badge, "Install" button
+* Install button opens confirmation dialog, then runs pack install
 
 ### 2. Plugin Marketplace (`/plugins`)
 **Reference:** `screens/04-plugin-marketplace.png`
-- Same layout as module marketplace but for plugins
-- Cards show: WhatsApp, Attendance, GST Invoice, Email, Leave Management, Razorpay
-- Install count shown on each card
-- Plugin config modal after install (API keys, toggles)
+* Same layout as module marketplace but for plugins
+* Cards show: WhatsApp, Attendance, GST Invoice, Email, Leave Management, Razorpay
+* Install count shown on each card
+* Plugin config modal after install (API keys, toggles)
 
 ### 3. Schema Designer (`/schema/[tableId]`)
 **Reference:** `screens/02-schema-designer.png`
-- Split-screen: left = field editor, right = live table preview
-- Left panel: list of fields, each with name input, type dropdown, config gear
-- "+" button to add new field
-- Right panel: table with sample data, updates live as fields change
-- Breadcrumb: Modules > [Table Name] > Schema
+* Split-screen: left = field editor, right = live table preview
+* Left panel: list of fields, each with name input, type dropdown, config gear
+* "+" button to add new field
+* Right panel: table with sample data, updates live as fields change
+* Breadcrumb: Modules > [Table Name] > Schema
 
 ### 4. Page Composer (`/pages/[pageId]/edit`)
 **Reference:** `screens/03-page-composer.png`
-- Three-panel layout: left (block palette), center (canvas), right (properties)
-- Block palette: draggable items — Table View, Kanban, Form, Text, Filter Bar, Chart
-- Canvas: drop zone, renders placed blocks with drag handles + delete button
-- Properties panel: shows config for selected block (data source, columns, sort)
-- "Preview" toggle button in top bar
+* Three-panel layout: left (block palette), center (canvas), right (properties)
+* Block palette: draggable items: Table View, Kanban, Form, Text, Filter Bar, Chart
+* Canvas: drop zone, renders placed blocks with drag handles + delete button
+* Properties panel: shows config for selected block (data source, columns, sort)
+* "Preview" toggle button in top bar
 
 ### 5. Module Configuration Wizard (`/modules/[packId]/configure`)
 **Reference:** `screens/05-attendance-module-builder.png`
-- Split-screen: left = step wizard, right = live preview
-- Step 1: Configure Fields (checkboxes to include/exclude fields)
-- Step 2: Set Rules (working hours, thresholds)
-- Step 3: Choose Views (table, kanban, calendar)
-- Progress indicator in top bar
-- Live preview shows sample data with Indian names
+* Split-screen: left = step wizard, right = live preview
+* Step 1: Configure Fields (checkboxes to include/exclude fields)
+* Step 2: Set Rules (working hours, thresholds)
+* Step 3: Choose Views (table, kanban, calendar)
+* Progress indicator in top bar
+* Live preview shows sample data with Indian names
 
----
 
 ## Starting Order for Implementation
 
-**Phase 1 — Scaffold (Day 1-2)**
+**Phase 1: Scaffold (Day 1-2)**
 1. `npx create-next-app@latest erp-builder --typescript --tailwind --app --src-dir`
 2. Install: `prisma @prisma/client next-auth zustand @dnd-kit/core @dnd-kit/sortable lucide-react recharts`
 3. Init shadcn/ui: `npx shadcn-ui@latest init`
@@ -422,27 +413,27 @@ export const whatsappPlugin: PluginDefinition = {
 5. Set up Prisma schema (copy from above), run `npx prisma db push`
 6. Build layout shell: Sidebar + Topbar + content area
 
-**Phase 2 — Module & Plugin Marketplace (Day 3-5)**
+**Phase 2: Module & Plugin Marketplace (Day 3-5)**
 1. Write pack definitions (inventory, crm, attendance)
 2. Write plugin definitions (whatsapp, gst, razorpay, etc.)
 3. Build PackCard and PluginCard components
 4. Build marketplace pages with search + filters
 5. Build install API endpoint + install flow UI
 
-**Phase 3 — Schema Designer (Day 6-8)**
+**Phase 3: Schema Designer (Day 6-8)**
 1. Build Field CRUD API
 2. Build Record CRUD API with JSONB storage
 3. Build split-screen schema designer page
 4. Wire left panel field edits to right panel live preview
 
-**Phase 4 — Page Composer (Day 9-12)**
+**Phase 4: Page Composer (Day 9-12)**
 1. Build block type definitions and BlockRenderer
 2. Build individual block components (TableView, Kanban, etc.)
 3. Build drag-drop canvas with dnd-kit
 4. Build properties panel
 5. Wire blocks to real data from tables
 
-**Phase 5 — Polish & Demo (Day 13-15)**
+**Phase 5: Polish & Demo (Day 13-15)**
 1. Module config wizard with steps
 2. Cross-module relations
 3. Filters, sort, search
@@ -450,15 +441,14 @@ export const whatsappPlugin: PluginDefinition = {
 5. Seed demo data ("Acme Traders Pvt Ltd")
 6. Deploy to Vercel
 
----
 
 ## Sample Data Theme
 
 All sample data uses Indian SME context:
-- **Company:** Acme Traders Pvt Ltd (Delhi-based distributor)
-- **Currency:** INR (use Rs. or the rupee symbol)
-- **Employee names:** Priya Sharma, Amit Patel, Deepika Nair, Rahul Verma, Anjali Gupta
-- **Products:** Basmati Rice, Toor Dal, Cardamom, Turmeric Powder
-- **Suppliers:** Krishna Traders (Mumbai), Patel Exports (Ahmedabad), Sharma & Sons (Jaipur)
-- **Godowns:** Main Warehouse (Delhi), Godown A (Gurgaon), Godown B (Noida)
-- **GST references:** GSTIN format 22AAAAA0000A1Z5
+* **Company:** Acme Traders Pvt Ltd (Delhi-based distributor)
+* **Currency:** INR (use Rs. or the rupee symbol)
+* **Employee names:** Priya Sharma, Amit Patel, Deepika Nair, Rahul Verma, Anjali Gupta
+* **Products:** Basmati Rice, Toor Dal, Cardamom, Turmeric Powder
+* **Suppliers:** Krishna Traders (Mumbai), Patel Exports (Ahmedabad), Sharma & Sons (Jaipur)
+* **Godowns:** Main Warehouse (Delhi), Godown A (Gurgaon), Godown B (Noida)
+* **GST references:** GSTIN format 22AAAAA0000A1Z5

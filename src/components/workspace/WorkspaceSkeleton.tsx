@@ -5,7 +5,7 @@ import { Activity } from "lucide-react";
 export function WorkspaceSkeleton() {
   return (
     <div className="space-y-8 max-w-6xl mx-auto p-4 sm:p-6 animate-fade-in-up">
-      {/* ── Hero / Welcome Skeleton ── */}
+      {/*  Hero / Welcome Skeleton  */}
       <section
         className="relative overflow-hidden rounded-2xl p-6 sm:p-8 border"
         style={{
@@ -23,7 +23,7 @@ export function WorkspaceSkeleton() {
         </div>
       </section>
 
-      {/* ── Stats Grid Skeleton ── */}
+      {/*  Stats Grid Skeleton  */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 stagger-children">
         {[1, 2, 3, 4].map((i) => (
           <div
@@ -44,7 +44,7 @@ export function WorkspaceSkeleton() {
         ))}
       </div>
 
-      {/* ── Quick Actions Skeleton ── */}
+      {/*  Quick Actions Skeleton  */}
       <div>
         <div className="skeleton h-5 w-32 rounded-md mb-4" />
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 stagger-children">
@@ -65,7 +65,7 @@ export function WorkspaceSkeleton() {
         </div>
       </div>
 
-      {/* ── Bottom Section Skeleton ── */}
+      {/*  Bottom Section Skeleton  */}
       <div className="grid gap-5 lg:grid-cols-5">
         <div className="lg:col-span-3">
           <div className="skeleton h-5 w-32 rounded-md mb-4" />

@@ -33,7 +33,7 @@ export interface BlockConfig {
   imageAlt?: string;
   imageWidth?: "sm" | "md" | "lg" | "full";
   imageAlign?: "left" | "center" | "right";
-  // FILTER_BAR — optional date range picker
+  // FILTER_BAR : optional date range picker
   includeDateRange?: boolean;
   dateField?: string;
   // GST_CALCULATOR

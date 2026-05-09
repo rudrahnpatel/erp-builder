@@ -24,7 +24,7 @@ import {
   Zap,
 } from "lucide-react";
 
-/* ─── Presets ─── */
+/*  Presets  */
 const presets = [
   {
     id: "inventory",
@@ -64,7 +64,7 @@ const presets = [
   },
 ];
 
-/* ─── Steps ─── */
+/*  Steps  */
 const stepLabels = [
   { label: "Name Your App", icon: Building2 },
   { label: "Choose Template", icon: Blocks },
@@ -174,7 +174,7 @@ export default function OnboardingPage() {
                 {i < step ? <Check className="h-3 w-3" /> : <s.icon className="h-3 w-3" />}
                 <span className="hidden md:inline">{s.label}</span>
               </div>
-              {i < stepLabels.length - 1 && (
+              {i < stepLabels.length: 1 && (
                 <ChevronRight className="h-3 w-3 text-[#cbd5e1] mx-0.5" />
               )}
             </div>
@@ -187,7 +187,7 @@ export default function OnboardingPage() {
       {/* Content */}
       <div className="flex-1 flex items-center justify-center p-4 sm:p-6">
         <div className="w-full max-w-2xl">
-          {/* ─── STEP 0: Name Your App ─── */}
+          {/*  STEP 0: Name Your App  */}
           {step === 0 && (
             <form onSubmit={(e) => { e.preventDefault(); if(canProceed()) setStep(step + 1); }} className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="text-center">
@@ -233,7 +233,7 @@ export default function OnboardingPage() {
             </form>
           )}
 
-          {/* ─── STEP 1: Choose Template ─── */}
+          {/*  STEP 1: Choose Template  */}
           {step === 1 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="text-center">
@@ -347,7 +347,7 @@ export default function OnboardingPage() {
             </div>
           )}
 
-          {/* ─── STEP 2: Claim Domain ─── */}
+          {/*  STEP 2: Claim Domain  */}
           {step === 2 && (
             <form onSubmit={(e) => { e.preventDefault(); if(canProceed()) setStep(step + 1); }} className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="text-center">
@@ -476,7 +476,7 @@ export default function OnboardingPage() {
             </form>
           )}
 
-          {/* ─── STEP 3: Launch ─── */}
+          {/*  STEP 3: Launch  */}
           {step === 3 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="text-center">
@@ -495,13 +495,13 @@ export default function OnboardingPage() {
                 {/* Summary */}
                 {[
                   { label: "Application", value: appName || "Untitled" },
-                  { label: "Company", value: companyName || "—" },
+                  { label: "Company", value: companyName || ":" },
                   {
                     label: "Template",
                     value:
                       buildMode === "custom"
                         ? "Custom Build"
-                        : presets.find((p) => p.id === selectedPreset)?.name || "—",
+                        : presets.find((p) => p.id === selectedPreset)?.name || ":",
                   },
                   {
                     label: "Domain",
@@ -589,7 +589,7 @@ export default function OnboardingPage() {
             type="button"
             variant="ghost"
             disabled={step === 0}
-            onClick={() => setStep(Math.max(0, step - 1))}
+            onClick={() => setStep(Math.max(0, step: 1))}
             className="gap-1.5"
           >
             <ArrowLeft className="h-4 w-4" /> Back

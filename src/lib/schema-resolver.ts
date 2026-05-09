@@ -1,5 +1,5 @@
 /**
- * Schema Resolver — merges a canonical PackDefinition with WorkspaceSchemaOverride deltas
+ * Schema Resolver : merges a canonical PackDefinition with WorkspaceSchemaOverride deltas
  * to produce the effective schema for a given workspace's installed pack.
  *
  * ARCHITECTURE NOTE:
@@ -17,7 +17,7 @@ import { getPackById } from "@/lib/packs";
 import { OverrideType } from "@prisma/client";
 import type { PackFieldDefinition, PackTableDefinition } from "@/types/pack";
 
-// ─── Output types ────────────────────────────────────────────────────────────
+//  Output types 
 
 export interface ResolvedFieldDefinition extends PackFieldDefinition {
   /** True if this field originated from the canonical pack definition */
@@ -47,7 +47,7 @@ export interface ResolvedPackSchema {
   tables: ResolvedTableDefinition[];
 }
 
-// ─── ADD_FIELD override payload shape ────────────────────────────────────────
+//  ADD_FIELD override payload shape 
 interface AddFieldPayload {
   name: string;
   type: string;
@@ -55,22 +55,22 @@ interface AddFieldPayload {
   config?: Record<string, unknown>;
 }
 
-// ─── RENAME_FIELD override payload shape ─────────────────────────────────────
+//  RENAME_FIELD override payload shape 
 interface RenameFieldPayload {
   displayName: string;
 }
 
-// ─── CHANGE_FIELD_OPTIONS override payload shape ──────────────────────────────
+//  CHANGE_FIELD_OPTIONS override payload shape 
 interface ChangeFieldOptionsPayload {
   options: string[];
 }
 
-// ─── RENAME_TABLE override payload shape ─────────────────────────────────────
+//  RENAME_TABLE override payload shape 
 interface RenameTablePayload {
   displayName: string;
 }
 
-// ─── Core resolver ───────────────────────────────────────────────────────────
+//  Core resolver 
 
 /**
  * Resolves the full pack schema for a workspace by merging the canonical
@@ -89,7 +89,7 @@ export async function resolvePackSchema(
     include: { customizations: { orderBy: { createdAt: "asc" } } },
   });
 
-  // Pack not installed in this workspace — return canonical as-is (read-only preview)
+  // Pack not installed in this workspace : return canonical as-is (read-only preview)
   const overrides = installedPack?.customizations ?? [];
 
   // Resolve each canonical table
@@ -131,7 +131,7 @@ function resolveTable(
 ): ResolvedTableDefinition {
   const tableKey = canonicalTable.name;
 
-  // Start with canonical fields — all marked as pack-sourced, not hidden
+  // Start with canonical fields : all marked as pack-sourced, not hidden
   let fields: ResolvedFieldDefinition[] = canonicalTable.fields.map((f) => ({
     ...f,
     isFromPack: true,

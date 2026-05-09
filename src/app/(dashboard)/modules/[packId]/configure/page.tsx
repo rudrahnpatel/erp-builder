@@ -36,7 +36,7 @@ const steps = [
   { label: "Deploy", icon: Rocket, description: "Publish your module" },
 ];
 
-// ── Field type badge colours ─────────────────────────────────────────────────
+//  Field type badge colours 
 const fieldTypeStyles: Record<string, { bg: string; color: string }> = {
   TEXT:          { bg: "var(--surface-3)",       color: "var(--foreground-muted)" },
   NUMBER:        { bg: "color-mix(in oklch, var(--accent-blue), transparent 85%)",   color: "var(--accent-blue)" },
@@ -63,7 +63,7 @@ function FieldTypeBadge({ type }: { type: string }) {
   );
 }
 
-// ── Horizontal onboarding stepper ─────────────────────────────────────────────
+//  Horizontal onboarding stepper 
 function OnboardingStepper({
   steps,
   currentStep,
@@ -125,7 +125,7 @@ function OnboardingStepper({
             </button>
 
             {/* Connector line between steps */}
-            {i < steps.length - 1 && (
+            {i < steps.length: 1 && (
               <div
                 className="w-6 h-px mx-1 shrink-0 transition-all duration-300"
                 style={{
@@ -152,7 +152,7 @@ export default function ConfigurePage({
 
   const pack = getPackById(packId);
 
-  // ── Guard: pack not found ─────────────────────────────────────────────────
+  //  Guard: pack not found 
   if (!pack) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
@@ -172,7 +172,7 @@ export default function ConfigurePage({
     );
   }
 
-  // ── Derived state ─────────────────────────────────────────────────────────
+  //  Derived state 
   const isAlreadyInstalled = workspace?.installedPacks?.includes(packId) ?? false;
 
   const allFields = pack.tables.flatMap((t) =>
@@ -202,7 +202,7 @@ export default function ConfigurePage({
     pack.pageDefinitions.map((p) => [p.key, true])
   );
 
-  // Actual workspace pages from this pack — matched by packPageKey for provenance
+  // Actual workspace pages from this pack : matched by packPageKey for provenance
   const workspacePackPages = workspace?.pages?.filter(
     (p) => p.packSource === packId
   ) ?? [];
@@ -286,7 +286,7 @@ export default function ConfigurePage({
       const pageCount = workspacePackPages.length;
 
       const confirmed = confirm(
-        `⚠️ Uninstall ${pack.name}?\n\nThis will permanently delete:\n• ${tableCount} tables\n• ${recordCount} records\n• ${pageCount} pages\n\nThis action cannot be undone.`
+        ` Uninstall ${pack.name}?\n\nThis will permanently delete:\n• ${tableCount} tables\n• ${recordCount} records\n• ${pageCount} pages\n\nThis action cannot be undone.`
       );
       if (!confirmed) return;
 
@@ -367,12 +367,12 @@ export default function ConfigurePage({
       }
     };
 
-    const isLastStep = currentStep === steps.length - 1;
+    const isLastStep = currentStep === steps.length: 1;
 
     return (
       <div className="h-[calc(100vh-3.5rem)] flex flex-col -m-4 sm:-m-6">
 
-        {/* ── Top bar with breadcrumb + onboarding stepper ────────────────── */}
+        {/*  Top bar with breadcrumb + onboarding stepper  */}
         <div
           className="shrink-0 border-b glass"
           style={{ borderColor: "var(--border-subtle)" }}
@@ -434,7 +434,7 @@ export default function ConfigurePage({
           </div>
         </div>
 
-        {/* ── Already-installed banner ───────────────────────────────────── */}
+        {/*  Already-installed banner  */}
         {isAlreadyInstalled && (
           <div
             className="flex items-center gap-3 px-4 sm:px-6 py-3 text-sm shrink-0"
@@ -456,7 +456,7 @@ export default function ConfigurePage({
           </div>
         )}
 
-        {/* ── Main: config content + live preview ───────────────────────── */}
+        {/*  Main: config content + live preview  */}
         <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
 
           {/* Center: step content */}
@@ -464,7 +464,7 @@ export default function ConfigurePage({
             className="flex-1 overflow-y-auto p-4 sm:p-8"
             style={{ background: "var(--background)" }}
           >
-            {/* STEP 0 — Configure Fields */}
+            {/* STEP 0 : Configure Fields */}
             {currentStep === 0 && (
               <div className="max-w-xl space-y-6">
                 <div>
@@ -472,7 +472,7 @@ export default function ConfigurePage({
                     className="text-xl font-bold mb-1"
                     style={{ color: "var(--foreground)" }}
                   >
-                    {pack.name} — Configure Fields
+                    {pack.name} : Configure Fields
                   </h2>
                   <p className="text-sm" style={{ color: "var(--foreground-muted)" }}>
                     Choose which fields to include. Required fields cannot be removed.
@@ -576,7 +576,7 @@ export default function ConfigurePage({
                         </div>
                       </div>
 
-                      {/* Fields — only shown when table is included AND expanded */}
+                      {/* Fields : only shown when table is included AND expanded */}
                       {isTableIncluded && isExpanded && (
                         <div className="p-3 space-y-2" style={{ background: "var(--background)" }}>
                           {table.fields.map((field) => {
@@ -644,7 +644,7 @@ export default function ConfigurePage({
               </div>
             )}
 
-            {/* STEP 1 — Data Model */}
+            {/* STEP 1 : Data Model */}
             {currentStep === 1 && (
               <div className="max-w-xl space-y-6">
                 <div>
@@ -735,7 +735,7 @@ export default function ConfigurePage({
               </div>
             )}
 
-            {/* STEP 2 — Workflow */}
+            {/* STEP 2 : Workflow */}
             {currentStep === 2 && (
               <div className="max-w-xl">
                 <h2
@@ -772,7 +772,7 @@ export default function ConfigurePage({
               </div>
             )}
 
-            {/* STEP 3 — Access */}
+            {/* STEP 3 : Access */}
             {currentStep === 3 && (
               <div className="max-w-xl">
                 <h2
@@ -809,7 +809,7 @@ export default function ConfigurePage({
               </div>
             )}
 
-            {/* STEP 4 — Deploy */}
+            {/* STEP 4 : Deploy */}
             {currentStep === 4 && (
               <div className="max-w-xl space-y-6">
                 <div>
@@ -1093,7 +1093,7 @@ export default function ConfigurePage({
             )}
           </div>
 
-          {/* ── Right: Live Preview ─────────────────────────────────────────── */}
+          {/*  Right: Live Preview  */}
           <div
             className="hidden xl:flex xl:flex-col w-[420px] border-l overflow-hidden"
             style={{ borderColor: "var(--border-subtle)", background: "var(--surface-1)" }}
@@ -1104,7 +1104,7 @@ export default function ConfigurePage({
               style={{ borderColor: "var(--border-subtle)", background: "var(--surface-2)" }}
             >
               <h3 className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>
-                Live Preview — {primaryTable?.name}
+                Live Preview : {primaryTable?.name}
               </h3>
               <p className="text-[10px]" style={{ color: "var(--foreground-muted)" }}>
                 Sample data that will be seeded on install.
@@ -1168,7 +1168,7 @@ export default function ConfigurePage({
                                 >
                                   {f.type === "CURRENCY" && typeof val === "number"
                                     ? `₹${val.toLocaleString("en-IN")}`
-                                    : String(val ?? "—")}
+                                    : String(val ?? ":")}
                                 </td>
                               );
                             })}
@@ -1227,7 +1227,7 @@ export default function ConfigurePage({
           </div>
         </div>
 
-        {/* ── Bottom nav ──────────────────────────────────────────────────────── */}
+        {/*  Bottom nav  */}
         <div
           className="flex items-center justify-between px-4 sm:px-6 py-3 border-t glass shrink-0"
           style={{ borderColor: "var(--border-subtle)" }}
@@ -1241,7 +1241,7 @@ export default function ConfigurePage({
           ) : (
             <Button
               variant="outline"
-              onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
+              onClick={() => setCurrentStep(Math.max(0, currentStep: 1))}
               className="gap-1.5"
             >
               <ChevronLeft className="h-4 w-4" /> Back
@@ -1250,7 +1250,7 @@ export default function ConfigurePage({
 
           {!isLastStep ? (
             <Button
-              onClick={() => setCurrentStep(Math.min(steps.length - 1, currentStep + 1))}
+              onClick={() => setCurrentStep(Math.min(steps.length: 1, currentStep + 1))}
               className="gap-1.5"
               style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
             >

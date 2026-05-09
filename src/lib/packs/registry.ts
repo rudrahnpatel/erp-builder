@@ -16,8 +16,8 @@ export const inventoryPack: PackDefinition = {
   // marketplace stops reporting `0 relations` on those tables.
   version: "1.2.0",
   tables: [
-    // ─── 1. Stock ─────────────────────────────────────────────────────────────
-    // NOTE: order matters — RELATION fields can only resolve to tables that
+    //  1. Stock 
+    // NOTE: order matters : RELATION fields can only resolve to tables that
     // were created earlier in this list during a fresh install. Suppliers and
     // Customers must come before Products (which links to both). For existing
     // installs, the /api/packs/update endpoint resolves cross-table refs from
@@ -68,7 +68,7 @@ export const inventoryPack: PackDefinition = {
       ],
     },
 
-    // ─── 2. Suppliers ─────────────────────────────────────────────────────────
+    //  2. Suppliers 
     {
       name: "Suppliers",
       icon: "truck",
@@ -90,7 +90,7 @@ export const inventoryPack: PackDefinition = {
       ],
     },
 
-    // ─── 3. Customers ─────────────────────────────────────────────────────────
+    //  3. Customers 
     {
       name: "Customers",
       icon: "users",
@@ -136,7 +136,7 @@ export const inventoryPack: PackDefinition = {
       ],
     },
 
-    // ─── 4. Products (Catalog) ────────────────────────────────────────────────
+    //  4. Products (Catalog) 
     // Listed last so its RELATION fields can resolve to Suppliers + Customers
     // during a fresh install.
     {
@@ -197,14 +197,14 @@ export const inventoryPack: PackDefinition = {
     },
 
     /* ===== COMMENTED OUT PREVIOUS TABLES =====
-    // ─── 1. Products ──────────────────────────────────────────────────────────
+    //  1. Products 
     {
       name: "Products",
       icon: "box",
       fields: [
         { name: "Product Name", type: "TEXT", required: true },
         { name: "SKU", type: "TEXT", required: true },
-        { name: "HSN Code", type: "TEXT" }, // Harmonised System of Nomenclature — required for GST invoicing
+        { name: "HSN Code", type: "TEXT" }, // Harmonised System of Nomenclature : required for GST invoicing
         {
           name: "Category",
           type: "SINGLE_SELECT",
@@ -287,7 +287,7 @@ export const inventoryPack: PackDefinition = {
       ],
     },
 
-    // ─── 2. Suppliers ─────────────────────────────────────────────────────────
+    //  2. Suppliers 
     {
       name: "Suppliers",
       icon: "truck",
@@ -296,7 +296,7 @@ export const inventoryPack: PackDefinition = {
         { name: "Contact Person", type: "TEXT" },
         { name: "Phone", type: "PHONE" },
         { name: "Email", type: "EMAIL" },
-        { name: "GST Number (GSTIN)", type: "TEXT" }, // 15-char GSTIN — required for ITC claims
+        { name: "GST Number (GSTIN)", type: "TEXT" }, // 15-char GSTIN : required for ITC claims
         { name: "PAN Number", type: "TEXT" },          // For TDS deduction
         { name: "Address", type: "TEXT" },
         { name: "City", type: "TEXT" },
@@ -364,7 +364,7 @@ export const inventoryPack: PackDefinition = {
       ],
     },
 
-    // ─── 3. Godowns ───────────────────────────────────────────────────────────
+    //  3. Godowns 
     // Promoted from a hard-coded SINGLE_SELECT to a proper relational table.
     // Enables dynamic addition and location-level stock reports.
     {
@@ -430,7 +430,7 @@ export const inventoryPack: PackDefinition = {
       ],
     },
 
-    // ─── 4. Stock Movements ───────────────────────────────────────────────────
+    //  4. Stock Movements 
     {
       name: "Stock Movements",
       icon: "arrow-left-right",
@@ -450,12 +450,12 @@ export const inventoryPack: PackDefinition = {
         { name: "Quantity", type: "NUMBER", required: true },
         { name: "Date", type: "DATE", required: true },
         {
-          name: "From Godown",        // Source — used for Transfer and Outward
+          name: "From Godown",        // Source : used for Transfer and Outward
           type: "RELATION",
           config: { linkedTable: "Godowns" },
         },
         {
-          name: "To Godown",          // Destination — used for Inward, Transfer, Return
+          name: "To Godown",          // Destination : used for Inward, Transfer, Return
           type: "RELATION",
           config: { linkedTable: "Godowns" },
         },
@@ -466,7 +466,7 @@ export const inventoryPack: PackDefinition = {
       ],
     },
 
-    // ─── 5. Purchase Orders ───────────────────────────────────────────────────
+    //  5. Purchase Orders 
     {
       name: "Purchase Orders",
       icon: "file-plus",
@@ -511,7 +511,7 @@ export const inventoryPack: PackDefinition = {
       ],
     },
 
-    // ─── 6. Purchase Order Items ──────────────────────────────────────────────
+    //  6. Purchase Order Items 
     {
       name: "Purchase Order Items",
       icon: "list",
@@ -540,7 +540,7 @@ export const inventoryPack: PackDefinition = {
       ],
     },
 
-    // ─── 7. Stock Alerts ──────────────────────────────────────────────────────
+    //  7. Stock Alerts 
     {
       name: "Stock Alerts",
       icon: "bell-ring",

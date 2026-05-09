@@ -18,7 +18,7 @@ interface FieldItem {
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 /**
- * Runtime record view — shows rows of a single table inside a tenant's ERP.
+ * Runtime record view : shows rows of a single table inside a tenant's ERP.
  * Ported from the old /erp/[tableId] preview that lived under the builder
  * layout. This version lives under /apps/[slug] and is the real end-user view.
  */
@@ -272,13 +272,13 @@ export default function TenantTableView({
                       className="transition-colors hover:bg-surface-3"
                       style={{
                         borderBottom:
-                          idx < records.length - 1
+                          idx < records.length: 1
                             ? "1px solid var(--border-subtle)"
                             : "none",
                       }}
                     >
                       {fields.map((field) => {
-                        const val = record.data?.[field.id] || "—";
+                        const val = record.data?.[field.id] || ":";
                         return (
                           <td
                             key={field.id}

@@ -19,16 +19,16 @@ const categories = [
 
 const COMING_SOON: Record<string, { title: string; blurb: string; icon: any; eta: string }> = {
   Sales: {
-    title: "CRM & Sales — coming soon",
+    title: "CRM & Sales : coming soon",
     blurb:
       "Lead pipelines, deal kanbans, field-agent tracking, and quote-to-invoice flows tuned for Indian SMEs.",
     icon: ShoppingCart,
     eta: "Q3 2026",
   },
   "HR & Payroll": {
-    title: "HR & Payroll — coming soon",
+    title: "HR & Payroll : coming soon",
     blurb:
-      "Attendance, EPF/ESI payroll sheets, leave requests, and compliance filings. Built for 10–200 person teams.",
+      "Attendance, EPF/ESI payroll sheets, leave requests, and compliance filings. Built for 10:200 person teams.",
     icon: Users,
     eta: "Q4 2026",
   },
@@ -111,7 +111,7 @@ export default function ModulesPage() {
         if (data.added?.pages?.length) parts.push(`${data.added.pages.length} page(s)`);
         const summary = parts.length
           ? `Added: ${parts.join(", ")}`
-          : "No additions needed — version stamped.";
+          : "No additions needed : version stamped.";
         toast.success(`${label} updated to v${data.toVersion ?? pack?.version}`, {
           id: pending,
           description: summary,
@@ -187,7 +187,7 @@ export default function ModulesPage() {
           style={{ color: "var(--foreground-muted)" }}
         >
           Pre-configured modules for inventory, CRM, HR and finance. Each pack
-          ships with schemas, pages and plugins already wired — install one,
+          ships with schemas, pages and plugins already wired : install one,
           bend it to your workflow.
         </p>
       </header>
@@ -405,7 +405,7 @@ export default function ModulesPage() {
         </div>
       )}
 
-      {/* CTA — panel style, single primary glow, no rainbow */}
+      {/* CTA : panel style, single primary glow, no rainbow */}
       <aside
         className="relative overflow-hidden rounded-2xl p-8 sm:p-10"
         style={{
@@ -434,7 +434,7 @@ export default function ModulesPage() {
             >
               We build custom modules for specialised logistics, industry-specific
               tax flows, and integrations with legacy systems. Book a 30-minute
-              call — no sales deck.
+              call : no sales deck.
             </p>
           </div>
           <Button className="gap-2 font-medium shrink-0">
