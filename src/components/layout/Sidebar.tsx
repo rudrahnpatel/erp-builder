@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import {
   Building2,
   LayoutDashboard,
@@ -19,16 +19,18 @@ import {
   Code2,
   Package,
   Network,
+  ShieldCheck,
 } from "lucide-react";
 import { useWorkspace } from "@/hooks/use-workspace";
 import { useLanguage } from "@/lib/i18n";
-import { useDevMode } from "@/hooks/use-dev-mode";
+
 
 export function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
   const { workspace, isLoading } = useWorkspace();
   const { t } = useLanguage();
-  const { isDevMode } = useDevMode();
+  const { data: session } = useSession();
+  const isDevMode = session?.user?.role === "admin";
 
   const dashboardItems = [
     { href: "/workspace", label: t("common.dashboard"), icon: LayoutDashboard },
@@ -61,9 +63,10 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
     ...(isDevMode
       ? [
           {
-            label: "Developer Tools",
+            label: "Admin & Dev Tools",
             isDev: true,
             items: [
+              { href: "/admin", label: "Admin Panel", icon: ShieldCheck },
               { href: "/dev/modules", label: "My Modules", icon: Package },
             ],
           },

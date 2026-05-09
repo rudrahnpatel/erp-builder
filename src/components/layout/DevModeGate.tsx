@@ -2,30 +2,23 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useDevMode } from "@/hooks/use-dev-mode";
+import { useSession } from "next-auth/react";
 
 /**
  * Gate component — wraps pages/tables routes and redirects to /settings
  * if the user hasn't activated developer mode.
  */
 export function DevModeGate({ children }: { children: React.ReactNode }) {
-  const { isDevMode } = useDevMode();
+  const { data: session, status } = useSession();
+  const isDevMode = session?.user?.role === "admin";
   const router = useRouter();
 
   useEffect(() => {
-    // We wait one tick so hydration settles and localStorage is read.
-    // Once stable, if not in dev mode, redirect.
-    if (isDevMode === false) {
-      // Give a small delay for the hook to read localStorage
-      const t = setTimeout(() => {
-        const stored = window.localStorage.getItem("erpbuilder:dev-mode");
-        if (stored !== "true") {
-          router.replace("/settings");
-        }
-      }, 100);
-      return () => clearTimeout(t);
+    if (status === "loading") return;
+    if (!isDevMode) {
+      router.replace("/settings");
     }
-  }, [isDevMode, router]);
+  }, [isDevMode, status, router]);
 
   // During initial hydration, show nothing (prevents flash of content)
   if (!isDevMode) {

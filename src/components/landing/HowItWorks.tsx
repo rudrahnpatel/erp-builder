@@ -18,6 +18,7 @@ import {
   Zap,
   Smartphone,
   Table,
+  Users,
 } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);

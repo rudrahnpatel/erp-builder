@@ -38,6 +38,7 @@ const providers: AuthProvider[] = [
         id: user.id,
         email: user.email,
         name: user.name,
+        role: user.role,
         workspaceId: user.workspace?.id ?? null,
       };
     },
@@ -92,6 +93,7 @@ export const authOptions: AuthOptions = {
     async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
+        token.role = (user as { role?: string }).role || "user";
         token.workspaceId = (user as { workspaceId?: string | null }).workspaceId ?? null;
       }
       // Google sign-ins don't carry our DB id in `user`, so resolve it from
@@ -103,6 +105,7 @@ export const authOptions: AuthOptions = {
         });
         if (dbUser) {
           token.id = dbUser.id;
+          token.role = dbUser.role;
           token.workspaceId = dbUser.workspace?.id ?? null;
         }
       }
@@ -111,6 +114,7 @@ export const authOptions: AuthOptions = {
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
+        session.user.role = token.role as string;
         session.user.workspaceId = token.workspaceId as string | null;
       }
       return session;

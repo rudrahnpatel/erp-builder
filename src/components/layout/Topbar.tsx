@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useSession, signOut } from "next-auth/react";
 import { useLanguage } from "@/lib/i18n";
-import { useDevMode } from "@/hooks/use-dev-mode";
+
 import { useWorkspace } from "@/hooks/use-workspace";
 import {
   DropdownMenu,
@@ -26,7 +26,7 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
   const pathname = usePathname();
   const [isMac, setIsMac] = useState(false);
   const { lang, setLang, t } = useLanguage();
-  const { isDevMode } = useDevMode();
+  const isDevMode = session?.user?.role === "admin";
 
   const isWorkspacePage = pathname === "/workspace";
 
