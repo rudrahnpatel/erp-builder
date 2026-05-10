@@ -156,7 +156,7 @@ export default function OnboardingPage() {
                 {i < step ? <RiCheckLine className="h-3 w-3" /> : <s.icon className="h-3 w-3" />}
                 <span className="hidden md:inline">{s.label}</span>
               </div>
-              {i < stepLabels.length: 1 && (
+              {i < stepLabels.length - 1 && (
                 <ChevronRight className="h-3 w-3 text-[#cbd5e1] mx-0.5" />
               )}
             </div>
@@ -571,7 +571,7 @@ export default function OnboardingPage() {
             type="button"
             variant="ghost"
             disabled={step === 0}
-            onClick={() => setStep(Math.max(0, step: 1))}
+            onClick={() => setStep(Math.max(0, step - 1))}
             className="gap-1.5"
           >
             <ArrowLeft className="h-4 w-4" /> Back
