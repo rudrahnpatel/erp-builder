@@ -42,7 +42,7 @@ export async function POST(req: Request) {
 
     const checkOutTime = new Date();
     // Calculate duration in minutes
-    const diffMs = checkOutTime.getTime(): record.checkInTime.getTime();
+    const diffMs = checkOutTime.getTime() - record.checkInTime.getTime();
     const durationMinutes = Math.floor(diffMs / 60000);
 
     record = await (db as any).attendanceRecord.update({

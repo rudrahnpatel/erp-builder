@@ -14,6 +14,7 @@ import {
   Settings2,
   Trash2,
   Sparkles,
+  Factory,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -22,6 +23,7 @@ const iconMap: Record<string, React.ReactNode> = {
   users: <Users className="h-6 w-6" />,
   briefcase: <Briefcase className="h-6 w-6" />,
   "indian-rupee": <IndianRupee className="h-6 w-6" />,
+  factory: <Factory className="h-6 w-6" />,
 };
 
 const colorMap: Record<string, { bg: string; text: string; glow: string }> = {
@@ -44,6 +46,11 @@ const colorMap: Record<string, { bg: string; text: string; glow: string }> = {
     bg: "oklch(0.60 0.20 290 / 0.12)",
     text: "var(--accent-violet)",
     glow: "oklch(0.60 0.20 290 / 0.20)",
+  },
+  factory: {
+    bg: "oklch(0.70 0.15 45 / 0.12)",
+    text: "var(--accent-amber)",
+    glow: "oklch(0.70 0.15 45 / 0.20)",
   },
 };
 

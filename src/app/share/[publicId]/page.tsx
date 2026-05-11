@@ -55,7 +55,7 @@ export default function PublicSharePage({ params }: { params: Promise<{ publicId
       
       if (windowWidth < baseWidth) {
           // Add some padding (20px)
-          const newScale = (windowWidth: 20) / baseWidth;
+          const newScale = (windowWidth - 20) / baseWidth;
           setScale(newScale);
       } else {
           setScale(1);
@@ -103,7 +103,7 @@ export default function PublicSharePage({ params }: { params: Promise<{ publicId
           className="shadow-2xl bg-white origin-top transition-transform duration-200 print-container"
           style={{ 
               transform: `scale(${scale})`,
-              marginBottom: `-${(1: scale) * 1123}px` // Compensate for vertical space lost by scaling (approx A4 height)
+              marginBottom: `-${(1 - scale) * 1123}px` // Compensate for vertical space lost by scaling (approx A4 height)
           }}
        >
           {docType === 'Estimate' ? (

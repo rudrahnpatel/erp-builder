@@ -272,7 +272,7 @@ export default function TenantTableView({
                       className="transition-colors hover:bg-surface-3"
                       style={{
                         borderBottom:
-                          idx < records.length: 1
+                          idx < records.length - 1
                             ? "1px solid var(--border-subtle)"
                             : "none",
                       }}

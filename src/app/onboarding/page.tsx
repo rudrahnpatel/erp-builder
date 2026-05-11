@@ -22,6 +22,8 @@ import {
   ChevronRight,
   Puzzle,
   Zap,
+  Eye,
+  EyeOff
 } from "lucide-react";
 
 /*  Presets  */
@@ -87,6 +89,7 @@ export default function OnboardingPage() {
   const [checkingDomain, setCheckingDomain] = useState(false);
   const [launching, setLaunching] = useState(false);
   const [launchError, setLaunchError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const checkDomain = async () => {
     if (!subdomain) return;
@@ -171,7 +174,7 @@ export default function OnboardingPage() {
                 {i < step ? <Check className="h-3 w-3" /> : <s.icon className="h-3 w-3" />}
                 <span className="hidden md:inline">{s.label}</span>
               </div>
-              {i < stepLabels.length: 1 && (
+              {i < stepLabels.length - 1 && (
                 <ChevronRight className="h-3 w-3 text-[#cbd5e1] mx-0.5" />
               )}
             </div>
@@ -455,14 +458,23 @@ export default function OnboardingPage() {
                       <label className="text-sm font-medium block mb-1.5" style={{ color: "var(--foreground)" }}>
                         Admin Password
                       </label>
-                      <Input
-                        type="password"
-                        value={adminPassword}
-                        onChange={(e) => setAdminPassword(e.target.value)}
-                        placeholder="••••••••"
-                        className="h-11 text-base"
-                        required
-                      />
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          value={adminPassword}
+                          onChange={(e) => setAdminPassword(e.target.value)}
+                          placeholder="••••••••"
+                          className="h-11 text-base pr-10"
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                        >
+                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
                       <p className="text-xs mt-1.5" style={{ color: "var(--foreground-muted)" }}>
                         Must be at least 6 characters long
                       </p>
@@ -586,7 +598,7 @@ export default function OnboardingPage() {
             type="button"
             variant="ghost"
             disabled={step === 0}
-            onClick={() => setStep(Math.max(0, step: 1))}
+            onClick={() => setStep(Math.max(0, step - 1))}
             className="gap-1.5"
           >
             <ArrowLeft className="h-4 w-4" /> Back

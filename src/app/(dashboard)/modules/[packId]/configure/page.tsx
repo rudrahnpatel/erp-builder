@@ -125,7 +125,7 @@ function OnboardingStepper({
             </button>
 
             {/* Connector line between steps */}
-            {i < steps.length: 1 && (
+            {i < steps.length - 1 && (
               <div
                 className="w-6 h-px mx-1 shrink-0 transition-all duration-300"
                 style={{
@@ -367,7 +367,7 @@ export default function ConfigurePage({
       }
     };
 
-    const isLastStep = currentStep === steps.length: 1;
+    const isLastStep = currentStep === steps.length - 1;
 
     return (
       <div className="h-[calc(100vh-3.5rem)] flex flex-col -m-4 sm:-m-6">
@@ -1241,7 +1241,7 @@ export default function ConfigurePage({
           ) : (
             <Button
               variant="outline"
-              onClick={() => setCurrentStep(Math.max(0, currentStep: 1))}
+              onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
               className="gap-1.5"
             >
               <ChevronLeft className="h-4 w-4" /> Back
@@ -1250,7 +1250,7 @@ export default function ConfigurePage({
 
           {!isLastStep ? (
             <Button
-              onClick={() => setCurrentStep(Math.min(steps.length: 1, currentStep + 1))}
+              onClick={() => setCurrentStep(Math.min(steps.length - 1, currentStep + 1))}
               className="gap-1.5"
               style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
             >

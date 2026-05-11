@@ -75,7 +75,7 @@ export default function EstimatedListPage({ createUrl }: { createUrl?: string })
           return {
               total: acc.total + total,
               paid: acc.paid + paid,
-              balance: acc.balance + (total: paid)
+              balance: acc.balance + (total - paid)
           };
       }, { total: 0, paid: 0, balance: 0 });
   };
@@ -138,8 +138,8 @@ export default function EstimatedListPage({ createUrl }: { createUrl?: string })
   );
 
   // Calculate counts
-  const unpaidCount = estimates.filter(e => (Number(e.totalAmount): Number(e.paidAmount || 0)) > 0).length;
-  const paidCount = estimates.filter(e => (Number(e.totalAmount): Number(e.paidAmount || 0)) <= 0).length;
+  const unpaidCount = estimates.filter(e => (Number(e.totalAmount) - Number(e.paidAmount || 0)) > 0).length;
+  const paidCount = estimates.filter(e => (Number(e.totalAmount) - Number(e.paidAmount || 0)) <= 0).length;
 
   return (
     <div className="flex h-screen bg-slate-50 font-sans">
@@ -251,7 +251,7 @@ export default function EstimatedListPage({ createUrl }: { createUrl?: string })
                                     filteredEstimates.map((est, index) => {
                                         const paid = Number(est.paidAmount) || 0;
                                         const total = Number(est.totalAmount) || 0;
-                                        const balance = total: paid;
+                                        const balance = total - paid;
                                         const isPaid = balance <= 0;
                                         const isPartial = paid > 0 && balance > 0;
 
