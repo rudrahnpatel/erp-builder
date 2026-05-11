@@ -6,8 +6,27 @@ import { mutate } from "swr";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import {
+  Building2,
+  ArrowRight,
+  ArrowLeft,
+  Package,
+  Users,
+  Briefcase,
+  IndianRupee,
+  Blocks,
+  Sparkles,
+  Globe,
+  ChevronRight,
+  Puzzle,
+  Zap,
+  Eye,
+  EyeOff
+} from "lucide-react";
+
+
 import { RiCheckLine, RiRocketLine } from "react-icons/ri";
-import { Building2, ArrowRight, ArrowLeft, Package, Users, Briefcase, IndianRupee, Blocks, Sparkles, Globe, ChevronRight, Puzzle, Zap } from "lucide-react";
+
 
 /*  Presets  */
 const presets = [
@@ -72,6 +91,7 @@ export default function OnboardingPage() {
   const [checkingDomain, setCheckingDomain] = useState(false);
   const [launching, setLaunching] = useState(false);
   const [launchError, setLaunchError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const checkDomain = async () => {
     if (!subdomain) return;
@@ -440,14 +460,23 @@ export default function OnboardingPage() {
                       <label className="text-sm font-medium block mb-1.5" style={{ color: "var(--foreground)" }}>
                         Admin Password
                       </label>
-                      <Input
-                        type="password"
-                        value={adminPassword}
-                        onChange={(e) => setAdminPassword(e.target.value)}
-                        placeholder="••••••••"
-                        className="h-11 text-base"
-                        required
-                      />
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          value={adminPassword}
+                          onChange={(e) => setAdminPassword(e.target.value)}
+                          placeholder="••••••••"
+                          className="h-11 text-base pr-10"
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                        >
+                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
                       <p className="text-xs mt-1.5" style={{ color: "var(--foreground-muted)" }}>
                         Must be at least 6 characters long
                       </p>

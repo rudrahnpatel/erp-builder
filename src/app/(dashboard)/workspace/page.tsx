@@ -1,20 +1,15 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
+
+
 import {
   RiArchiveLine,
+
   RiPlugLine,
   RiDatabase2Line,
   RiFileTextLine,
   RiArrowRightLine,
-  RiLineChartLine,
   RiPulseLine,
   RiFlashlightLine,
   RiDashboardLine,
@@ -22,6 +17,9 @@ import {
   RiTimeLine,
   RiArrowRightUpLine,
 } from "react-icons/ri";
+
+import { FileText, ArrowUpRight } from "lucide-react";
+
 
 const recentActivity = [
   {
@@ -101,6 +99,8 @@ import { useWorkspace } from "@/hooks/use-workspace";
 import { WorkspaceSkeleton } from "@/components/workspace/WorkspaceSkeleton";
 
 export default function WorkspacePage() {
+
+
   const { workspace, isLoading, isError } = useWorkspace();
 
   if (isLoading) {
@@ -117,8 +117,9 @@ export default function WorkspacePage() {
           Database Offline
         </h2>
         <p className="text-sm" style={{ color: "var(--foreground-muted)" }}>
-          Your dashboard couldn't be loaded because the database server is asleep or unreachable. Please wait a moment and try refreshing.
+          Your dashboard couldn&apos;t be loaded because the database server is asleep or unreachable. Please wait a moment and try refreshing.
         </p>
+
       </div>
     );
   }
@@ -363,9 +364,9 @@ export default function WorkspacePage() {
                       color: "var(--accent-blue)",
                     }}
                   >
-                    <RiFileTextLine className="h-6 w-6" />
+                    <FileText className="h-6 w-6" />
                   </div>
-                  <RiArrowRightUpLine className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-all duration-200" style={{ color: "var(--accent-blue)" }} />
+                  <ArrowUpRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-all duration-200" style={{ color: "var(--accent-blue)" }} />
                 </div>
                 <h3 className="text-base font-bold mb-1" style={{ color: "var(--foreground)" }}>Quotations</h3>
                 <p className="text-xs leading-relaxed" style={{ color: "var(--foreground-dimmed)" }}>
@@ -404,9 +405,9 @@ export default function WorkspacePage() {
                       color: "var(--accent-amber)",
                     }}
                   >
-                    <RiFileTextLine className="h-6 w-6" />
+                    <FileText className="h-6 w-6" />
                   </div>
-                  <RiArrowRightUpLine className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-all duration-200" style={{ color: "var(--accent-amber)" }} />
+                  <ArrowUpRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-all duration-200" style={{ color: "var(--accent-amber)" }} />
                 </div>
                 <h3 className="text-base font-bold mb-1" style={{ color: "var(--foreground)" }}>Estimates</h3>
                 <p className="text-xs leading-relaxed" style={{ color: "var(--foreground-dimmed)" }}>

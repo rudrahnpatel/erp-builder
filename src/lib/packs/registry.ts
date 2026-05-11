@@ -1286,3 +1286,200 @@ export const supportPack: PackDefinition = {
   ],
 };
 
+export const manufacturingPack: PackDefinition = {
+  id: "manufacturing",
+  name: "Manufacturing",
+  description:
+    "End-to-end production tracking. Manage Work Orders, Bill of Materials (BOM), and shop floor resource allocation.",
+  icon: "factory",
+  category: "Operations",
+  badge: "Free",
+  version: "1.0.0",
+  tables: [
+    {
+      name: "Bill of Materials",
+      icon: "clipboard-list",
+      fields: [
+        { name: "Final Product", type: "TEXT", required: true },
+        { name: "SKU", type: "TEXT" },
+        {
+          name: "Category",
+          type: "SINGLE_SELECT",
+          config: { options: ["Assembly", "Sub-Assembly", "Finished Good"] },
+        },
+        { name: "Total Components", type: "NUMBER" },
+        { name: "Base Cost", type: "CURRENCY", config: { currency: "INR" } },
+      ],
+      seedData: [
+        {
+          "Final Product": "Executive Office Chair",
+          SKU: "CH-EXEC-01",
+          Category: "Finished Good",
+          "Total Components": 12,
+          "Base Cost": 4500,
+        },
+        {
+          "Final Product": "Hydraulic Lift Assembly",
+          SKU: "SUB-HYD-04",
+          Category: "Sub-Assembly",
+          "Total Components": 5,
+          "Base Cost": 1200,
+        },
+      ],
+    },
+    {
+      name: "Work Orders",
+      icon: "file-cog",
+      fields: [
+        { name: "Order ID", type: "TEXT", required: true },
+        {
+          name: "BOM Reference",
+          type: "RELATION",
+          config: { linkedTable: "Bill of Materials" },
+        },
+        { name: "Quantity to Produce", type: "NUMBER", required: true },
+        {
+          name: "Priority",
+          type: "SINGLE_SELECT",
+          config: { options: ["Low", "Medium", "High", "Urgent"] },
+        },
+        {
+          name: "Status",
+          type: "SINGLE_SELECT",
+          config: {
+            options: [
+              "Draft",
+              "Scheduled",
+              "In Production",
+              "Quality Check",
+              "Completed",
+              "On Hold",
+            ],
+          },
+        },
+        { name: "Start Date", type: "DATE" },
+        { name: "Target Date", type: "DATE" },
+      ],
+      seedData: [
+        {
+          "Order ID": "WO-1001",
+          "Quantity to Produce": 50,
+          Priority: "High",
+          Status: "In Production",
+          "Start Date": "2026-05-01",
+          "Target Date": "2026-05-15",
+        },
+        {
+          "Order ID": "WO-1002",
+          "Quantity to Produce": 200,
+          Priority: "Medium",
+          Status: "Scheduled",
+          "Start Date": "2026-05-20",
+          "Target Date": "2026-06-05",
+        },
+      ],
+    },
+    {
+      name: "Production Resources",
+      icon: "cpu",
+      fields: [
+        { name: "Resource Name", type: "TEXT", required: true },
+        {
+          name: "Type",
+          type: "SINGLE_SELECT",
+          config: { options: ["Machine", "Assembly Line", "Workstation", "Tooling"] },
+        },
+        { name: "Location", type: "TEXT" },
+        {
+          name: "Availability Status",
+          type: "SINGLE_SELECT",
+          config: { options: ["Operational", "Under Maintenance", "Down", "Idle"] },
+        },
+        { name: "Last Serviced", type: "DATE" },
+      ],
+      seedData: [
+        {
+          "Resource Name": "Injection Molding M1",
+          Type: "Machine",
+          Location: "Bay 1",
+          "Availability Status": "Operational",
+          "Last Serviced": "2026-04-10",
+        },
+        {
+          "Resource Name": "Assembly Line A",
+          Type: "Assembly Line",
+          Location: "Floor 2",
+          "Availability Status": "Idle",
+          "Last Serviced": "2026-03-25",
+        },
+      ],
+    },
+  ],
+  pageDefinitions: [
+    {
+      key: "production_kanban",
+      title: "Work Order Board",
+      icon: "kanban",
+      blocks: [
+        {
+          type: "TEXT",
+          config: {
+            content: "Production Pipeline",
+            level: "h1",
+            description: "Monitor manufacturing progress in real-time. Drag work orders across stages to track completion.",
+          },
+        },
+        {
+          type: "KANBAN_VIEW",
+          config: { tableRef: "Work Orders", groupByField: "Status" },
+        },
+      ],
+    },
+    {
+      key: "bom_directory",
+      title: "Bill of Materials",
+      icon: "clipboard-list",
+      blocks: [
+        {
+          type: "TEXT",
+          config: {
+            content: "BOM Master List",
+            level: "h1",
+            description: "Define assembly structures, component counts, and base manufacturing costs.",
+          },
+        },
+        { type: "FILTER_BAR", config: { tableRef: "Bill of Materials" } },
+        {
+          type: "TABLE_VIEW",
+          config: {
+            tableRef: "Bill of Materials",
+            visibleFields: ["Final Product", "SKU", "Category", "Total Components", "Base Cost"],
+          },
+        },
+      ],
+    },
+    {
+      key: "resource_monitor",
+      title: "Resource Monitor",
+      icon: "cpu",
+      blocks: [
+        {
+          type: "TEXT",
+          config: {
+            content: "Shop Floor Resources",
+            level: "h1",
+            description: "Track the health and availability of machines and workstations.",
+          },
+        },
+        {
+          type: "TABLE_VIEW",
+          config: {
+            tableRef: "Production Resources",
+            visibleFields: ["Resource Name", "Type", "Location", "Availability Status", "Last Serviced"],
+          },
+        },
+      ],
+    },
+  ],
+};
+

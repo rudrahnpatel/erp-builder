@@ -4,15 +4,35 @@ import { PackDefinition } from "@/types/pack";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { RiArchiveLine, RiGroupLine, RiBriefcaseLine, RiMoneyRupeeCircleLine, RiDownloadLine, RiDeleteBinLine, RiSparklingLine, RiPlugLine } from "react-icons/ri";
-import { RiCheckLine, RiEqualizerLine } from "react-icons/ri";
+import {
+  Package,
+  Users,
+  Briefcase,
+  IndianRupee,
+  Factory,
+} from "lucide-react";
+
+import {
+  RiArchiveLine,
+  RiGroupLine,
+  RiBriefcaseLine,
+  RiMoneyRupeeCircleLine,
+  RiDownloadLine,
+  RiDeleteBinLine,
+  RiSparklingLine,
+  RiPlugLine,
+  RiCheckLine,
+  RiEqualizerLine
+} from "react-icons/ri";
 import { useState } from "react";
 
 const iconMap: Record<string, React.ReactNode> = {
-  package: <RiArchiveLine className="h-6 w-6" />,
-  users: <RiGroupLine className="h-6 w-6" />,
-  briefcase: <RiBriefcaseLine className="h-6 w-6" />,
-  "indian-rupee": <RiMoneyRupeeCircleLine className="h-6 w-6" />,
+  package: <Package className="h-6 w-6" />,
+  users: <Users className="h-6 w-6" />,
+  briefcase: <Briefcase className="h-6 w-6" />,
+  "indian-rupee": <IndianRupee className="h-6 w-6" />,
+  factory: <Factory className="h-6 w-6" />,
+
 };
 
 const colorMap: Record<string, { bg: string; text: string; glow: string }> = {
@@ -35,6 +55,11 @@ const colorMap: Record<string, { bg: string; text: string; glow: string }> = {
     bg: "oklch(0.60 0.20 290 / 0.12)",
     text: "var(--accent-violet)",
     glow: "oklch(0.60 0.20 290 / 0.20)",
+  },
+  factory: {
+    bg: "oklch(0.70 0.15 45 / 0.12)",
+    text: "var(--accent-amber)",
+    glow: "oklch(0.70 0.15 45 / 0.20)",
   },
 };
 

@@ -4,7 +4,10 @@ import { useEffect, useState } from "react";
 import { signIn, getProviders } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { Eye, EyeOff } from "lucide-react";
+
 import { RiLoader4Line, RiUserLine, RiLockLine, RiMailLine, RiBriefcaseLine } from "react-icons/ri";
+
 import { toast } from "sonner";
 
 const textVariants = {
@@ -47,6 +50,7 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [workspaceName, setWorkspaceName] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -65,6 +69,7 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
     setIsLogin(login);
     window.history.pushState(null, "", login ? "/login" : "/register");
     setPassword("");
+    setShowPassword(false);
   };
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
@@ -227,7 +232,7 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
                   <div className="relative w-full border-b border-gray-300 pb-2 mb-6 flex items-center gap-4">
                     <RiLockLine className="h-[18px] w-[18px] text-gray-400" />
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       placeholder="Password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -235,6 +240,13 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
                       disabled={loading}
                       className="w-full bg-transparent outline-none text-gray-800 placeholder:text-gray-400 text-sm font-medium"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-gray-400 hover:text-gray-600 transition-colors shrink-0"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
                   </div>
 
                   <div className="flex justify-between items-center w-full mt-8">
@@ -333,7 +345,7 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
                   <div className="relative w-full border-b border-gray-300 pb-2 mb-5 flex items-center gap-4">
                     <RiLockLine className="h-[18px] w-[18px] text-gray-400" />
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       placeholder="Password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -341,6 +353,13 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
                       disabled={loading}
                       className="w-full bg-transparent outline-none text-gray-800 placeholder:text-gray-400 text-sm font-medium"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-gray-400 hover:text-gray-600 transition-colors shrink-0"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
                   </div>
 
                   <div className="flex justify-end w-full mt-8">

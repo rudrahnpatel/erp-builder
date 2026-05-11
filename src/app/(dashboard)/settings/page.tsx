@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { toast } from "sonner";
 import { RiAlertLine, RiLoader4Line, RiDeleteBinLine } from "react-icons/ri";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -25,6 +26,8 @@ export default function SettingsPage() {
   const [password, setPassword] = useState("");
   const [confirmText, setConfirmText] = useState("");
   const [deleting, setDeleting] = useState(false);
+  const [showTenantPasswords, setShowTenantPasswords] = useState(false);
+  const [showDeletePassword, setShowDeletePassword] = useState(false);
 
   // Company Profile
   const [companyProfile, setCompanyProfile] = useState({
@@ -267,7 +270,17 @@ export default function SettingsPage() {
                   <span className="font-semibold" style={{ color: "var(--warning)" }}>Verify identity :</span>{" "}
                   Enter the account password for <span className="font-medium" style={{ color: "var(--foreground)" }}>{session?.user?.email}</span> to authorize this change.
                 </p>
-                <Input name="accountPassword" type="password" placeholder="Account password" required className="h-9" />
+                <div className="relative">
+                  <Input name="accountPassword" type={showTenantPasswords ? "text" : "password"} placeholder="Account password" required className="h-9 pr-9" />
+                  <button
+                    type="button"
+                    onClick={() => setShowTenantPasswords(!showTenantPasswords)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-gray-400 hover:text-gray-600 transition-colors"
+                    tabIndex={-1}
+                  >
+                    {showTenantPasswords ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                  </button>
+                </div>
               </div>
             )}
             
@@ -277,7 +290,17 @@ export default function SettingsPage() {
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-medium" style={{ color: "var(--foreground-muted)" }}>Password</label>
-              <Input name="adminPassword" type="password" placeholder="Min. 6 characters" required minLength={6} className="h-9" />
+              <div className="relative">
+                <Input name="adminPassword" type={showTenantPasswords ? "text" : "password"} placeholder="Min. 6 characters" required minLength={6} className="h-9 pr-9" />
+                <button
+                  type="button"
+                  onClick={() => setShowTenantPasswords(!showTenantPasswords)}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-gray-400 hover:text-gray-600 transition-colors"
+                  tabIndex={-1}
+                >
+                  {showTenantPasswords ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                </button>
+              </div>
             </div>
             <Button type="submit" size="sm" className="mt-1">
               {workspace.hasTenantAdmin ? "Update Credentials" : "Set Credentials"}
@@ -345,13 +368,24 @@ export default function SettingsPage() {
           <div className="space-y-3 pt-1">
             <div className="space-y-1.5">
               <label className="text-xs font-medium">Confirm your password</label>
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                autoComplete="current-password"
-              />
+              <div className="relative">
+                <Input
+                  type={showDeletePassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  autoComplete="current-password"
+                  className="pr-9"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowDeletePassword(!showDeletePassword)}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-gray-400 hover:text-gray-600 transition-colors"
+                  tabIndex={-1}
+                >
+                  {showDeletePassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                </button>
+              </div>
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-medium">
