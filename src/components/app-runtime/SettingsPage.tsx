@@ -37,12 +37,12 @@ type TenantUser = {
 
 type TabKey = "general" | "preferences" | "company" | "layout" | "users";
 
-const TABS: Array<{ key: TabKey; label: string; icon: typeof Settings }> = [
+const TABS: Array<{ key: TabKey; label: string; icon: typeof RiSettings4Line }> = [
   { key: "general", label: "General", icon: RiSettings4Line },
   { key: "company", label: "Company", icon: RiBuilding4Line },
   { key: "layout", label: "Layout", icon: RiDashboardLine },
   { key: "preferences", label: "Preferences", icon: RiListSettingsLine },
-  { key: "users", label: "RiGroupLine", icon: RiGroupLine },
+  { key: "users", label: "Users", icon: RiGroupLine },
 ];
 
 export function SettingsPage({
