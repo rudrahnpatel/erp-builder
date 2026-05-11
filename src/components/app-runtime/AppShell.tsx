@@ -226,7 +226,7 @@ export function AppShell({
     >
       {active && (
         <span
-          className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full animate-nav-indicator"
+          className="absolute left-0 top-0 bottom-0 my-auto w-[3px] h-5 rounded-r-full animate-nav-indicator"
           style={{ background: "var(--primary)" }}
         />
       )}
@@ -414,7 +414,7 @@ export function AppShell({
                     >
                       {isActive(`${base}/plugins/${pluginId}`, false) && (
                         <span
-                          className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full animate-nav-indicator"
+                          className="absolute left-0 top-0 bottom-0 my-auto w-[3px] h-5 rounded-r-full animate-nav-indicator"
                           style={{ background: "var(--primary)" }}
                         />
                       )}
@@ -459,7 +459,7 @@ export function AppShell({
               >
                 {active && (
                   <span
-                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[18px] rounded-full animate-nav-indicator"
+                    className="absolute left-0 top-0 bottom-0 my-auto w-[3px] h-[18px] rounded-full animate-nav-indicator"
                     style={{ background: "var(--primary)" }}
                   />
                 )}

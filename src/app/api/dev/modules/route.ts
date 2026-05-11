@@ -58,7 +58,7 @@ export async function POST(req: Request) {
       .replace(/^-|-$/g, "")
       || `module-${Date.now()}`;
 
-    // RiCheckLine uniqueness
+    // Check uniqueness
     const existing = await db.moduleDefinition.findUnique({ where: { packId } });
     if (existing) {
       return NextResponse.json(

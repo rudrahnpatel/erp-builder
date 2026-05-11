@@ -35,7 +35,7 @@ export function AttendanceLogBlock({ config }: { config?: any }) {
 
   const exportCSV = () => {
     if (!data?.records) return;
-    const headers = ["Date", "Employee Name", "Status", "RiCheckLine-in Time", "RiCheckLine-out Time", "Duration (mins)", "Remark"];
+    const headers = ["Date", "Employee Name", "Status", "Check-in Time", "Check-out Time", "Duration (mins)", "Remark"];
     const rows = data.records.map((r: any) => [
       new Date(r.date).toLocaleDateString(),
       r.employeeName,
@@ -154,12 +154,12 @@ export function AttendanceLogBlock({ config }: { config?: any }) {
                     <td className="px-6 py-4 text-right">
                       <div className="flex gap-1 justify-end">
                         {record.checkInLat && (
-                          <Button size="sm" variant="ghost" className="h-8 px-2 text-[10px] font-bold text-primary hover:bg-primary/10 rounded-lg transition-all" onClick={() => setMapModal({ isOpen: true, lat: record.checkInLat, lng: record.checkInLng, type: "RiCheckLine-in" })}>
+                          <Button size="sm" variant="ghost" className="h-8 px-2 text-[10px] font-bold text-primary hover:bg-primary/10 rounded-lg transition-all" onClick={() => setMapModal({ isOpen: true, lat: record.checkInLat, lng: record.checkInLng, type: "Check-in" })}>
                             <RiMapPinLine className="h-3 w-3 mr-1" /> IN
                           </Button>
                         )}
                         {record.checkOutLat && (
-                          <Button size="sm" variant="ghost" className="h-8 px-2 text-[10px] font-bold text-warning hover:bg-warning/10 rounded-lg transition-all" onClick={() => setMapModal({ isOpen: true, lat: record.checkOutLat, lng: record.checkOutLng, type: "RiCheckLine-out" })}>
+                          <Button size="sm" variant="ghost" className="h-8 px-2 text-[10px] font-bold text-warning hover:bg-warning/10 rounded-lg transition-all" onClick={() => setMapModal({ isOpen: true, lat: record.checkOutLat, lng: record.checkOutLng, type: "Check-out" })}>
                             <RiMapPinLine className="h-3 w-3 mr-1" /> OUT
                           </Button>
                         )}

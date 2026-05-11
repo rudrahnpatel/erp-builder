@@ -113,7 +113,7 @@ export function SubdomainEditor({
             setEditing(true);
           }}
           className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-md hover-bg-subtle focus-ring"
-          aria-label="RiEdit2Line subdomain"
+          aria-label="Edit subdomain"
           style={{ color: "var(--foreground-dimmed)" }}
         >
           <RiPencilLine className="h-3.5 w-3.5" />

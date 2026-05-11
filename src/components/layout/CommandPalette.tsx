@@ -22,7 +22,7 @@ const baseNavigationData = [
   { id: "schema", title: "Schema Designer", href: "/schema", icon: RiNodeTree, keywords: ["relations", "diagram", "architecture", "data model", "visualize"], category: "Navigation" },
   { id: "attendance", title: "Attendance Log", href: "/attendance-log", icon: RiCalendarEventLine, keywords: ["employees", "time", "clock", "punch", "tracker", "shift"], category: "Navigation" },
   { id: "plugins", title: "Plugins", href: "/plugins", icon: RiPlugLine, keywords: ["extensions", "addons", "integrations", "tools", "connectors", "plugin"], category: "Navigation" },
-  { id: "settings", title: "RiSettings4Line", href: "/settings", icon: RiSettings4Line, keywords: ["preferences", "configuration", "account", "profile", "options", "setting"], category: "Navigation" },
+  { id: "settings", title: "Settings", href: "/settings", icon: RiSettings4Line, keywords: ["preferences", "configuration", "account", "profile", "options", "setting"], category: "Navigation" },
 ];
 
 export function CommandPalette() {
@@ -51,12 +51,12 @@ export function CommandPalette() {
     // 1. Navigation items
     const data = [...baseNavigationData];
 
-    // 2. RiSettings4Line Sections
+    // 2. Settings Sections
     data.push(
-      { id: "settings-account", title: "Account RiSettings4Line", href: "/settings", icon: RiUserLine, keywords: ["name", "email", "profile", "user"], category: "RiSettings4Line" },
-      { id: "settings-workspace", title: "Workspace Domain", href: "/settings", icon: RiGlobalLine, keywords: ["subdomain", "url", "link", "address", "slug"], category: "RiSettings4Line" },
-      { id: "settings-admin", title: "Admin Credentials", href: "/settings", icon: RiShieldKeyholeLine, keywords: ["password", "login", "auth", "security", "tenant"], category: "RiSettings4Line" },
-      { id: "settings-delete", title: "Delete Account", href: "/settings", icon: RiDeleteBinLine, keywords: ["remove", "wipe", "danger", "trash", "erase"], category: "RiSettings4Line" }
+      { id: "settings-account", title: "Account Settings", href: "/settings", icon: RiUserLine, keywords: ["name", "email", "profile", "user"], category: "Settings" },
+      { id: "settings-workspace", title: "Workspace Domain", href: "/settings", icon: RiGlobalLine, keywords: ["subdomain", "url", "link", "address", "slug"], category: "Settings" },
+      { id: "settings-admin", title: "Admin Credentials", href: "/settings", icon: RiShieldKeyholeLine, keywords: ["password", "login", "auth", "security", "tenant"], category: "Settings" },
+      { id: "settings-delete", title: "Delete Account", href: "/settings", icon: RiDeleteBinLine, keywords: ["remove", "wipe", "danger", "trash", "erase"], category: "Settings" }
     );
 
     // 3. All Plugins available in the platform

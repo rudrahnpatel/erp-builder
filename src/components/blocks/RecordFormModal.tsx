@@ -183,7 +183,7 @@ export function RecordFormModal({
               className="text-xl font-bold tracking-tight"
               style={{ color: "var(--foreground)" }}
             >
-              {recordId ? "RiEdit2Line Record" : "Add Record"}
+              {recordId ? "Edit Record" : "Add Record"}
             </h2>
             <p className="text-xs mt-1" style={{ color: "var(--foreground-dimmed)" }}>
               Fill out the details below.

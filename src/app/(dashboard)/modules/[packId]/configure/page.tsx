@@ -343,7 +343,7 @@ export default function ConfigurePage({
       } catch {
         toast.error("Network error", {
           id: pending,
-          description: "RiCheckLine your connection and try again.",
+          description: "Check your connection and try again.",
         });
       } finally {
         setDeploying(false);

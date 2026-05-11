@@ -182,7 +182,7 @@ const QuotationForm = ({ data, onChange, onAddItem, onRemoveItem, onItemChange, 
     <div className="p-4 md:p-8 pb-32">
       {/* Header */}
       <h2 className="text-xl font-bold mb-6 text-gray-800">
-          {isEditMode ? 'RiEdit2Line Quotation' : 'Create Quotation'}
+          {isEditMode ? 'Edit Quotation' : 'Create Quotation'}
       </h2>
       
       {/* Form Header Options */}
@@ -379,7 +379,7 @@ const QuotationForm = ({ data, onChange, onAddItem, onRemoveItem, onItemChange, 
           />
           <div className="grid grid-cols-3 gap-4">
             <input
-              placeholder="RiPhoneLine"
+              placeholder="Phone"
               value={data.sender.phone || ''}
               onChange={(e) => handleChange(e, 'sender', 'phone')}
               className="w-full rounded-md border border-gray-200 bg-white text-gray-900 px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
@@ -425,7 +425,7 @@ const QuotationForm = ({ data, onChange, onAddItem, onRemoveItem, onItemChange, 
           />
            <div className="grid grid-cols-2 gap-4">
             <input
-              placeholder="RiPhoneLine"
+              placeholder="Phone"
               value={data.receiver.phone}
               onChange={(e) => handleChange(e, 'receiver', 'phone')}
               className="w-full rounded-md border border-gray-200 bg-white text-gray-900 px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"

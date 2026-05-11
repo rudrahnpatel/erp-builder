@@ -68,7 +68,7 @@ export async function proxy(request: NextRequest) {
   const { nextUrl } = request;
   const path = nextUrl.pathname;
 
-  // --- 1. Authentication RiCheckLine ---
+  // --- 1. Authentication Check ---
   const token = await getToken({ req: request });
   const isAuth = !!token;
   const isAuthPage = path.startsWith("/login") || path.startsWith("/register");

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import useSWR from "swr";
-import { RiTableLine, RiMoreLine, RiAddLine } from "react-icons/ri";
+import { RiTableLine, RiMoreLine, RiAddLine, RiEdit2Line } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { RecordFormModal } from "./RecordFormModal";
@@ -196,7 +196,7 @@ export function TableView({ config, tableId }: { config: any; tableId?: string }
                           setIsFormOpen(true);
                         }}
                       >
-                        RiEdit2Line
+                        <RiEdit2Line className="w-4 h-4 mr-1" /> Edit
                       </Button>
                     </div>
                   </td>

@@ -249,7 +249,7 @@ export default function QuotationsPage({ createUrl }: { createUrl?: string }) {
                           <Link 
                             href={`${finalCreateUrl}?id=${q.id}`}
                             className="p-1 hover:text-blue-600 transition-colors"
-                            title="RiEdit2Line"
+                            title="Edit"
                           >
                             <RiEdit2Line className="w-4 h-4" />
                           </Link>

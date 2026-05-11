@@ -225,7 +225,7 @@ function SortablePageRow({
         <button
           className="p-1.5 rounded hover:bg-[var(--surface-3)] text-[var(--foreground-muted)] transition-colors"
           onClick={onOpen}
-          title="RiEdit2Line Page"
+          title="Edit Page"
         >
           <RiPencilLine className="h-4 w-4" />
         </button>

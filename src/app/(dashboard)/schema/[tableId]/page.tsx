@@ -15,7 +15,7 @@ const fieldTypes = [
   { value: "SINGLE_SELECT", label: "Select", color: "var(--accent-violet)" },
   { value: "CURRENCY", label: "Currency", color: "var(--accent-rose)" },
   { value: "RELATION", label: "Relation", color: "#6366f1" },
-  { value: "PHONE", label: "RiPhoneLine", color: "#06b6d4" },
+  { value: "PHONE", label: "Phone", color: "#06b6d4" },
   { value: "EMAIL", label: "Email", color: "#8b5cf6" },
   { value: "CHECKBOX", label: "Checkbox", color: "var(--foreground-muted)" },
   { value: "TIME", label: "Time", color: "#f59e0b" },

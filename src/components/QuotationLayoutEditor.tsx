@@ -65,7 +65,7 @@ const SECTION_META: Record<
   { label: string; description: string; icon: React.ComponentType<{ className?: string }>; locked?: boolean; zone: "header" | "items" | "tail" }
 > = {
   header:    { label: "Company Header",   description: "Logo, name & tagline",          icon: RiBuilding4Line,  zone: "header" },
-  contact:   { label: "Contact Info",     description: "RiPhoneLine, email & website",         icon: RiPhoneLine,      zone: "header" },
+  contact:   { label: "Contact Info",     description: "Phone, email & website",         icon: RiPhoneLine,      zone: "header" },
   pan:       { label: "PAN / GST No.",    description: "Tax ID shown under contact",     icon: RiHashtag,       zone: "header" },
   meta:      { label: "Document Meta",    description: "Quotation No., Date, Valid Till",icon: RiFileTextLine,   zone: "header" },
   subject:   { label: "Subject Line",     description: "What the quotation is for",      icon: RiFileListLine, zone: "header" },

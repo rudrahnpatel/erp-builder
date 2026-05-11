@@ -329,7 +329,7 @@ export default function EstimatedListPage({ createUrl }: { createUrl?: string })
                                                     <button 
                                                         onClick={() => router.push(`${finalCreateUrl}?id=${est.id}`)} 
                                                         className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                        title="RiEdit2Line"
+                                                        title="Edit"
                                                     >
                                                         <RiEdit2Line className="w-4 h-4" />
                                                     </button>

@@ -108,7 +108,7 @@ export default function AttendanceClient({
             </div>
           </div>
 
-          {/* RiCheckLine-in time while working */}
+          {/* Check-in time while working */}
           {status === "WORKING" && checkInTime && (
             <div className="flex items-center gap-4 bg-success/10 border border-success/20 rounded-2xl px-5 py-4 animate-in fade-in slide-in-from-top-2 duration-500">
               <div className="h-10 w-10 rounded-xl bg-success/20 flex items-center justify-center shrink-0">

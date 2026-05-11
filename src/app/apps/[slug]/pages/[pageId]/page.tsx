@@ -133,7 +133,7 @@ export default function TenantCustomPage({
                 href={`/pages/${pageId}/edit`}
                 className="text-primary hover:underline mt-2 inline-block"
               >
-                RiEdit2Line this page in composer
+                Edit this page in composer
               </Link>
             </div>
           ) : (
@@ -232,7 +232,7 @@ export default function TenantCustomPage({
                           color: "var(--foreground-muted)",
                         }}
                       >
-                        <RiFilter3Line className="h-4 w-4" /> RiFilter3Line
+                        <RiFilter3Line className="h-4 w-4" /> Filter
                       </Button>
                     </div>
                   )}

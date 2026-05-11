@@ -23,7 +23,7 @@ export async function POST(req: Request) {
 
     const todayDate = getISTDateMidnight();
 
-    // RiCheckLine if record already exists for today
+    // Check if record already exists for today
     let record = await (db as any).attendanceRecord.findUnique({
       where: {
         employeeId_date: {

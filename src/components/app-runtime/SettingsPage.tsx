@@ -37,7 +37,7 @@ type TenantUser = {
 
 type TabKey = "general" | "preferences" | "company" | "layout" | "users";
 
-const TABS: Array<{ key: TabKey; label: string; icon: typeof RiSettings4Line }> = [
+const TABS: Array<{ key: TabKey; label: string; icon: typeof Settings }> = [
   { key: "general", label: "General", icon: RiSettings4Line },
   { key: "company", label: "Company", icon: RiBuilding4Line },
   { key: "layout", label: "Layout", icon: RiDashboardLine },
@@ -209,7 +209,7 @@ function GeneralTab({
   return (
     <Card
       title="Workspace"
-      description="Basic information about this ERP. RiEdit2Line these from the builder."
+      description="Basic information about this ERP. Edit these from the builder."
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Workspace Name" value={workspaceName} />
@@ -290,7 +290,7 @@ function CompanyProfileTab() {
     { key: "tagline", label: "Tagline", placeholder: "e.g. Built for the future" },
     { key: "logo", label: "Logo URL", placeholder: "https://yoursite.com/logo.png", colSpan: true },
     { key: "address", label: "Address", placeholder: "123 Main St, City, State, Country", colSpan: true },
-    { key: "phone", label: "RiPhoneLine", placeholder: "+91 98765 43210" },
+    { key: "phone", label: "Phone", placeholder: "+91 98765 43210" },
     { key: "email", label: "Email", placeholder: "contact@acme.com", type: "email" },
     { key: "website", label: "Website", placeholder: "https://acme.com" },
     { key: "pan", label: "Tax ID / PAN / GST", placeholder: "ABCDE1234F" },

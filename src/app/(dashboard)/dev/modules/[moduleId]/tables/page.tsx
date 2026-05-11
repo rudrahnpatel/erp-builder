@@ -342,7 +342,7 @@ export default function ModuleTablesPage({
                       className="p-1.5 rounded-lg hover-bg-subtle focus-ring"
                       style={{ color: "var(--foreground-muted)" }}
                       onClick={() => router.push(`/schema/${table.id}`)}
-                      title="RiEdit2Line Schema"
+                      title="Edit Schema"
                     >
                       <RiArrowRightUpLine className="h-4 w-4" />
                     </button>

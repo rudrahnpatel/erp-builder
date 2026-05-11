@@ -36,7 +36,7 @@ export default function AttendanceLogClient() {
 
   const exportCSV = () => {
     if (!data?.records) return;
-    const headers = ["Date", "Employee Name", "Status", "RiCheckLine-in Time", "RiCheckLine-out Time", "Duration (mins)", "Remark"];
+    const headers = ["Date", "Employee Name", "Status", "Check-in Time", "Check-out Time", "Duration (mins)", "Remark"];
     const rows = data.records.map((r: any) => [
       new Date(r.date).toLocaleDateString(),
       r.employeeName,
@@ -164,12 +164,12 @@ export default function AttendanceLogClient() {
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
                         {record.checkInLat && (
-                          <Button size="sm" variant="ghost" className="h-8 px-2.5 text-xs font-bold text-primary hover:bg-primary/10 rounded-md" onClick={() => setMapModal({ isOpen: true, lat: record.checkInLat, lng: record.checkInLng, type: "RiCheckLine-in" })}>
+                          <Button size="sm" variant="ghost" className="h-8 px-2.5 text-xs font-bold text-primary hover:bg-primary/10 rounded-md" onClick={() => setMapModal({ isOpen: true, lat: record.checkInLat, lng: record.checkInLng, type: "Check-in" })}>
                             <RiMapPinLine className="h-3.5 w-3.5 mr-1" /> In
                           </Button>
                         )}
                         {record.checkOutLat && (
-                          <Button size="sm" variant="ghost" className="h-8 px-2.5 text-xs font-bold text-orange-500 hover:bg-orange-500/10 rounded-md" onClick={() => setMapModal({ isOpen: true, lat: record.checkOutLat, lng: record.checkOutLng, type: "RiCheckLine-out" })}>
+                          <Button size="sm" variant="ghost" className="h-8 px-2.5 text-xs font-bold text-orange-500 hover:bg-orange-500/10 rounded-md" onClick={() => setMapModal({ isOpen: true, lat: record.checkOutLat, lng: record.checkOutLng, type: "Check-out" })}>
                             <RiMapPinLine className="h-3.5 w-3.5 mr-1" /> Out
                           </Button>
                         )}

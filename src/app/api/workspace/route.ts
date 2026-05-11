@@ -8,7 +8,7 @@ export async function GET() {
     const workspace = await getWorkspace();
     if (!workspace) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    // RiCheckLine if tenantUser model is available (may be missing if Prisma client hasn't been regenerated yet)
+    // Check if tenantUser model is available (may be missing if Prisma client hasn't been regenerated yet)
     const hasTenantUserModel = typeof (db as any).tenantUser !== "undefined";
 
     const [tables, pages, installedPacks, installedPlugins, tenantUsers] = await Promise.all([

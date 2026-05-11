@@ -3,7 +3,7 @@
 import { use, useState } from "react";
 import useSWR from "swr";
 import Link from "next/link";
-import { RiTableLine, RiAddLine, RiSearchLine, RiStackLine, RiLoader4Line, RiArrowLeftLine } from "react-icons/ri";
+import { RiTableLine, RiAddLine, RiSearchLine, RiStackLine, RiLoader4Line, RiArrowLeftLine, RiEdit2Line } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -308,7 +308,7 @@ export default function TenantTableView({
                           size="sm"
                           className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
                         >
-                          RiEdit2Line
+                          <RiEdit2Line className="w-4 h-4 mr-1" /> Edit
                         </Button>
                       </td>
                     </tr>

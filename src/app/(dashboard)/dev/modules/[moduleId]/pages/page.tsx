@@ -370,7 +370,7 @@ function SortablePageCard({
               className="p-1.5 rounded-lg hover-bg-subtle focus-ring"
               style={{ color: "var(--foreground-muted)" }}
               onClick={onOpen}
-              title="RiEdit2Line Page"
+              title="Edit Page"
             >
               <PenLine className="h-4 w-4" />
             </button>

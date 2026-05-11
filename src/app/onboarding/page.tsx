@@ -396,7 +396,7 @@ export default function OnboardingPage() {
                           disabled={checkingDomain}
                           className="text-xs"
                         >
-                          {checkingDomain ? "Checking…" : "RiCheckLine Availability"}
+                          {checkingDomain ? "Checking…" : "Check Availability"}
                         </Button>
                       ) : domainAvailable ? (
                         <p className="text-sm text-emerald-600 flex items-center gap-1.5">
