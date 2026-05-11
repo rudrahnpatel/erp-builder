@@ -3,6 +3,7 @@
 import { Bell, Search, Menu, Command, LogOut, Settings, ChevronDown, Languages, Code2, Building2, ExternalLink } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useSession, signOut } from "next-auth/react";
@@ -31,9 +32,11 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
   const isWorkspacePage = pathname === "/workspace";
 
   useEffect(() => {
-    const platform =
-      (navigator as any).userAgentData?.platform || navigator.platform || "";
-    setIsMac(/Mac|iPhone|iPad|iPod/i.test(platform));
+    const timer = setTimeout(() => {
+      const platform = (navigator as any).userAgentData?.platform || navigator.platform || "";
+      setIsMac(/Mac|iPhone|iPad|iPod/i.test(platform));
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -50,7 +53,7 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
         {/* Hamburger menu */}
         <button
           onClick={onMenuToggle}
-          className="p-1.5 rounded-md hover-bg-subtle focus-ring shrink-0"
+          className="p-1.5 rounded-md hover-bg-subtle focus-ring shrink-0 lg:hidden"
           style={{ color: "var(--foreground-muted)" }}
         >
           <Menu className="h-5 w-5" />
@@ -60,7 +63,7 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
         {isWorkspacePage && (
           <div className="flex items-center min-w-0 animate-fade-in">
             <div className="relative shrink-0 flex items-center">
-              <img src="/logo/logo.png" alt="Logo" className="h-10 w-auto" />
+              <Image src="/logo/logo.png" alt="Logo" width={40} height={40} className="h-10 w-auto" priority />
             </div>
             <div className="ml-2.5 min-w-0 hidden sm:block">
               {isLoading && !workspace ? (

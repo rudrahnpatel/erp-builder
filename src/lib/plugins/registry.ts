@@ -31,6 +31,7 @@ export const attendancePlugin: PluginDefinition = {
   category: "HR",
   badge: "Free",
   installs: 900,
+  supersededBy: "HR Module",
   configFields: [
     { name: "Working Hours Start", type: "TEXT", defaultValue: "09:00" },
     { name: "Working Hours End", type: "TEXT", defaultValue: "18:00" },
@@ -49,6 +50,7 @@ export const gstPlugin: PluginDefinition = {
   category: "Finance",
   badge: "Pro",
   installs: 1500,
+  supersededBy: "Quotation & Invoicing",
   configFields: [
     { name: "Business GSTIN", type: "TEXT", placeholder: "22AAAAA0000A1Z5" },
     { name: "Default Tax Rate", type: "SELECT", defaultValue: "18", options: ["5", "12", "18", "28"] },
@@ -86,6 +88,7 @@ export const leavePlugin: PluginDefinition = {
   category: "HR",
   badge: "Free",
   installs: 950,
+  supersededBy: "HR Module",
   configFields: [
     { name: "Annual Leave Quota", type: "TEXT", defaultValue: "24" },
     { name: "Require Manager Approval", type: "CHECKBOX", defaultValue: true },
@@ -122,11 +125,13 @@ export const pdfPlugin: PluginDefinition = {
   category: "Finance",
   badge: "Free",
   installs: 4500,
+  supersededBy: "Quotation & Invoicing",
   configFields: [
     { name: "Company Name", type: "TEXT", placeholder: "Your Company Ltd." },
     { name: "GSTIN", type: "TEXT", placeholder: "22AAAAA0000A1Z5" },
     { name: "Logo URL", type: "TEXT", placeholder: "https://..." },
     { name: "Bank Details", type: "TEXT", placeholder: "A/C Number, IFSC, etc." },
+    { name: "Template", type: "SELECT", defaultValue: "Modern", options: ["Modern", "Classic", "Minimalist", "Corporate", "Creative", "Retail"] },
   ],
   triggers: [
     { event: "manual", table: "Invoices", action: "Generate PDF" },

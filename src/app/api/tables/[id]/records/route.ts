@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getWorkspace } from "@/lib/get-workspace";
+import { Prisma } from "@prisma/client";
 
 // GET /api/tables/[id]/records : list records with optional filter/sort/search
 export async function GET(
@@ -21,66 +22,78 @@ export async function GET(
   const url = new URL(req.url);
   const search = url.searchParams.get("search");
   const sortField = url.searchParams.get("sortField");
-  const sortDir = url.searchParams.get("sortDir") || "asc";
-  const page = parseInt(url.searchParams.get("page") || "1");
-  const limit = parseInt(url.searchParams.get("limit") || "50");
+  const sortDir = url.searchParams.get("sortDir") === "desc" ? "DESC" : "ASC";
+  const page = parseInt(url.searchParams.get("page") || "1", 10);
+  const limit = parseInt(url.searchParams.get("limit") || "50", 10);
+  const skip = (page - 1) * limit;
 
-  // Build base query
-  let records = await db.record.findMany({
-    where: { tableId: id },
-    orderBy: { createdAt: "desc" },
-  });
-
-  // Client-side filtering on JSONB data (Prisma has limited JSONB query support)
-  if (search) {
-    const searchLower = search.toLowerCase();
-    const textFields = table.fields
-      .filter((f) => ["TEXT", "EMAIL", "PHONE"].includes(f.type))
-      .map((f) => f.id);
-
-    records = records.filter((r) => {
-      const data = r.data as Record<string, unknown>;
-      return textFields.some((fid) => {
-        const val = data[fid];
-        return typeof val === "string" && val.toLowerCase().includes(searchLower);
-      });
-    });
-  }
-
-  // Filter by field values: ?filter.FIELD_ID=value
+  const filters: Record<string, string> = {};
   for (const [key, value] of url.searchParams.entries()) {
     if (key.startsWith("filter.")) {
-      const fieldId = key.replace("filter.", "");
-      records = records.filter((r) => {
-        const data = r.data as Record<string, unknown>;
-        return String(data[fieldId]) === value;
-      });
+      filters[key.replace("filter.", "")] = value;
     }
   }
 
-  // Sort by field value
-  if (sortField) {
-    records.sort((a, b) => {
-      const dataA = a.data as Record<string, unknown>;
-      const dataB = b.data as Record<string, unknown>;
-      const valA = dataA[sortField] ?? "";
-      const valB = dataB[sortField] ?? "";
-      const cmp = String(valA).localeCompare(String(valB), undefined, { numeric: true });
-      return sortDir === "desc" ? -cmp : cmp;
+  try {
+    const whereConditions: Prisma.Sql[] = [Prisma.sql`"tableId" = ${id}`];
+
+    if (search) {
+      const textFields = table.fields
+        .filter((f) => ["TEXT", "EMAIL", "PHONE"].includes(f.type))
+        .map((f) => f.id);
+        
+      if (textFields.length > 0) {
+        const searchPattern = `%${search}%`;
+        const searchConditions = textFields.map(
+          (fid) => Prisma.sql`"data"->>${fid} ILIKE ${searchPattern}`
+        );
+        whereConditions.push(Prisma.sql`(${Prisma.join(searchConditions, ' OR ')})`);
+      } else {
+        whereConditions.push(Prisma.sql`FALSE`);
+      }
+    }
+
+    for (const [key, value] of Object.entries(filters)) {
+      whereConditions.push(Prisma.sql`"data"->>${key} = ${value}`);
+    }
+
+    const whereClause = Prisma.sql`WHERE ${Prisma.join(whereConditions, ' AND ')}`;
+    
+    let orderByClause = Prisma.sql`ORDER BY "createdAt" DESC`;
+    if (sortField) {
+      if (sortDir === "DESC") {
+        orderByClause = Prisma.sql`ORDER BY "data"->>${sortField} DESC NULLS LAST`;
+      } else {
+        orderByClause = Prisma.sql`ORDER BY "data"->>${sortField} ASC NULLS LAST`;
+      }
+    }
+
+    const records = await db.$queryRaw<any[]>`
+      SELECT id, "tableId", data, "createdAt", "updatedAt"
+      FROM "Record"
+      ${whereClause}
+      ${orderByClause}
+      LIMIT ${limit} OFFSET ${skip}
+    `;
+
+    const countRes = await db.$queryRaw<{count: bigint}[]>`
+      SELECT COUNT(*) as count
+      FROM "Record"
+      ${whereClause}
+    `;
+    const total = Number(countRes[0]?.count || 0);
+
+    return NextResponse.json({
+      records,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
     });
+  } catch (error) {
+    console.error("[RECORDS_GET_ERROR]", error);
+    return NextResponse.json({ error: "Failed to fetch records" }, { status: 500 });
   }
-
-  // Pagination
-  const total = records.length;
-  const paginated = records.slice((page - 1) * limit, page * limit);
-
-  return NextResponse.json({
-    records: paginated,
-    total,
-    page,
-    limit,
-    totalPages: Math.ceil(total / limit),
-  });
 }
 
 // POST /api/tables/[id]/records : create a record
@@ -118,6 +131,26 @@ export async function POST(
   const record = await db.record.create({
     data: { data, tableId: id },
   });
+
+  // Update GlobalSearchIndex
+  const stringValues = Object.values(data as object).filter(v => typeof v === "string" && v.length > 0);
+  const displayTitle = stringValues.length > 0 ? String(stringValues[0]) : "Record";
+  const keywords = stringValues.join(" ").substring(0, 1000);
+
+  try {
+    await db.globalSearchIndex.create({
+      data: {
+        title: `${displayTitle} (${table.name})`,
+        type: "record",
+        url: `/apps/${workspace.slug}/${id}#record-${record.id}`,
+        keywords,
+        category: "Data Records",
+        workspaceId: workspace.id,
+      }
+    });
+  } catch (err) {
+    console.error("Failed to create search index for record", err);
+  }
 
   return NextResponse.json(record, { status: 201 });
 }

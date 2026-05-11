@@ -13,18 +13,20 @@ export default function AttendanceLogClient() {
   const [mounted, setMounted] = useState(false);
   const [employeeFilter, setEmployeeFilter] = useState("all");
   
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+  });
+  const [endDate, setEndDate] = useState(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+  });
 
   const [mapModal, setMapModal] = useState<{ isOpen: boolean; lat?: number; lng?: number; type?: string } | null>(null);
 
   useEffect(() => {
-    setMounted(true);
-    const now = new Date();
-    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
-    setStartDate(firstDay);
-    setEndDate(lastDay);
+    const timer = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const { data, error, isLoading } = useSWR(

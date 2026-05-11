@@ -20,7 +20,7 @@ export async function GET(request: Request) {
     }
 
     // Dynamic Universal Search — all queries fire in parallel for speed
-    const [pages, tables, modules, customIndices, records] = await Promise.all([
+    const [pages, tables, modules, customIndices] = await Promise.all([
       // 1. Pages
       db.page.findMany({
         where: {
@@ -51,7 +51,7 @@ export async function GET(request: Request) {
         take: 10,
       }),
 
-      // 4. Custom Indices
+      // 4. Custom Indices (Now includes indexed Records)
       db.globalSearchIndex.findMany({
         where: {
           workspaceId: workspace.id,
@@ -60,18 +60,8 @@ export async function GET(request: Request) {
             { keywords: { contains: query, mode: "insensitive" } },
           ],
         },
-        take: 10,
+        take: 15,
       }),
-
-      // 5. Records (Data) — JSON text ILIKE search
-      db.$queryRaw<any[]>`
-        SELECT r.id, r.data, t.name as "tableName", t.id as "tableId"
-        FROM "Record" r
-        JOIN "Table" t ON r."tableId" = t.id
-        WHERE t."workspaceId" = ${workspace.id}
-        AND r.data::text ILIKE ${'%' + query + '%'}
-        LIMIT 15
-      `,
     ]);
 
     // Map everything to a unified search result format
@@ -104,28 +94,10 @@ export async function GET(request: Request) {
         id: `custom-${c.id}`,
         title: c.title,
         href: c.url,
-        icon: "Search",
+        icon: c.type === "record" ? "FilePlus" : "Search",
         keywords: (c.keywords || "").split(/[ ,]+/),
         category: c.category || "Custom Content",
-      })),
-      ...records.map(r => {
-        // Find a string value in the JSON to use as the title
-        let displayTitle = "Record";
-        if (r.data && typeof r.data === "object") {
-          const values = Object.values(r.data).filter(v => typeof v === "string");
-          if (values.length > 0) {
-            displayTitle = String(values[0]);
-          }
-        }
-        return {
-          id: `record-${r.id}`,
-          title: `${displayTitle} (${r.tableName})`,
-          href: `/apps/${workspace.slug}/${r.tableId}`,
-          icon: "FilePlus",
-          keywords: ["record", "data", r.tableName.toLowerCase()],
-          category: "Data Records",
-        };
-      })
+      }))
     ];
 
     return NextResponse.json(results);

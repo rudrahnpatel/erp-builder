@@ -1,0 +1,519 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP Builder - Viva Notes</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        h1 { color: #111; border-bottom: 2px solid #eaecef; padding-bottom: .3em; }
+        h2 { color: #222; margin-top: 1.5em; border-bottom: 1px solid #eaecef; padding-bottom: .3em;}
+        h3 { color: #333; margin-top: 1.5em; }
+        p { margin-top: 0; margin-bottom: 16px; }
+        code { background-color: rgba(27,31,35,.05); border-radius: 3px; font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace; font-size: 85%; margin: 0; padding: .2em .4em; }
+        pre { background-color: #f6f8fa; border-radius: 3px; font-size: 85%; line-height: 1.45; overflow: auto; padding: 16px; }
+        pre code { background-color: transparent; border: 0; display: inline; line-height: inherit; margin: 0; max-width: auto; overflow: visible; padding: 0; word-wrap: normal; }
+        blockquote { border-left: .25em solid #dfe2e5; color: #6a737d; margin: 0 0 16px; padding: 0 1em; background-color: #f8f9fa; padding-top: 10px; padding-bottom: 10px; border-radius: 0 8px 8px 0;}
+        .mermaid { margin: 20px 0; text-align: center; }
+        @media print {
+            .page-break { page-break-before: always; }
+            body { max-width: 100%; padding: 0; margin: 0; }
+            a { text-decoration: none; color: black; }
+        }
+    </style>
+    <!-- Include Mermaid.js for rendering diagrams -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</head>
+<body>
+    <h1>ERP Builder - Comprehensive Viva Notes</h1>
+<div class="page-break"></div><h1>01 - Technical Stack &amp; Libraries</h1>
+<p>This document details every library and framework used in the ERP Builder project, answering the &quot;what did you use for X and why?&quot; questions.</p>
+<h2>Core Framework</h2>
+<ul>
+<li><strong>Framework:</strong> Next.js 16.2.3 (App Router)</li>
+<li><strong>UI Library:</strong> React 19.2.4</li>
+<li><strong>Language:</strong> TypeScript</li>
+<li><strong>Styling:</strong> Tailwind CSS (v4) with CSS variables for dynamic theming.</li>
+</ul>
+<blockquote>
+<p><strong>Simplified Explanation:</strong>
+Imagine building a house. <strong>React</strong> is the bricks, <strong>Tailwind</strong> is the paint and decoration, <strong>TypeScript</strong> is the blueprint that stops you from making mistakes, and <strong>Next.js</strong> is the foundation and plumbing that holds everything together and connects it to the city (the internet).</p>
+</blockquote>
+<h2>Database &amp; ORM</h2>
+<ul>
+<li><strong>Database:</strong> PostgreSQL (specifically Neon Serverless Postgres)</li>
+<li><strong>ORM:</strong> Prisma (<code>@prisma/client</code>, <code>prisma</code> v6.4.1)</li>
+<li><strong>Adapter:</strong> <code>@prisma/adapter-neon</code> for Edge/Serverless compatibility.</li>
+</ul>
+<blockquote>
+<p><strong>Simplified Explanation:</strong>
+<strong>PostgreSQL</strong> is a giant, super-organized filing cabinet. <strong>Prisma</strong> is a smart assistant who knows exactly which drawer to open. You just tell Prisma &quot;Get me John&#39;s file&quot;, and Prisma does the hard work of searching the cabinet instead of you learning cabinet-searching language (SQL).</p>
+</blockquote>
+<h2>UI Components &amp; Aesthetics</h2>
+<ul>
+<li><strong>Component Library:</strong> shadcn/ui (customized, built on top of Radix UI primitives/<code>@base-ui/react</code>).</li>
+<li><strong>Icons:</strong> <code>lucide-react</code> and <code>react-icons</code>.</li>
+<li><strong>Class Merging:</strong> <code>clsx</code> and <code>tailwind-merge</code> to handle dynamic tailwind class conflicts.</li>
+<li><strong>Theming:</strong> <code>next-themes</code> for Dark/Light/System mode switching.</li>
+</ul>
+<blockquote>
+<p><strong>Simplified Explanation:</strong>
+Instead of building buttons and menus from scratch every time, <strong>shadcn/ui</strong> gives us pre-made Lego pieces. We just change their color and put them where we want. <strong>Next-themes</strong> is like a light switch that instantly turns the room from bright (Light mode) to dark (Dark mode).</p>
+</blockquote>
+<h2>Advanced Visuals &amp; Animations</h2>
+<ul>
+<li><strong>3D Interactive Elements:</strong> <code>@splinetool/react-spline</code> and <code>@splinetool/runtime</code>.<ul>
+<li><em>Examiner Question:</em> &quot;What library was used to create the 3D card on the landing page?&quot;</li>
+<li><em>Answer:</em> &quot;We used Spline (<code>@splinetool/react-spline</code>). It allows us to embed a fully interactive 3D WebGL scene directly into a React component without writing raw Three.js code.&quot;</li>
+</ul>
+</li>
+<li><strong>Animations:</strong> <code>framer-motion</code>, <code>gsap</code>, <code>tw-animate-css</code>.</li>
+</ul>
+<blockquote>
+<p><strong>Simplified Explanation:</strong>
+<strong>Spline</strong> is like embedding a mini 3D video game right into the webpage. <strong>Framer Motion</strong> and <strong>GSAP</strong> are the puppeteers that make the website elements dance smoothly instead of just teleporting around abruptly.</p>
+</blockquote>
+<h2>Page Composer &amp; Drag-and-Drop</h2>
+<ul>
+<li><strong>Drag &amp; Drop Engine:</strong> <code>@dnd-kit/core</code>, <code>@dnd-kit/sortable</code>, <code>@dnd-kit/utilities</code>.<ul>
+<li><em>Examiner Question:</em> &quot;Which library did you use for the drag-and-drop functionality in the Page Composer?&quot;</li>
+<li><em>Answer:</em> &quot;We used <code>dnd-kit</code>. Unlike older libraries like <code>react-beautiful-dnd</code>, <code>dnd-kit</code> is lightweight, highly modular, accessible, and works flawlessly with React&#39;s modern architecture and custom grid layouts.&quot;</li>
+</ul>
+</li>
+<li><strong>Rich Text Editing:</strong> <code>react-quill-new</code></li>
+</ul>
+<blockquote>
+<p><strong>Simplified Explanation:</strong>
+<strong>dnd-kit</strong> is the magic invisible hand that lets you pick up an element on the screen with your mouse, move it around, and tells the other elements to politely move out of the way to make room.</p>
+</blockquote>
+<h2>State Management &amp; Data Fetching</h2>
+<ul>
+<li><strong>Global State:</strong> <code>zustand</code> (Used for managing complex client-side state).</li>
+<li><strong>Data Fetching:</strong> <code>swr</code> (Stale-While-Revalidate by Vercel).</li>
+</ul>
+<blockquote>
+<p><strong>Simplified Explanation:</strong>
+<strong>Zustand</strong> is like the brain of the app that remembers things across different screens (like what you are dragging). <strong>SWR</strong> is like a smart messenger boy who shows you a photo of the data immediately (stale), while quietly running to the database to check if the data changed (revalidate), and updates the photo if needed.</p>
+</blockquote>
+<h2>Authentication &amp; Security</h2>
+<ul>
+<li><strong>Platform Auth:</strong> <code>next-auth</code> (for Google SSO and Admin access).</li>
+<li><strong>Tenant Auth:</strong> Custom JWT implementation using <code>jose</code> and <code>bcryptjs</code>.</li>
+</ul>
+<blockquote>
+<p><strong>Simplified Explanation:</strong>
+<strong>next-auth</strong> is the bouncer at the front door of the main building. <strong>jose</strong> creates a secret VIP wristband (JWT) that gets checked by a second bouncer (Middleware) before letting employees into their specific company rooms.</p>
+</blockquote>
+<h2>Exporting &amp; Data Generation</h2>
+<ul>
+<li><strong>PDF Generation:</strong> <code>jspdf</code> and <code>jspdf-autotable</code>.</li>
+<li><strong>Printing:</strong> <code>react-to-print</code>.</li>
+<li><strong>QR Codes:</strong> <code>qrcode</code>.</li>
+</ul>
+<blockquote>
+<p><strong>Simplified Explanation:</strong>
+These libraries take the messy computer code and draw it neatly onto a virtual piece of paper (PDF) or convert links into black-and-white square puzzles (QR code) that phones can scan.</p>
+</blockquote>
+<h2>Design Decisions &amp; FAQ</h2>
+<p><em>Examiner Question:</em> &quot;Why did you choose Next.js App Router instead of a standard React SPA?&quot;
+<em>Answer:</em> &quot;We chose Next.js App Router because it provides Server Components and built-in API routes. For an ERP, securely fetching database schema at the server level before sending it to the client drastically improves performance and security compared to a standard SPA making multiple round-trip API calls.&quot;</p>
+<p><em>Examiner Question:</em> &quot;Why did you use Zustand over Redux?&quot;
+<em>Answer:</em> &quot;Redux introduces too much boilerplate. Zustand is a minimalist, unopinionated state manager that handles our complex Page Composer state perfectly without the massive setup and verbosity of Redux.&quot;</p>
+<p><em>Examiner Question:</em> &quot;Why Tailwind CSS instead of styled-components or SCSS?&quot;
+<em>Answer:</em> &quot;Tailwind provides utility-first classes which drastically speeds up development. It also automatically removes unused CSS in production, leading to a much smaller bundle size and faster load times compared to traditional SCSS.&quot;</p>
+<p><em>Examiner Question:</em> &quot;Why use TypeScript instead of plain JavaScript?&quot;
+<em>Answer:</em> &quot;An ERP system handles complex, interrelated data (like nested JSON objects for dynamic records). TypeScript catches type mismatches at compile time, preventing runtime crashes and making large-scale refactoring much safer.&quot;</p>
+<div class="page-break"></div><h1>02 - Architecture &amp; Multi-Tenancy (Proxy)</h1>
+<p>This document explains the overarching system architecture and how multi-tenancy is handled using Next.js Middleware (Proxy).</p>
+<h2>The Multi-Tenant Model</h2>
+<p>ERP Builder is designed to serve multiple businesses (Tenants/Workspaces) from a single deployment.</p>
+<ul>
+<li><strong>Platform Layer:</strong> The main marketing site (<code>/</code>), platform login (<code>/login</code>), and platform-level administration.</li>
+<li><strong>App Layer:</strong> Individual workspaces mapped to specific subdomains or subdirectories (<code>/apps/[workspace-slug]</code>).</li>
+</ul>
+<blockquote>
+<p>👶 <strong>ELI5 (Explain Like I&#39;m 5):</strong>
+Multi-tenancy is like an apartment building. Instead of buying a separate house for every company (single-tenant), all companies live in the same big building. But each company has its own locked apartment with its own key, so they can&#39;t see each other&#39;s stuff.</p>
+</blockquote>
+<h3>How Next.js Middleware (<code>src/proxy.ts</code>) Works</h3>
+<p>Instead of deploying a separate instance for every client, we use Next.js Middleware as a reverse proxy.</p>
+<div class="mermaid">sequenceDiagram
+    participant User
+    participant Next.js Middleware (Proxy)
+    participant Next.js App Router
+    
+    User->>Next.js Middleware (Proxy): Visits `acme.erpbuilder.com`
+    Next.js Middleware (Proxy)->>Next.js Middleware (Proxy): Extracts `acme` from Host header
+    Next.js Middleware (Proxy)->>Next.js App Router: Rewrites request to `/apps/acme`
+    Next.js App Router-->>User: Returns Workspace Dashboard</div><h4>Key Responsibilities of <code>proxy.ts</code>:</h4>
+<ol>
+<li><strong>Host Header Parsing:</strong> It checks if the request is coming from a custom domain/subdomain.</li>
+<li><strong>Path Rewriting:</strong> It intercepts the request and silently rewrites the URL to <code>/apps/[slug]/...</code></li>
+<li><strong>Authentication Verification:</strong> It reads the <code>tenant_auth_[slug]</code> cookie and uses <code>jose</code> to verify the JWT token at the Edge.</li>
+</ol>
+<blockquote>
+<p><strong>Simplified Explanation:</strong>
+<strong>Middleware (Proxy)</strong> is like the receptionist at the front desk of the apartment building. When you walk in and say &quot;I&#39;m going to Acme Corp&quot;, the receptionist secretly points you down hallway C to room 4 (Path Rewriting) and checks your Acme ID badge (Auth Verification) before letting you pass. You never have to know the actual room number.</p>
+</blockquote>
+<p><em>Examiner Question:</em> &quot;How does the application know which company&#39;s data to show if it&#39;s hosted on a single server?&quot;
+<em>Answer:</em> &quot;We use a multi-tenant architecture. The Next.js Middleware (<code>proxy.ts</code>) reads the subdomain from the request headers and rewrites the internal route to a dynamic segment (<code>/apps/[slug]</code>). Downstream, functions like <code>getWorkspace()</code> read this slug from the headers to scope all database queries strictly to that workspace&#39;s ID.&quot;</p>
+<h2>Next.js App Router Structure</h2>
+<p>The project uses Next.js App Router (<code>src/app</code>) extensively, taking advantage of Route Groups (<code>(folderName)</code>) to organize layouts without affecting the URL.</p>
+<pre><code class="language-text">src/app/
+├── (auth)/             # Platform login pages (no sidebar)
+├── (dashboard)/        # Main builder interface (includes Sidebar & Topbar)
+│   ├── admin/          # Platform super-admin controls
+│   ├── modules/        # Module marketplace
+│   └── schema/         # Database table schema editor
+├── api/                # Backend REST endpoints (server-side)
+├── apps/               # The Multi-Tenant Runtime!
+│   └── [slug]/         # Dynamic route for tenant workspaces
+│       └── login/      # Tenant-specific login page
+└── page.tsx            # Main Landing Page</code></pre><blockquote>
+<p><strong>Simplified Explanation:</strong>
+Folders with parenthesis like <code>(dashboard)</code> are just a way for developers to organize code folders without changing the website&#39;s web address. It&#39;s like putting your math homework in a blue folder and science in a red folder, but to the teacher, it&#39;s all just &quot;homework&quot;.</p>
+</blockquote>
+<h2>State vs Database Fetching</h2>
+<ul>
+<li>The backend (<code>api/</code> routes) uses Prisma to fetch raw data.</li>
+<li>The frontend uses <code>SWR</code> (Stale-While-Revalidate) to fetch this data. SWR provides caching, optimistic UI updates, and auto-refresh on focus.</li>
+</ul>
+<blockquote>
+<p><strong>Simplified Explanation:</strong>
+Normally, when you ask a website for data, it makes you wait staring at a blank screen. <strong>SWR</strong> is clever: it immediately shows you the data it remembers from last time (Stale), and quietly asks the database &quot;did anything change?&quot; (Revalidate). If it did, it magically updates the screen in the background.</p>
+</blockquote>
+<h2>Design Decisions &amp; FAQ</h2>
+<p><em>Examiner Question:</em> &quot;Why did you use Next.js Middleware for routing instead of deploying separate server instances for each tenant?&quot;
+<em>Answer:</em> &quot;Deploying separate instances is extremely costly and hard to maintain. By using Middleware as a proxy, we use a single codebase and a single server. The Middleware dynamically rewrites the URL based on the subdomain, achieving multi-tenancy with zero extra infrastructure cost.&quot;</p>
+<p><em>Examiner Question:</em> &quot;Why did you use SWR for data fetching instead of standard fetch?&quot;
+<em>Answer:</em> &quot;SWR provides an optimistic UI and caching out of the box. For an ERP, if a user updates a table, SWR instantly updates the UI using cached data, then quietly revalidates with the database in the background, making the app feel incredibly fast without writing complex Redux logic.&quot;</p>
+<p><em>Examiner Question:</em> &quot;How does the application scale if thousands of companies sign up?&quot;
+<em>Answer:</em> &quot;Since the app is built on Next.js and is designed for serverless environments, it scales automatically. The Next.js Middleware handles routing with minimal latency at the Edge, and our Serverless PostgreSQL database (Neon) scales compute resources up and down based on demand.&quot;</p>
+<p><em>Examiner Question:</em> &quot;What happens if two employees try to edit the same record at the exact same time?&quot;
+<em>Answer:</em> &quot;Because we use PostgreSQL, the database handles concurrent transactions securely using ACID properties. The last write wins by default, but because we use SWR on the frontend, users will immediately see the updated data pushed by the other user upon their next focus or background revalidation.&quot;</p>
+<div class="page-break"></div><h1>03 - Database Schema &amp; Data Modeling</h1>
+<p>This document covers the Prisma schema design, explaining how generic data, multi-tenancy, and module overrides are handled.</p>
+<h2>Multi-Tenant Core</h2>
+<p>At the core of the database is the <code>Workspace</code> model. A Workspace represents a tenant (a business using the ERP Builder).</p>
+<ul>
+<li>Every major table (<code>Table</code>, <code>Page</code>, <code>Record</code>, <code>ModuleDefinition</code>, <code>GlobalSearchIndex</code>) has a <code>workspaceId</code> foreign key.</li>
+<li><strong>Security Rule:</strong> The backend API always enforces <code>where: { workspaceId: workspace.id }</code> ensuring tenants can never access each other&#39;s data.</li>
+</ul>
+<blockquote>
+<p>👶 <strong>ELI5 (Explain Like I&#39;m 5):</strong>
+Every single piece of data has a &quot;Workspace ID&quot; tag stamped on it. When Acme Corp asks for their data, the database guard strictly says &quot;Give me only the stuff stamped with Acme Corp.&quot; This prevents data mixing.</p>
+</blockquote>
+<h2>Generic Builder Architecture (The &quot;EAV&quot; Pattern)</h2>
+<p>Unlike a traditional app where you might have tables for <code>Employees</code>, <code>Invoices</code>, and <code>Products</code>, ERP builder allows users to dynamically create any data structure. It uses an Entity-Attribute-Value (EAV) style approach optimized with JSON.</p>
+<div class="mermaid">erDiagram
+    WORKSPACE ||--o{ TABLE : owns
+    TABLE ||--o{ FIELD : defines
+    TABLE ||--o{ RECORD : contains
+    
+    TABLE {
+        string id
+        string name
+        boolean isCustom
+    }
+    FIELD {
+        string id
+        string name
+        enum type
+        json config
+    }
+    RECORD {
+        string id
+        json data
+    }</div><ul>
+<li><strong><code>Table</code></strong>: Represents a data entity (e.g., &quot;Products&quot;).</li>
+<li><strong><code>Field</code></strong>: Defines the columns (e.g., &quot;Product Name&quot;, Type: TEXT).</li>
+<li><strong><code>Record</code></strong>: Stores the actual row. The magic happens here: the entire row payload is stored inside a <code>data</code> JSON column.</li>
+</ul>
+<blockquote>
+<p><strong>Simplified Explanation:</strong>
+Normally, adding a new type of data requires tearing down the database walls and building new ones. Here, we just have one giant &quot;Records&quot; box. We use a sticky note (<code>Table</code>) to say what the box represents, another note (<code>Field</code>) to say what questions to ask, and we throw all the answers as a single flexible document (JSON) inside the box. No wall-breaking needed!</p>
+</blockquote>
+<p><em>Examiner Question:</em> &quot;How do you store dynamic tables without creating physical PostgreSQL tables for each one?&quot;
+<em>Answer:</em> &quot;We use a metadata-driven architecture. A <code>Table</code> record defines the entity, <code>Field</code> records define the schema, and <code>Record</code> rows store the actual user data inside a <code>JSONB</code> column named <code>data</code>. This avoids expensive dynamic DDL operations while keeping queries fast.&quot;</p>
+<h2>Module Customization &amp; Overrides</h2>
+<p>When a user installs a built-in module (like &quot;Inventory&quot; or &quot;HR&quot;), we don&#39;t want to lose the connection to the original code schema (<code>registry.ts</code>), but we also want users to be able to rename fields or add custom fields.</p>
+<p>This is solved by the <code>WorkspaceSchemaOverride</code> pattern:</p>
+<ol>
+<li><strong><code>InstalledPack</code></strong>: Tracks that Workspace A has installed &quot;Inventory v1.2.0&quot;.</li>
+<li><strong><code>WorkspaceSchemaOverride</code></strong>: If a user renames &quot;Product Name&quot; to &quot;Item Name&quot;, we DO NOT mutate the base schema. Instead, we write a <code>RENAME_FIELD</code> override row in the database.</li>
+<li><strong>Runtime Merge:</strong> <code>src/lib/schema-resolver.ts</code> merges the canonical Typescript schema with the database overrides at runtime, caching the result in memory for performance.</li>
+</ol>
+<blockquote>
+<p><strong>Simplified Explanation:</strong>
+Imagine buying a printed book (the Module). You can&#39;t rewrite the printed text. If you want to change a word, you put a transparent sticky note over the word and write your own (The Override). When the app reads the book, it reads your sticky notes on top of the printed text (Runtime Merge).</p>
+</blockquote>
+<p><em>Examiner Question:</em> &quot;If two users install the same module but customize it differently, how is that managed?&quot;
+<em>Answer:</em> &quot;We use an event-sourcing/override model. The base schema remains pure in code. Any user customization (like adding a custom field or hiding a default one) is stored as a <code>WorkspaceSchemaOverride</code> row. Our Schema Resolver merges these deltas at runtime to produce the final schema for that specific tenant.&quot;</p>
+<h2>Universal Search (GlobalSearchIndex)</h2>
+<p>Instead of running slow <code>ILIKE</code> scans across JSON columns for search, the app uses a flattened <code>GlobalSearchIndex</code> table.
+Whenever a <code>Record</code>, <code>Page</code>, or <code>Table</code> is created/updated, a flattened text string of its contents is inserted into the <code>GlobalSearchIndex</code>. The <code>/api/search</code> route only queries this single table, making universal search incredibly fast.</p>
+<blockquote>
+<p><strong>Simplified Explanation:</strong>
+Instead of making the search engine read every single book in the library page-by-page every time you search, we create an index card (GlobalSearchIndex) for every book that has all its important words on it. The search engine just quickly flips through the index cards.</p>
+</blockquote>
+<h2>Design Decisions &amp; FAQ</h2>
+<p><em>Examiner Question:</em> &quot;Why store record data as JSONB instead of dynamically creating PostgreSQL columns for each new field?&quot;
+<em>Answer:</em> &quot;Running dynamic <code>ALTER TABLE</code> commands is dangerous, slow, and doesn&#39;t scale well in a multi-tenant environment. PostgreSQL&#39;s JSONB is heavily optimized. Storing data in JSONB allows tenants to add or remove fields instantly without structural database migrations, and we can still index JSONB if needed.&quot;</p>
+<p><em>Examiner Question:</em> &quot;Why not just use a single database table for all data without the <code>workspaceId</code>?&quot;
+<em>Answer:</em> &quot;Without a <code>workspaceId</code>, it is a massive security risk (Data Leakage). We chose a shared-database, isolated-schema approach where every query strictly filters by <code>workspaceId</code> to ensure Tenant A can never accidentally query Tenant B&#39;s data.&quot;</p>
+<p><em>Examiner Question:</em> &quot;Why did you choose PostgreSQL over a NoSQL database like MongoDB, especially since you are storing dynamic data in JSON?&quot;
+<em>Answer:</em> &quot;While MongoDB is great for flexible JSON documents, an ERP heavily relies on relational data (e.g., an Invoice record must relate back to the exact Table definition and Workspace). PostgreSQL gives us the best of both worlds: strict relational integrity for core system models, combined with powerful <code>JSONB</code> support for the dynamic user-generated records.&quot;</p>
+<div class="page-break"></div><h1>04 - Page Composer &amp; Drag and Drop</h1>
+<p>This document explains the architecture of the custom Page Composer, which allows users to build dashboards dynamically using a drag-and-drop interface.</p>
+<h2>Core Drag-and-Drop Library</h2>
+<ul>
+<li><strong>Library Used:</strong> <code>@dnd-kit/core</code>, <code>@dnd-kit/sortable</code>, <code>@dnd-kit/utilities</code></li>
+</ul>
+<blockquote>
+<p>👶 <strong>ELI5 (Explain Like I&#39;m 5):</strong>
+Think of building a webpage like arranging magnets on a fridge. <code>dnd-kit</code> is the invisible rulebook that tells the magnets how to move smoothly and snap into the right places without falling off or overlapping weirdly.</p>
+</blockquote>
+<p><em>Examiner Question:</em> &quot;What component/library was used for dragging and dropping components in the page composer?&quot;
+<em>Answer:</em> &quot;We used <code>dnd-kit</code>. It provides primitives like <code>&lt;DndContext&gt;</code>, <code>useDraggable</code>, and <code>useDroppable</code>. Unlike older libraries, it separates the DOM event handling from the visual layout, which allowed us to build a complex multi-column CSS grid where items can be resized and sorted simultaneously.&quot;</p>
+<h2>Architecture of the Composer</h2>
+<p>The composer relies on an array of <code>PlacedBlock</code> objects stored in React state (and eventually saved to the <code>Page.blocks</code> JSON column in the database).</p>
+<pre><code class="language-typescript">interface PlacedBlock {
+  id: string;        // Unique ID for the instance on the canvas
+  type: string;      // "TABLE_VIEW", "CHART", "METRIC", etc.
+  label: string;
+  icon: ReactNode;
+  config?: any;      // Custom settings for the block (e.g. which table to link to)
+}</code></pre><blockquote>
+<p><strong>Simplified Explanation:</strong>
+The website remembers your design simply as a grocery list. &quot;Item 1 is a chart, Item 2 is a table.&quot; The <code>config</code> part is just the instructions for each item: &quot;Make the chart blue&quot; or &quot;Show data from the Customers table.&quot;</p>
+</blockquote>
+<h3>The Three Panes</h3>
+<p>The UI is divided into three sections:</p>
+<ol>
+<li><strong>Left Sidebar (Palette):</strong> Contains draggable items (<code>palette-item</code>). When dragged onto the canvas, a new <code>PlacedBlock</code> is generated.</li>
+<li><strong>Center Canvas (Dropzone &amp; Sortable Context):</strong> Uses CSS Grid (<code>grid-cols-6</code>). The canvas itself is a droppable area. Inside it, a <code>&lt;SortableContext&gt;</code> wraps all the placed blocks, allowing them to be reordered using <code>arrayMove</code>.</li>
+<li><strong>Right Sidebar (Properties Inspector):</strong> When a block on the canvas is clicked, it becomes the &quot;selected&quot; block. The right sidebar reads its <code>config</code> object and renders relevant inputs (e.g., dropdowns to pick a table, color pickers, text inputs).</li>
+</ol>
+<h2>CSS Grid and Resizing</h2>
+<p>The canvas relies on a 6-column CSS grid.</p>
+<pre><code class="language-css">grid-template-columns: repeat(6, minmax(0, 1fr));</code></pre><p>Each block&#39;s <code>config</code> has a <code>colSpan</code> (1 to 6).
+When a user drags the right-edge resizer of a block, a <code>PointerEvent</code> triggers a calculation:
+<code>newColSpan = startColSpan + Math.round(dragDeltaX / columnWidth)</code>.
+The block&#39;s <code>gridColumn</code> inline style is then updated (<code>grid-column: span {colSpan} / span {colSpan}</code>).</p>
+<blockquote>
+<p><strong>Simplified Explanation:</strong>
+The page is divided into 6 vertical invisible lanes. A small box takes up 2 lanes (<code>span 2</code>), a full-width box takes up all 6 lanes (<code>span 6</code>). When you drag to resize, the computer just calculates how many lanes your mouse crossed and updates the number.</p>
+</blockquote>
+<h2>Block Rendering Engine</h2>
+<p>At runtime (in the actual app view, not the editor), the page iterates over the <code>blocks</code> array and uses a <code>switch</code> statement to render the correct React component dynamically.</p>
+<pre><code class="language-tsx">// Simplified example of the runtime rendering engine
+{blocks.map(block => {
+  switch(block.type) {
+    case "TABLE_VIEW": return <TableView config={block.config} />;
+    case "METRIC": return <MetricCard config={block.config} />;
+    case "CHART": return <ChartView config={block.config} />;
+    // ...
+  }
+})}</code></pre><blockquote>
+<p><strong>Simplified Explanation:</strong>
+The engine is like a factory line. It reads the grocery list. If the list says &quot;METRIC&quot;, it pulls a metric card from the shelf, paints it according to the config instructions, and puts it on the screen.</p>
+</blockquote>
+<p>This decoupled design means that adding a new widget to the ERP simply involves adding a new case to the switch statement and defining its properties in the palette.</p>
+<h2>Design Decisions &amp; FAQ</h2>
+<p><em>Examiner Question:</em> &quot;Why did you choose <code>dnd-kit</code> over <code>react-beautiful-dnd</code>?&quot;
+<em>Answer:</em> &quot;<code>react-beautiful-dnd</code> is deprecated and struggles heavily with 2-dimensional CSS Grid layouts. <code>dnd-kit</code> is modern, actively maintained, and separates the drag logic from the visual DOM, allowing us to perfectly snap items into our complex 6-column grid.&quot;</p>
+<p><em>Examiner Question:</em> &quot;Why store the Page layout as JSON in the database?&quot;
+<em>Answer:</em> &quot;It provides immense flexibility. If we invent a new block type tomorrow (like a Kanban board), we don&#39;t need to change the database schema. We just parse the JSON and our React frontend knows how to render the new type.&quot;</p>
+<p><em>Examiner Question:</em> &quot;How do you ensure the drag-and-drop dashboards look good on mobile phones?&quot;
+<em>Answer:</em> &quot;Our CSS Grid system is responsive by default. While a chart might take up <code>span 4</code> out of 6 columns on a desktop, we use Tailwind&#39;s responsive prefixes (like <code>col-span-full md:col-span-4</code>) in the rendering engine to ensure that on small mobile screens, all blocks automatically stack vertically to take up the full screen width.&quot;</p>
+<div class="page-break"></div><h1>05 - Authentication &amp; Security</h1>
+<p>This document details the dual authentication strategy used in ERP Builder to separate platform owners from tenant users.</p>
+<h2>The Dual Authentication Strategy</h2>
+<p>Because this is a multi-tenant SaaS application, there are two distinct types of users:</p>
+<ol>
+<li><strong>Platform Users (Builders/Owners):</strong> The people who sign up for ERP Builder to create an ERP for their business.</li>
+<li><strong>Tenant Users (Employees/Staff):</strong> The people who work for the Platform User and need to log into the generated ERP subdomain.</li>
+</ol>
+<p>To ensure strict security boundaries, these two user bases use completely different authentication mechanisms.</p>
+<blockquote>
+<p><strong>Simplified Explanation:</strong>
+Imagine an airport. <strong>Platform Users</strong> are the Airline CEOs who buy the planes (They log in via the main website). <strong>Tenant Users</strong> are the passengers who just want to board their specific flight (They log in via their company&#39;s specific portal). They shouldn&#39;t use the same door.</p>
+</blockquote>
+<p><em>Examiner Question:</em> &quot;Why did you use two different methods of authentication? Why not just use NextAuth for everything?&quot;
+<em>Answer:</em> &quot;NextAuth is powerful for OAuth (like Google SSO) but it relies heavily on Node.js core modules and database sessions. Our tenant application uses Next.js Middleware to handle dynamic subdomains (<code>/apps/my-company</code>). Middleware runs on the <strong>Edge Runtime</strong>, which does not support Node.js APIs or heavy database queries. Therefore, for tenants, we built a custom, lightweight JWT solution using the <code>jose</code> library, which is specifically designed to run on the Edge, allowing our Middleware to verify tokens instantly without slowing down the app.&quot;</p>
+<h3>1. Platform Authentication (NextAuth.js)</h3>
+<p>The main platform (<code>acme.com/login</code>) uses <strong>NextAuth.js</strong> (<code>next-auth</code>).</p>
+<ul>
+<li><strong>Strategy:</strong> Database session strategy using the Prisma adapter (<code>@prisma/client</code>).</li>
+<li><strong>Features:</strong> <ul>
+<li>Standard Email/Password login (using <code>bcryptjs</code> for hashing).</li>
+<li><strong>Google SSO:</strong> Configured using the <code>GoogleProvider</code> inside <code>src/lib/auth.ts</code>. When a user signs in via Google, NextAuth automatically provisions a user row in the database.</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p><strong>Simplified Explanation:</strong>
+<strong>NextAuth</strong> is like the airport&#39;s official security team. If an Airline CEO wants to enter, they can either show their ID (Email/Password) or say &quot;Google knows me&quot; (Google SSO), and the security team verifies them against the master database.</p>
+</blockquote>
+<p><em>Examiner Question:</em> &quot;How did you implement Google Login?&quot;
+<em>Answer:</em> &quot;We used the <code>GoogleProvider</code> from <code>next-auth</code>. In <code>src/lib/auth.ts</code>, we hooked into the <code>signIn</code> and <code>jwt</code> callbacks. If a user signs in via Google for the first time, our callback automatically provisions a <code>User</code> row in the database and links their workspace.&quot;</p>
+<h3>2. Tenant Authentication (Custom JWT via <code>jose</code>)</h3>
+<p>Tenant users access the system via dynamic subdomains or subpaths (e.g., <code>acme.com/apps/my-company</code>). NextAuth is not designed to handle highly dynamic, dynamically generated tenant boundaries effectively in Edge environments.</p>
+<p>Instead, we built a custom JWT solution:</p>
+<ul>
+<li><strong>Library:</strong> <code>jose</code> (Used instead of <code>jsonwebtoken</code> because <code>jose</code> is Edge Runtime compatible, allowing us to verify tokens directly in Next.js Middleware).</li>
+<li><strong>Process:</strong><ol>
+<li>Employee visits <code>/apps/my-company/login</code>.</li>
+<li>They submit their username/password.</li>
+<li>The API (<code>src/app/api/tenant/login/route.ts</code>) verifies credentials using <code>bcryptjs</code>.</li>
+<li>It calls <code>signTenantToken()</code> from <code>src/lib/tenant-auth.ts</code> to create a signed JWT containing their ID and Role.</li>
+<li>A secure, HTTP-only cookie (<code>tenant_auth_[slug]</code>) is set on the browser.</li>
+<li><strong>Middleware:</strong> On subsequent requests, <code>src/proxy.ts</code> (Next.js Middleware) extracts this cookie, calls <code>verifyTenantToken()</code>, and blocks access if invalid.</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p><strong>Simplified Explanation:</strong>
+Because there are thousands of companies, we don&#39;t check the master database every time a passenger moves. Instead, when they first log in, we give them an unforgeable digital wristband (JWT) created by a library called <strong>jose</strong>. This wristband is hidden in their browser (HTTP-Only Cookie). The security guard at the hallway (Middleware) just glances at the wristband and instantly knows if they belong there.</p>
+</blockquote>
+<h3>Summary Diagram</h3>
+<div class="mermaid">graph TD
+    User("User") --> Router{"Where are they logging in?"}
+
+    Router -->|"Platform (/login)"| NextAuth["NextAuth.js"]
+    NextAuth -->|"Google SSO"| DB[("PostgreSQL: User Table")]
+    NextAuth -->|"Credentials"| DB
+
+    Router -->|"Tenant App (/apps/slug/login)"| TenantAuth["Custom JWT API"]
+    TenantAuth --> Jose["jose library signing"]
+    Jose --> Cookie["HTTP-Only Cookie: tenant_auth_slug"]
+    Cookie --> Middleware["Next.js Middleware / proxy.ts"]
+    Middleware --> DB2[("PostgreSQL: TenantUser Table")]</div><h2>Design Decisions &amp; FAQ</h2>
+<p><em>Examiner Question:</em> &quot;How are user passwords stored in the database?&quot;
+<em>Answer:</em> &quot;Passwords are never stored in plain text. We use the <code>bcryptjs</code> library to cryptographically hash and salt the passwords before saving them. This means even if the database is compromised, the actual passwords cannot be reverse-engineered.&quot;</p>
+<p><em>Examiner Question:</em> &quot;What happens if a tenant employee&#39;s JWT token is stolen via a malicious script?&quot;
+<em>Answer:</em> &quot;We mitigate this risk by storing the JWT token as an <code>HTTP-Only</code> cookie. This means malicious JavaScript (like in an XSS attack) cannot read the cookie at all. Additionally, the token has a strict expiration time set during signing, further limiting any potential window of abuse.&quot;</p>
+<div class="page-break"></div><h1>06 - Marketplace, Modules, and Plugins</h1>
+<p>This document explains how the ERP Builder&#39;s Marketplace works, including how Modules (Packs) are installed, updated, and how Plugins execute backend logic.</p>
+<h2>Modules (Schema Packs)</h2>
+<p>Instead of forcing users to build their ERP from scratch table-by-table, we provide &quot;Modules&quot; (e.g., Inventory, CRM, HR).</p>
+<ul>
+<li><strong>Registry (<code>src/lib/packs/registry.ts</code>):</strong> Modules are defined in code as JSON-like objects of type <code>PackDefinition</code>. They contain an array of <code>tables</code> (with predefined <code>fields</code> and <code>seedData</code>) and <code>pageDefinitions</code> (pre-configured dashboards).</li>
+<li><strong>Installation Process (<code>/api/packs/install</code>):</strong>
+When a user clicks &quot;Install&quot; on the Inventory module:<ol>
+<li>The backend reads the definition from <code>registry.ts</code>.</li>
+<li>It dynamically provisions <code>Table</code> and <code>Field</code> rows in PostgreSQL.</li>
+<li>It inserts <code>seedData</code> as <code>Record</code> rows so the user has immediate dummy data.</li>
+<li>It generates <code>Page</code> rows for the pre-built dashboards.</li>
+<li>It creates an <code>InstalledPack</code> row to track the version.</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p><strong>Simplified Explanation:</strong>
+A <strong>Module</strong> is like a pre-furnished house package. Instead of buying individual tables and chairs, you buy the &quot;Kitchen Package&quot;. When you hit install, the system automatically builds the tables, adds the columns, and even puts dummy data in so you see exactly how it works.</p>
+</blockquote>
+<h3>The &quot;Update&quot; Flow</h3>
+<p><em>Examiner Question:</em> &quot;What happens if you update a module in code? Do existing users get the updates?&quot;
+<em>Answer:</em> &quot;Yes. We built a strictly additive sync engine (<code>src/app/api/packs/update/route.ts</code>). If we bump a pack version in <code>registry.ts</code> and add a new field (e.g., adding <code>GST Rate (%)</code> to the Products table), the frontend shows an &#39;Update&#39; button. The sync engine compares the DB state with <code>registry.ts</code> and pushes only the missing tables, fields, or pages without deleting or overwriting any of the user&#39;s data.&quot;</p>
+<blockquote>
+<p><strong>Simplified Explanation:</strong>
+If we upgrade the &quot;Kitchen Package&quot; to include a Microwave, our sync engine just walks into your house and adds the Microwave. It NEVER deletes your existing fridge or throws away the custom paint job you did.</p>
+</blockquote>
+<h2>Plugins (Logic Executors)</h2>
+<p>While Modules provide data structure (Schema) and views (Pages), <strong>Plugins provide Backend Logic</strong>.</p>
+<ul>
+<li><strong>Structure:</strong> Plugins are stored in <code>src/lib/plugins/registry.ts</code> and their logic lives in <code>src/lib/plugins/executors/</code>.</li>
+<li><strong>How they work:</strong>
+Plugins act as event listeners. A plugin defines <code>triggers</code>. For example, the <code>whatsapp-alerts</code> plugin triggers on <code>RECORD_CREATED</code> for the <code>Stock</code> table.</li>
+<li><strong>Execution:</strong> When a record is created via the API, the backend checks for enabled plugins, finds matching triggers, and invokes the plugin&#39;s executor function dynamically.</li>
+</ul>
+<blockquote>
+<p><strong>Simplified Explanation:</strong>
+Modules give you the physical objects. <strong>Plugins</strong> are like smart home automation. You set a rule (trigger) saying &quot;If someone rings the doorbell (Record Created), flash the living room lights (Invoke Executor function)&quot;. </p>
+</blockquote>
+<h3>Notable Plugins</h3>
+<ul>
+<li><strong>GST Invoice Generator:</strong> Uses <code>jspdf</code> and <code>jspdf-autotable</code> to turn Record JSON data into formatted PDF invoices.</li>
+<li><strong>Razorpay Payment Links:</strong> Uses standard <code>fetch</code> to call Razorpay&#39;s API to generate a payment link, then uses <code>qrcode</code> to generate a Base64 QR code image for display.</li>
+<li><strong>WhatsApp Alerts:</strong> Simulated plugin logic that formats strings and prepares API payloads.</li>
+</ul>
+<div class="mermaid">sequenceDiagram
+    participant User
+    participant API (Record Create)
+    participant Plugin Engine
+    participant Executor (e.g. PDF Gen)
+    
+    User->>API (Record Create): POST /api/tables/invoices/records
+    API (Record Create)->>DB: Insert Record
+    API (Record Create)->>Plugin Engine: Emit(RECORD_CREATED, "invoices", data)
+    Plugin Engine->>Plugin Engine: Check Installed Plugins
+    Plugin Engine->>Executor (e.g. PDF Gen): invoke()
+    Executor (e.g. PDF Gen)-->>User: Return specific result / side-effect</div><h2>Design Decisions &amp; FAQ</h2>
+<p><em>Examiner Question:</em> &quot;Why do you use an &#39;Additive Sync&#39; model for module updates?&quot;
+<em>Answer:</em> &quot;We want to give users new features (like a new GST field) without wiping out their custom changes. The additive sync only adds missing tables and fields; it intentionally refuses to delete or rename existing user data, ensuring updates are always safe.&quot;</p>
+<p><em>Examiner Question:</em> &quot;Why use a Plugin system for backend logic instead of hardcoding features?&quot;
+<em>Answer:</em> &quot;Extensibility. An ERP needs to connect to hundreds of third-party tools (like Razorpay, WhatsApp, or Tally). Hardcoding them creates a monolithic, messy codebase. By using an event-driven Plugin engine, we keep the core lean and only execute specific logic if the tenant has enabled that plugin.&quot;</p>
+<p><em>Examiner Question:</em> &quot;Can a user write their own custom code in a Plugin?&quot;
+<em>Answer:</em> &quot;Currently, plugins are pre-built by us (the platform developers) in <code>registry.ts</code> to ensure system stability. If users could write arbitrary backend code, it would introduce severe security risks (Remote Code Execution). Safely running user-provided code would require building a complex, sandboxed execution environment (like WebAssembly or secure Docker containers), which is beyond the current scope.&quot;</p>
+<div class="page-break"></div><h1>07 - FAQ &amp; Quick Answers for Examiner</h1>
+<p>Use this cheat sheet to confidently answer direct technical questions during your viva or presentation. Every answer includes a simple analogy (ELI5) to help you explain it easily.</p>
+<h3>Q: What is the core technology stack?</h3>
+<p><strong>A:</strong> The project is built using Next.js (App Router), React, TypeScript, and Tailwind CSS. The backend uses Prisma ORM connected to a Neon Serverless PostgreSQL database.</p>
+<blockquote>
+<p><strong>Simplified Explanation:</strong> React and Tailwind build the house, Next.js is the foundation, and PostgreSQL via Prisma is our ultra-organized storage room.</p>
+</blockquote>
+<h3>Q: How did you implement multi-tenancy? (How do you separate data for different companies?)</h3>
+<p><strong>A:</strong> We use a two-layered approach. First, Next.js Middleware (<code>src/proxy.ts</code>) intercepts requests, reads the subdomain from the Host header, and rewrites the path to a dynamic tenant folder (e.g., <code>/apps/[slug]</code>). Second, at the database level, every table has a <code>workspaceId</code> foreign key, and all Prisma queries strictly filter by this ID.</p>
+<blockquote>
+<p><strong>Simplified Explanation:</strong> Like an apartment building: Middleware is the receptionist directing you to the right floor (URL routing), and the Workspace ID is your unique key that only unlocks your room&#39;s data.</p>
+</blockquote>
+<h3>Q: What library was used for the Drag and Drop Page Composer?</h3>
+<p><strong>A:</strong> We used <code>dnd-kit</code> (<code>@dnd-kit/core</code> and <code>@dnd-kit/sortable</code>). It is a modern, lightweight, and accessible drag-and-drop toolkit that works perfectly with our CSS Grid layout, unlike older libraries that struggle with grid sorting.</p>
+<blockquote>
+<p><strong>Simplified Explanation:</strong> It&#39;s the invisible hand that lets us pick up widgets, drag them smoothly, and mathematically calculates where they should snap into our 6-column grid.</p>
+</blockquote>
+<h3>Q: What library was used for the 3D element on the landing page?</h3>
+<p><strong>A:</strong> We used Spline (<code>@splinetool/react-spline</code>). It allows us to integrate interactive 3D WebGL scenes directly into React without having to write complex Three.js boilerplate.</p>
+<blockquote>
+<p><strong>Simplified Explanation:</strong> It lets us embed a mini, interactive 3D video game right inside a web page block.</p>
+</blockquote>
+<h3>Q: How do you handle authentication?</h3>
+<p><strong>A:</strong> We use a dual authentication system to maintain security boundaries. Platform owners use <code>next-auth</code> (with Google SSO support), which handles database sessions. Tenant employees use a custom JWT solution built with <code>jose</code> (Edge-compatible) and <code>bcryptjs</code>. The JWT is stored in an HTTP-only cookie and verified by the Next.js Middleware.</p>
+<blockquote>
+<p><strong>Simplified Explanation:</strong> Platform owners log in via the main gate using official IDs (NextAuth). Tenant employees log into their company portal and get a digital wristband (JWT by jose) that the hallway bouncers (Middleware) check.</p>
+</blockquote>
+<h3>Q: How do users create tables and fields without altering the actual PostgreSQL database schema?</h3>
+<p><strong>A:</strong> We use a metadata-driven &quot;EAV&quot; (Entity-Attribute-Value) pattern. Instead of running <code>CREATE TABLE</code> commands, we store the definition of entities in a <code>Table</code> row and their columns in <code>Field</code> rows. The actual user data is stored as a JSON object inside a single <code>data</code> column in the <code>Record</code> table.</p>
+<blockquote>
+<p><strong>Simplified Explanation:</strong> Instead of knocking down database walls to build new ones, we put all data inside a giant box as flexible JSON documents, using sticky notes (Field rows) to remember what the data means.</p>
+</blockquote>
+<h3>Q: If a user installs the &quot;Inventory&quot; module and renames a field, does it break the original module code?</h3>
+<p><strong>A:</strong> No. We use an event-sourcing/override architecture. The core module definition (<code>registry.ts</code>) is never mutated. When a user renames a field, we store a <code>RENAME_FIELD</code> row in the <code>WorkspaceSchemaOverride</code> table. At runtime, our Schema Resolver merges the original definition with the user&#39;s overrides.</p>
+<blockquote>
+<p><strong>Simplified Explanation:</strong> It&#39;s like putting a transparent sticky note over a printed book. We never erase the printed text; we just read the sticky note on top of it.</p>
+</blockquote>
+<h3>Q: How is search implemented? Is it slow to search through all those JSON columns?</h3>
+<p><strong>A:</strong> We do not scan the JSON columns during a search. We built an event-driven <code>GlobalSearchIndex</code> table. Whenever a record, page, or module is created or updated, we extract the important text and insert a flattened row into the GlobalSearchIndex. Our search API only queries this highly optimized table, making it extremely fast.</p>
+<blockquote>
+<p><strong>Simplified Explanation:</strong> Instead of reading every book in the library to find a word, we created a small index card for every book. The search engine just quickly flips through the index cards.</p>
+</blockquote>
+<h3>Q: How do you generate PDFs and Invoices?</h3>
+<p><strong>A:</strong> We use <code>jspdf</code> and <code>jspdf-autotable</code> inside our Plugin executor engine to take the JSON data from a Record and format it into a professional, downloadable PDF.</p>
+<blockquote>
+<p><strong>Simplified Explanation:</strong> It takes the raw computer code of a bill and neatly draws it onto a virtual piece of paper that anyone can download and read.</p>
+</blockquote>
+
+</body>
+</html>

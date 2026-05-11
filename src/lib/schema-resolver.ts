@@ -70,6 +70,14 @@ interface RenameTablePayload {
   displayName: string;
 }
 
+//  Cache Implementation 
+const schemaCache = new Map<string, { schema: ResolvedPackSchema; timestamp: number }>();
+const CACHE_TTL = 1000 * 60 * 5; // 5 minutes
+
+export function invalidatePackSchemaCache(workspaceId: string, packId: string) {
+  schemaCache.delete(`${workspaceId}:${packId}`);
+}
+
 //  Core resolver 
 
 /**
@@ -80,6 +88,12 @@ export async function resolvePackSchema(
   workspaceId: string,
   packId: string
 ): Promise<ResolvedPackSchema | null> {
+  const cacheKey = `${workspaceId}:${packId}`;
+  const cached = schemaCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.schema;
+  }
+
   const pack = getPackById(packId);
   if (!pack) return null;
 
@@ -115,11 +129,14 @@ export async function resolvePackSchema(
     });
   }
 
-  return {
+  const result = {
     packId,
     packVersion: installedPack?.packVersion ?? "1.0.0",
     tables: resolvedTables,
   };
+
+  schemaCache.set(cacheKey, { schema: result, timestamp: Date.now() });
+  return result;
 }
 
 /**

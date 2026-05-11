@@ -15,6 +15,7 @@ const CommandPalette = dynamic(
 );
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const { workspace, isLoading } = useWorkspace();
   const router = useRouter();
 
@@ -28,7 +29,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "s") {
         e.preventDefault();
-        setSidebarOpen((prev) => !prev);
+        // If desktop (lg), toggle minimize. If mobile, toggle open.
+        if (window.innerWidth >= 1024) {
+          setIsCollapsed((prev) => !prev);
+        } else {
+          setSidebarOpen((prev) => !prev);
+        }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -46,7 +52,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       {/* Overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 transition-opacity duration-300"
+          className="fixed inset-0 z-40 transition-opacity duration-300 lg:hidden"
           style={{
             background: "oklch(0.08 0.020 260 / 0.55)",
             backdropFilter: "blur(6px)",
@@ -56,11 +62,17 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         />
       )}
       <div
-        className={`fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-[var(--ease-out-expo)] ${
+        className={`fixed inset-y-0 left-0 z-50 transform transition-all duration-300 ease-[var(--ease-out-expo)] lg:static lg:translate-x-0 lg:z-0 lg:shadow-none ${
+          isCollapsed ? "w-[68px]" : "w-[248px]"
+        } ${
           sidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"
         }`}
       >
-        <Sidebar onClose={() => setSidebarOpen(false)} />
+        <Sidebar 
+          onClose={() => setSidebarOpen(false)} 
+          isCollapsed={isCollapsed}
+          onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
+        />
       </div>
 
       {/*  Main content  */}

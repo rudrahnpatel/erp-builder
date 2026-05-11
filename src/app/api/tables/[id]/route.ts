@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getWorkspace } from "@/lib/get-workspace";
 import { OverrideType, Prisma } from "@prisma/client";
+import { invalidatePackSchemaCache } from "@/lib/schema-resolver";
 
 // GET /api/tables/[id] : get single table with fields
 export async function GET(
@@ -64,6 +65,7 @@ export async function PATCH(
             payload: { displayName: name } as Prisma.InputJsonValue,
           },
         });
+        invalidatePackSchemaCache(workspace.id, table.packSource);
       }
     }
 

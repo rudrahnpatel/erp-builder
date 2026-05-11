@@ -35,6 +35,32 @@ const COMING_SOON: Record<string, { title: string; blurb: string; icon: any; eta
 };
 
 import { useWorkspace } from "@/hooks/use-workspace";
+import { allPlugins } from "@/lib/plugins/registry";
+
+// Map pack IDs to their associated plugins count (from the plugin registry)
+// Plugins declare which pack they require via connectedTables matching pack table names
+const PLUGIN_PACK_TAGS: Record<string, string> = {
+  "razorpay-payments": "finance",
+  "gst-invoice": "finance",
+  "tally-export": "finance",
+  "pdf-invoice-generator": "finance",
+  "upi-payment-link": "finance",
+  "employee-attendance": "hr",
+  "leave-management": "hr",
+  "whatsapp-notifications": "any",
+  "email-campaigns": "any",
+  "sms-msg91": "any",
+  "google-sheets-sync": "any",
+  "eway-bill": "inventory",
+};
+
+// Count plugins that are exclusively tied to each pack (exclude "any")
+const pluginsPerPack: Record<string, number> = {};
+for (const [pluginId, packId] of Object.entries(PLUGIN_PACK_TAGS)) {
+  if (packId !== "any") {
+    pluginsPerPack[packId] = (pluginsPerPack[packId] || 0) + 1;
+  }
+}
 
 export default function ModulesPage() {
   const [search, setSearch] = useState("");
@@ -281,6 +307,7 @@ export default function ModulesPage() {
               pack={pack}
               installed={installedPacks.includes(pack.id)}
               installedVersion={installedVersionByPack[pack.id]}
+              pluginCount={pluginsPerPack[pack.id] ?? 0}
               onInstall={handleInstall}
               onUninstall={handleUninstall}
               onUpdate={handleUpdate}

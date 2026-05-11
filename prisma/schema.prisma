@@ -268,3 +268,13 @@ model AuditLog {
   details    Json?
   createdAt  DateTime @default(now())
 }
+
+model PaymentLink {
+  id          String   @id @default(cuid())
+  shortId     String   @unique
+  upiId       String
+  merchantName String
+  amount      Float?
+  note        String?
+  createdAt   DateTime @default(now())
+}

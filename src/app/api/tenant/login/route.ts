@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
+import { signTenantToken } from "@/lib/tenant-auth";
 
 export async function POST(req: Request) {
   try {
@@ -30,11 +31,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    // Set a simple cookie for tenant authentication
-    // In a real app, this should be a JWT with proper expiration and signing
-    // For this prototype, we'll store the workspaceId and tenantUserId
+    // Set a secure JWT cookie for tenant authentication
+    const token = await signTenantToken({
+      id: user.id,
+      username: user.username,
+      role: user.role,
+    });
+
     const cookieStore = await cookies();
-    cookieStore.set(`tenant_auth_${slug}`, user.id, {
+    cookieStore.set(`tenant_auth_${slug}`, token, {
       path: `/apps/${slug}`,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

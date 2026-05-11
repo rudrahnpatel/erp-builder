@@ -25,4 +25,6 @@ export interface PluginDefinition {
   triggers: PluginTrigger[];
   installed?: boolean;
   enabled?: boolean;
+  /** If set, this plugin is redundant because the named module covers its functionality */
+  supersededBy?: string;
 }

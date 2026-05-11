@@ -6,6 +6,7 @@ import { RiTableLine, RiMoreLine, RiAddLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { RecordFormModal } from "./RecordFormModal";
+import { TableViewActions } from "./TableViewActions";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -15,25 +16,6 @@ export function TableView({ config, tableId }: { config: any; tableId?: string }
 
   const { data: fields } = useSWR(tableId ? `/api/tables/${tableId}/fields` : null, fetcher);
   const { data: recordsData, mutate: refreshRecords } = useSWR(tableId ? `/api/tables/${tableId}/records` : null, fetcher);
-
-  const copyAttendanceLink = async (employeeId: string) => {
-    try {
-      const res = await fetch("/api/attendance/tokens", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ employeeId }),
-      });
-      const data = await res.json();
-      if (data.checkInUrl) {
-        await navigator.clipboard.writeText(data.checkInUrl);
-        alert("Attendance link copied to clipboard!");
-      } else {
-        alert(data.error || "Failed to generate link");
-      }
-    } catch (e) {
-      alert("Network error");
-    }
-  };
 
   if (!tableId) {
     return (
@@ -203,20 +185,7 @@ export function TableView({ config, tableId }: { config: any; tableId?: string }
                   })}
                   <td className="px-6 py-4 text-right whitespace-nowrap">
                     <div className="flex items-center justify-end gap-2">
-                      {config.tableRef === "Employees" && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-9 px-4 text-xs font-bold rounded-xl border-2 hover:bg-primary hover:text-white transition-all"
-                          style={{ borderColor: "var(--primary)", color: "var(--primary)" }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            copyAttendanceLink(row.id);
-                          }}
-                        >
-                          RiFileCopyLine Link
-                        </Button>
-                      )}
+                      <TableViewActions tableRef={config.tableRef} recordId={row.id} />
                       <Button 
                         variant="secondary" 
                         size="sm" 

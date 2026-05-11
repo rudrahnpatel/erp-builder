@@ -4,7 +4,7 @@ import { PackDefinition } from "@/types/pack";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { RiArchiveLine, RiGroupLine, RiBriefcaseLine, RiMoneyRupeeCircleLine, RiDownloadLine, RiDeleteBinLine, RiSparklingLine } from "react-icons/ri";
+import { RiArchiveLine, RiGroupLine, RiBriefcaseLine, RiMoneyRupeeCircleLine, RiDownloadLine, RiDeleteBinLine, RiSparklingLine, RiPlugLine } from "react-icons/ri";
 import { RiCheckLine, RiEqualizerLine } from "react-icons/ri";
 import { useState } from "react";
 
@@ -42,6 +42,7 @@ export function PackCard({
   pack,
   installed = false,
   installedVersion,
+  pluginCount = 0,
   onInstall,
   onUninstall,
   onUpdate,
@@ -49,6 +50,7 @@ export function PackCard({
   pack: PackDefinition;
   installed?: boolean;
   installedVersion?: string;
+  pluginCount?: number;
   onInstall?: (packId: string) => Promise<void> | void;
   onUninstall?: (packId: string) => Promise<void> | void;
   onUpdate?: (packId: string) => Promise<void> | void;
@@ -145,6 +147,7 @@ export function PackCard({
         {[
           { value: pack.tables.reduce((acc, t) => acc + t.fields.length, 0), label: "fields" },
           { value: pack.pageDefinitions.length, label: "pages" },
+          ...(pluginCount > 0 ? [{ value: pluginCount, label: "plugins", icon: true }] : []),
         ].map((s) => (
           <div
             key={s.label}
@@ -152,9 +155,10 @@ export function PackCard({
             style={{ color: "var(--foreground-dimmed)" }}
           >
             <span
-              className="block text-sm font-semibold tabular-nums"
-              style={{ color: "var(--foreground)" }}
+              className="flex items-center gap-1 text-sm font-semibold tabular-nums"
+              style={{ color: s.label === "plugins" ? "var(--primary)" : "var(--foreground)" }}
             >
+              {"icon" in s && s.icon && <RiPlugLine className="h-3 w-3" />}
               {s.value}
             </span>
             <span className="uppercase tracking-[0.14em] mono">{s.label}</span>

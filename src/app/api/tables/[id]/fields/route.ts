@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getWorkspace } from "@/lib/get-workspace";
 import { FieldType, OverrideType, Prisma } from "@prisma/client";
+import { invalidatePackSchemaCache } from "@/lib/schema-resolver";
 
 //  GET /api/tables/[id]/fields 
 // Returns all fields for a table.
@@ -119,6 +120,7 @@ export async function POST(
             } as Prisma.InputJsonValue,
           },
         });
+        invalidatePackSchemaCache(workspace.id, table.packSource);
       }
     }
 
@@ -208,6 +210,7 @@ export async function PATCH(
               targetKey: `${table.packTableKey}.${field.packFieldKey}`,
             },
           });
+          invalidatePackSchemaCache(workspace.id, table.packSource!);
         }
       }
 
@@ -242,6 +245,7 @@ export async function PATCH(
             payload: o.payload,
           })),
         });
+        invalidatePackSchemaCache(workspace.id, table.packSource!);
       }
 
       return updatedField;
@@ -329,6 +333,7 @@ export async function DELETE(
             //  for this field name as a best-effort cleanup)
           },
         });
+        invalidatePackSchemaCache(workspace.id, table.packSource);
       }
     }
   });

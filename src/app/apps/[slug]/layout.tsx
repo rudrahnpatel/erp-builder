@@ -22,7 +22,7 @@ export default async function TenantAppLayout({
   const workspace = await getWorkspaceBySlug(slug);
   if (!workspace) notFound();
 
-  const [tables, pages] = await Promise.all([
+  const [tables, pages, installedPlugins] = await Promise.all([
     db.table.findMany({
       where: { workspaceId: workspace.id },
       select: { id: true, name: true },
@@ -33,6 +33,10 @@ export default async function TenantAppLayout({
       select: { id: true, title: true, icon: true, packPageKey: true, packSource: true },
       orderBy: { order: "asc" },
     }),
+    db.installedPlugin.findMany({
+      where: { workspaceId: workspace.id, enabled: true },
+      select: { pluginId: true, config: true },
+    }),
   ]);
 
   return (
@@ -42,6 +46,7 @@ export default async function TenantAppLayout({
         slug: workspace.slug,
         tables,
         pages,
+        installedPlugins: installedPlugins.map((p) => ({ pluginId: p.pluginId })),
       }}
     >
       {children}

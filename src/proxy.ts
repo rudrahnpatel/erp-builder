@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { verifyTenantToken } from "@/lib/tenant-auth";
 
 /**
  * Next.js 16 Proxy (renamed from Middleware).
@@ -121,7 +122,16 @@ export async function proxy(request: NextRequest) {
       logicalPath !== "/login"
     ) {
       const authCookie = request.cookies.get(`tenant_auth_${tenantSlug}`);
-      if (!authCookie?.value) {
+      let isValidToken = false;
+
+      if (authCookie?.value) {
+        const payload = await verifyTenantToken(authCookie.value);
+        if (payload) {
+          isValidToken = true;
+        }
+      }
+
+      if (!isValidToken) {
         const loginUrl = new URL(
           hostSlug ? `/login` : `/apps/${tenantSlug}/login`,
           request.url

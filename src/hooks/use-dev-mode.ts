@@ -14,12 +14,14 @@ const EVENT_KEY = "erpbuilder:dev-mode-change";
 export function useDevMode() {
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === "admin";
-  const [isDevModeActive, setIsDevModeActive] = useState(false);
+  const [isDevModeActive, setIsDevModeActive] = useState(() => {
+    if (typeof window !== "undefined") {
+      return window.localStorage.getItem(STORAGE_KEY) === "true";
+    }
+    return false;
+  });
 
   useEffect(() => {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    setIsDevModeActive(stored === "true");
-
     const onChange = (e: Event) => {
       const ce = e as CustomEvent<boolean>;
       setIsDevModeActive(ce.detail);

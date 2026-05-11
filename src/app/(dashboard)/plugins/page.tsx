@@ -47,7 +47,7 @@ export default function PluginsPage() {
     (p) =>
       p.name.toLowerCase().includes(search.toLowerCase()) ||
       p.description.toLowerCase().includes(search.toLowerCase())
-  );
+  ).sort((a, b) => (a.supersededBy ? 1 : 0) - (b.supersededBy ? 1 : 0));
 
   const togglePlugin = async (pluginId: string) => {
     // Optimistic update
@@ -127,6 +127,7 @@ export default function PluginsPage() {
         {filteredPlugins.map((plugin: any) => {
           const isInstalled = plugin.installed;
           const isEnabled = plugin.enabled;
+          const isSuperseded = !!plugin.supersededBy;
 
           // Compute a dynamic inline style for the icon background using the accent map defined in KI.
           // Since it was inline previously, we'll keep it inline purely for the dynamic accent color,
@@ -151,7 +152,7 @@ export default function PluginsPage() {
           return (
             <div
               key={plugin.id}
-              className="group flex flex-col p-6 gap-5 rounded-2xl transition-all duration-300 bg-card border border-border/40 hover:border-border/80 shadow-sm hover:shadow-md relative overflow-hidden"
+              className={`group flex flex-col p-6 gap-5 rounded-2xl transition-all duration-300 bg-card border shadow-sm relative overflow-hidden ${isSuperseded ? "border-border/20 opacity-50 grayscale-[60%]" : "border-border/40 hover:border-border/80 hover:shadow-md"}`}
             >
               {/* Subtle background glow effect on hover */}
               <div 
@@ -183,6 +184,14 @@ export default function PluginsPage() {
                     {plugin.badge}
                   </Badge>
                 </div>
+                {isSuperseded && (
+                  <span
+                    className="text-[10px] font-semibold px-2 py-0.5 rounded-md uppercase tracking-wider w-fit"
+                    style={{ background: "var(--surface-3)", color: "var(--foreground-dimmed)", border: "1px solid var(--border-subtle)" }}
+                  >
+                    Covered by {plugin.supersededBy}
+                  </span>
+                )}
               </div>
 
               {/* Body: Description + Triggers */}
@@ -278,19 +287,22 @@ export default function PluginsPage() {
                       >
                         {isEnabled ? <RiToggleFill className="h-8 w-8" /> : <RiToggleLine className="h-8 w-8" />}
                       </button>
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        className="h-8 text-xs font-medium px-4"
-                      >
-                        Configure
-                      </Button>
+                      <Link href={`/plugins/manage/${plugin.id}`}>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          className="h-8 text-xs font-medium px-4"
+                        >
+                          Configure
+                        </Button>
+                      </Link>
                     </>
                   ) : (
                     <Button
                       size="sm"
                       className="h-8 rounded-lg font-medium shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5 px-4"
                       onClick={() => installPlugin(plugin.id)}
+                      disabled={isSuperseded}
                     >
                       <RiDownloadLine className="h-3.5 w-3.5 mr-1.5" /> Install
                     </Button>

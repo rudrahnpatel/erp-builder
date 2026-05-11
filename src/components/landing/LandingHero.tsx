@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
@@ -66,7 +67,10 @@ function LandingThemeToggle() {
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    const timer = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(timer);
+  }, []);
   if (!mounted) return null;
 
   return (
@@ -152,7 +156,7 @@ export function LandingHero() {
           style={{ fontFamily: "var(--font-body)" }}
         >
           <Link href="/" className="flex items-center gap-2.5 group">
-            <img src="/logo/logo.png" alt="Logo" className="h-14 w-auto" />
+            <Image src="/logo/logo.png" alt="Logo" width={56} height={56} className="h-14 w-auto" priority />
           </Link>
 
           {/* Nav links : hidden on mobile */}

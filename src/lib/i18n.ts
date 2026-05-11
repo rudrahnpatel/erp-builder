@@ -88,10 +88,9 @@ export function useLanguage(): {
   setLang: (next: Lang) => void;
   t: (key: TranslationKey) => string;
 } {
-  const [lang, setLangState] = useState<Lang>(DEFAULT_LANG);
+  const [lang, setLangState] = useState<Lang>(() => getStoredLang());
 
   useEffect(() => {
-    setLangState(getStoredLang());
     const onChange = (e: Event) => {
       const ce = e as CustomEvent<Lang>;
       if (ce.detail === "hi" || ce.detail === "en") {

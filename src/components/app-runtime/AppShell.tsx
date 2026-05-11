@@ -35,23 +35,42 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { Puzzle } from "lucide-react";
 
-function NavGroup({ title, icon: Icon, children, defaultOpen = true }: any) {
+// Plugin display metadata — name + icon shown in tenant sidebar
+const PLUGIN_META: Record<string, { name: string; icon: any }> = {
+  "upi-payment-link":       { name: "UPI Payment Link",      icon: IndianRupee },
+  "pdf-invoice-generator":  { name: "PDF Invoices",          icon: FileText },
+  "tally-export":           { name: "Tally Sync",            icon: ArrowLeftRight },
+  "whatsapp-notifications": { name: "WhatsApp Alerts",       icon: BellRing },
+  "email-campaigns":        { name: "Email Campaigns",       icon: Receipt },
+  "sms-msg91":              { name: "SMS Notifications",     icon: BellRing },
+  "razorpay-payments":      { name: "Razorpay Gateway",      icon: IndianRupee },
+  "google-sheets-sync":     { name: "Google Sheets Sync",   icon: Layers },
+};
+
+function NavGroup({ title, icon: Icon, children, defaultOpen = true, isCollapsed = false }: any) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   return (
     <div className="mb-1">
       <button 
         onClick={() => setIsOpen(!isOpen)} 
-        className="w-full flex items-center justify-between px-3 py-2 text-[13px] rounded-lg hover-bg-subtle focus-ring text-[var(--foreground-muted)] font-medium"
+        className={`w-full flex items-center justify-between px-3 py-2 text-[13px] rounded-lg hover-bg-subtle focus-ring text-[var(--foreground-muted)] font-medium ${isCollapsed ? "justify-center px-0" : ""}`}
+        title={isCollapsed ? title : undefined}
       >
         <div className="flex items-center gap-2.5">
           {Icon && <Icon className="h-[16px] w-[16px]" />}
-          <span className="truncate uppercase text-[10px] tracking-wider">{title}</span>
+          {!isCollapsed && <span className="truncate uppercase text-[10px] tracking-wider">{title}</span>}
         </div>
-        {isOpen ? <ChevronDown className="h-4 w-4 opacity-50" /> : <ChevronRight className="h-4 w-4 opacity-50" />}
+        {!isCollapsed && (isOpen ? <ChevronDown className="h-4 w-4 opacity-50" /> : <ChevronRight className="h-4 w-4 opacity-50" />)}
       </button>
-      {isOpen && (
+      {isOpen && !isCollapsed && (
         <div className="ml-4 pl-2 border-l border-[var(--sidebar-border)] mt-1 space-y-1">
+          {children}
+        </div>
+      )}
+      {isCollapsed && (
+        <div className="mt-1 space-y-1">
           {children}
         </div>
       )}
@@ -101,6 +120,7 @@ export type AppShellWorkspace = {
     packPageKey?: string | null;
     packSource?: string | null;
   }>;
+  installedPlugins?: Array<{ pluginId: string }>;
 };
 
 export function AppShell({
@@ -113,13 +133,19 @@ export function AppShell({
   const pathname = usePathname();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "s") {
         e.preventDefault();
-        setSidebarOpen((prev) => !prev);
+        // If desktop (lg), toggle minimize. If mobile, toggle open.
+        if (window.innerWidth >= 1024) {
+          setIsCollapsed((prev) => !prev);
+        } else {
+          setSidebarOpen((prev) => !prev);
+        }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -194,8 +220,9 @@ export function AppShell({
       onClick={() => setSidebarOpen(false)}
       className={`relative flex items-center gap-2.5 px-3 py-2 text-[13px] rounded-lg focus-ring ${
         active ? "sidebar-nav-item active font-medium" : "sidebar-nav-item"
-      }`}
+      } ${isCollapsed ? "justify-center px-0" : ""}`}
       style={active ? undefined : { color: "var(--foreground-muted)" }}
+      title={isCollapsed ? item.label : undefined}
     >
       {active && (
         <span
@@ -204,7 +231,9 @@ export function AppShell({
         />
       )}
       <item.icon className="h-[16px] w-[16px] shrink-0" />
-      <span className="truncate">{item.label}</span>
+      <span className={`truncate transition-all duration-300 ${isCollapsed ? "opacity-0 w-0 hidden" : "opacity-100"}`}>
+        {item.label}
+      </span>
     </Link>
   );
 
@@ -219,7 +248,7 @@ export function AppShell({
       {/* Overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 transition-opacity duration-300"
+          className="fixed inset-0 z-40 transition-opacity duration-300 lg:hidden"
           style={{
             background: "oklch(0.08 0.020 260 / 0.55)",
             backdropFilter: "blur(6px)",
@@ -231,9 +260,11 @@ export function AppShell({
 
       {/* Sidebar : hidden by default, slide-in on toggle */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-[248px] flex flex-col border-r transform transition-transform duration-300 ease-[var(--ease-out-expo)] ${
-          sidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"
-        }`}
+        className={`fixed inset-y-0 left-0 z-50 flex flex-col border-r transform transition-transform duration-300 ease-[var(--ease-out-expo)] 
+          lg:static lg:translate-x-0 lg:z-0 lg:shadow-none
+          ${isCollapsed ? "w-[68px]" : "w-[248px]"}
+          ${sidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"}
+        `}
         style={{
           background: "var(--sidebar)",
           borderColor: "var(--sidebar-border)",
@@ -241,34 +272,63 @@ export function AppShell({
       >
         {/* Brand */}
         <div
-          className="h-[60px] flex items-center px-3 border-b shrink-0"
+          className="h-[60px] flex items-center px-3 border-b shrink-0 relative"
           style={{ borderColor: "var(--sidebar-border)" }}
         >
-          <div className="relative shrink-0 flex items-center">
-            <img src="/logo/logo.png" alt="Logo" className="h-12 w-auto" />
+          <div className={`flex items-center min-w-0 flex-1 ${isCollapsed ? "justify-center" : ""}`}>
+            <div className="relative shrink-0 flex items-center">
+              <img src="/logo/logo.png" alt="Logo" className={`${isCollapsed ? "h-8" : "h-10"} w-auto transition-all duration-300`} />
+            </div>
+            {!isCollapsed && (
+              <div className="ml-2.5 min-w-0 flex-1 animate-fade-in">
+                <span
+                  className="font-semibold text-[15px] block leading-tight truncate tracking-tight"
+                  style={{ color: "var(--sidebar-foreground)" }}
+                >
+                  {workspace.name}
+                </span>
+                <span
+                  className="text-[10px] tracking-[0.05em] font-medium opacity-50 uppercase"
+                  style={{ color: "var(--foreground-dimmed)" }}
+                >
+                  {workspace.slug}
+                </span>
+              </div>
+            )}
           </div>
-          <div className="ml-2.5 min-w-0 flex-1">
-            <span
-              className="font-semibold text-[15px] block leading-tight truncate tracking-tight"
-              style={{ color: "var(--sidebar-foreground)" }}
-            >
-              {workspace.name}
-            </span>
-            <span
-              className="text-[10px] tracking-[0.05em] font-medium opacity-50 uppercase"
-              style={{ color: "var(--foreground-dimmed)" }}
-            >
-              {workspace.slug}
-            </span>
-          </div>
+          
+          {/* Mobile close button */}
           <button
             onClick={() => setSidebarOpen(false)}
-            className="h-7 w-7 rounded-lg flex items-center justify-center hover-bg-subtle focus-ring ml-auto"
+            className="h-7 w-7 rounded-lg flex items-center justify-center hover-bg-subtle focus-ring ml-auto lg:hidden"
             style={{ color: "var(--foreground-dimmed)", background: "var(--surface-2)" }}
             aria-label="Close sidebar"
           >
             <ChevronLeft className="h-3.5 w-3.5" />
           </button>
+
+          {/* Minimize button (Desktop only) */}
+          {!isCollapsed && (
+            <button
+              onClick={() => setIsCollapsed(true)}
+              className="hidden lg:flex h-7 w-7 rounded-lg items-center justify-center hover-bg-subtle focus-ring ml-1"
+              style={{ color: "var(--foreground-dimmed)", background: "var(--surface-2)" }}
+              aria-label="Collapse sidebar"
+            >
+              <ChevronLeft className="h-3.5 w-3.5" />
+            </button>
+          )}
+
+          {/* Expand button (Visible only when collapsed) */}
+          {isCollapsed && (
+            <button
+              onClick={() => setIsCollapsed(false)}
+              className="hidden lg:flex h-6 w-6 rounded-full items-center justify-center bg-[var(--primary)] text-white shadow-lg absolute -right-3 top-1/2 -translate-y-1/2 z-10 hover:scale-110 transition-transform"
+              aria-label="Expand sidebar"
+            >
+              <ChevronRight className="h-3 w-3" />
+            </button>
+          )}
         </div>
 
         {/* Nav */}
@@ -287,6 +347,7 @@ export function AppShell({
                 key={packSource} 
                 title={formatPackName(packSource)} 
                 defaultOpen={hasActiveChild || true}
+                isCollapsed={isCollapsed}
                 icon={Box} // Generic icon for modules
               >
                 {pages.map((p) => {
@@ -327,6 +388,47 @@ export function AppShell({
             </div>
           )}
 
+          {/* Plugin Tools */}
+          {workspace.installedPlugins && workspace.installedPlugins.length > 0 && (
+            <div className="pt-2 mt-2 border-t" style={{ borderColor: "var(--sidebar-border)" }}>
+              <NavGroup title="Tools" icon={Puzzle} defaultOpen={true} isCollapsed={isCollapsed}>
+                {workspace.installedPlugins.map(({ pluginId }) => {
+                  const meta = PLUGIN_META[pluginId];
+                  if (!meta) return null;
+                  const Icon = meta.icon;
+                  // Navigate to the tool execution page within the tenant app
+                  return (
+                    <Link
+                      key={pluginId}
+                      href={`${base}/plugins/${pluginId}`}
+                      onClick={() => setSidebarOpen(false)}
+                      className={`relative flex items-center gap-2.5 px-3 py-2 text-[13px] rounded-lg sidebar-nav-item focus-ring ${
+                        isActive(`${base}/plugins/${pluginId}`, false) ? "active font-medium" : ""
+                      } ${isCollapsed ? "justify-center px-0" : ""}`}
+                      title={isCollapsed ? meta.name : undefined}
+                      style={
+                        isActive(`${base}/plugins/${pluginId}`, false)
+                          ? undefined
+                          : { color: "var(--foreground-muted)" }
+                      }
+                    >
+                      {isActive(`${base}/plugins/${pluginId}`, false) && (
+                        <span
+                          className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full animate-nav-indicator"
+                          style={{ background: "var(--primary)" }}
+                        />
+                      )}
+                      <Icon className="h-[16px] w-[16px] shrink-0" style={{ color: "var(--primary)" }} />
+                      <span className={`truncate transition-all duration-300 ${isCollapsed ? "opacity-0 w-0 hidden" : "opacity-100"}`}>
+                        {meta.name}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </NavGroup>
+            </div>
+          )}
+
           {workspace.tables.length === 0 && nonSystemPages.length === 0 && (
             <div
               className="px-3 py-6 text-xs text-center"
@@ -351,8 +453,9 @@ export function AppShell({
                 onClick={() => setSidebarOpen(false)}
                 className={`relative flex items-center gap-2.5 px-3 py-2.5 text-[13px] rounded-lg focus-ring ${
                   active ? "sidebar-nav-item active" : "sidebar-nav-item"
-                }`}
+                } ${isCollapsed ? "justify-center px-0" : ""}`}
                 style={active ? undefined : { color: "var(--foreground-muted)" }}
+                title={isCollapsed ? settingsPage.title : undefined}
               >
                 {active && (
                   <span
@@ -361,21 +464,24 @@ export function AppShell({
                   />
                 )}
                 <Settings className="h-[18px] w-[18px] shrink-0" />
-                <span className="truncate">{settingsPage.title}</span>
+                <span className={`truncate transition-all duration-300 ${isCollapsed ? "opacity-0 w-0 hidden" : "opacity-100"}`}>
+                  {settingsPage.title}
+                </span>
               </Link>
             );
           })()}
-          <div className="flex items-center justify-between px-1 pt-1">
+          <div className={`flex items-center justify-between px-1 pt-1 ${isCollapsed ? "justify-center" : ""}`}>
             <ThemeToggle />
           </div>
           <button
             onClick={handleLogout}
             disabled={loggingOut}
-            className="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] rounded-lg sidebar-nav-item focus-ring transition-colors"
+            className={`w-full flex items-center gap-2.5 px-3 py-2 text-[13px] rounded-lg sidebar-nav-item focus-ring transition-colors ${isCollapsed ? "justify-center px-0" : ""}`}
             style={{ color: "var(--danger)" }}
+            title={isCollapsed ? (loggingOut ? "Signing out…" : "Sign Out") : undefined}
           >
             <LogOut className="h-4 w-4" />
-            {loggingOut ? "Signing out…" : "Sign Out"}
+            {!isCollapsed && <span>{loggingOut ? "Signing out…" : "Sign Out"}</span>}
           </button>
         </div>
       </aside>
@@ -392,7 +498,7 @@ export function AppShell({
         >
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-1.5 rounded-md hover-bg-subtle focus-ring shrink-0"
+            className="p-1.5 rounded-md hover-bg-subtle focus-ring shrink-0 lg:hidden"
             style={{ color: "var(--foreground-muted)" }}
             aria-label="Open menu"
           >
