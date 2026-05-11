@@ -1,56 +1,53 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+
+
 import {
-  Package,
-  Puzzle,
-  Database,
-  FileText,
-  ArrowRight,
-  TrendingUp,
-  Activity,
-  Zap,
-  LayoutDashboard,
-  CheckCircle2,
-  Clock,
-  ArrowUpRight,
-} from "lucide-react";
+  RiArchiveLine,
+
+  RiPlugLine,
+  RiDatabase2Line,
+  RiFileTextLine,
+  RiArrowRightLine,
+  RiPulseLine,
+  RiFlashlightLine,
+  RiDashboardLine,
+  RiCheckDoubleLine,
+  RiTimeLine,
+  RiArrowRightUpLine,
+} from "react-icons/ri";
+
+import { FileText, ArrowUpRight } from "lucide-react";
+
 
 const recentActivity = [
   {
     action: "Inventory module installed",
     time: "2 minutes ago",
     type: "module",
-    icon: CheckCircle2,
+    icon: RiCheckDoubleLine,
     href: "/modules",
   },
   {
     action: "Product Table schema updated",
     time: "15 minutes ago",
     type: "schema",
-    icon: Database,
+    icon: RiDatabase2Line,
     href: "/tables",
   },
   {
     action: "WhatsApp plugin configured",
     time: "1 hour ago",
     type: "plugin",
-    icon: Puzzle,
+    icon: RiPlugLine,
     href: "/plugins",
   },
   {
     action: "Attendance Module deployed",
     time: "3 hours ago",
     type: "module",
-    icon: Zap,
+    icon: RiFlashlightLine,
     href: "/modules",
   },
 ];
@@ -66,7 +63,7 @@ const moduleTopology = [
 const quickActions = [
   {
     href: "/modules",
-    icon: Package,
+    icon: RiArchiveLine,
     label: "Browse Modules",
     description: "Explore marketplace for new capabilities",
     iconColor: "var(--accent-blue)",
@@ -74,7 +71,7 @@ const quickActions = [
   },
   {
     href: "/plugins",
-    icon: Puzzle,
+    icon: RiPlugLine,
     label: "Browse Plugins",
     description: "Add integrations like WhatsApp, Razorpay",
     iconColor: "var(--accent-violet)",
@@ -82,7 +79,7 @@ const quickActions = [
   },
   {
     href: "/schema/products",
-    icon: Database,
+    icon: RiDatabase2Line,
     label: "Schema Designer",
     description: "Design your data tables and fields",
     iconColor: "var(--accent-emerald)",
@@ -90,7 +87,7 @@ const quickActions = [
   },
   {
     href: "/pages",
-    icon: LayoutDashboard,
+    icon: RiDashboardLine,
     label: "Manage Pages",
     description: "Build and manage pages visually",
     iconColor: "var(--accent-amber)",
@@ -102,7 +99,8 @@ import { useWorkspace } from "@/hooks/use-workspace";
 import { WorkspaceSkeleton } from "@/components/workspace/WorkspaceSkeleton";
 
 export default function WorkspacePage() {
-  const router = useRouter();
+
+
   const { workspace, isLoading, isError } = useWorkspace();
 
   if (isLoading) {
@@ -113,14 +111,15 @@ export default function WorkspacePage() {
     return (
       <div className="p-8 mt-12 max-w-md mx-auto text-center space-y-4 animate-in fade-in slide-in-from-bottom-4">
         <div className="h-12 w-12 rounded-xl mx-auto flex items-center justify-center bg-red-50 text-red-600 border border-red-100">
-          <Database className="h-6 w-6" />
+          <RiDatabase2Line className="h-6 w-6" />
         </div>
         <h2 className="text-lg font-semibold" style={{ color: "var(--foreground)" }}>
           Database Offline
         </h2>
         <p className="text-sm" style={{ color: "var(--foreground-muted)" }}>
-          Your dashboard couldn't be loaded because the database server is asleep or unreachable. Please wait a moment and try refreshing.
+          Your dashboard couldn&apos;t be loaded because the database server is asleep or unreachable. Please wait a moment and try refreshing.
         </p>
+
       </div>
     );
   }
@@ -129,7 +128,7 @@ export default function WorkspacePage() {
     {
       label: "Installed Modules",
       value: workspace.stats.installedPacks.toString(),
-      icon: Package,
+      icon: RiArchiveLine,
       detail: "Total active",
       accentVar: "--accent-blue",
       href: "/modules",
@@ -137,7 +136,7 @@ export default function WorkspacePage() {
     {
       label: "Active Plugins",
       value: workspace.stats.installedPlugins.toString(),
-      icon: Puzzle,
+      icon: RiPlugLine,
       detail: "Total active",
       accentVar: "--accent-violet",
       href: "/plugins",
@@ -145,7 +144,7 @@ export default function WorkspacePage() {
     {
       label: "Tables Created",
       value: workspace.stats.tables.toString(),
-      icon: Database,
+      icon: RiDatabase2Line,
       detail: `${workspace.stats.totalRecords} total records`,
       accentVar: "--accent-emerald",
       href: "/tables",
@@ -153,7 +152,7 @@ export default function WorkspacePage() {
     {
       label: "Custom Pages",
       value: workspace.stats.pages.toString(),
-      icon: FileText,
+      icon: RiFileTextLine,
       detail: "Total pages",
       accentVar: "--accent-amber",
       href: "/pages",
@@ -216,7 +215,7 @@ export default function WorkspacePage() {
                   boxShadow: "0 2px 12px color-mix(in oklch, var(--primary), transparent 60%), inset 0 1px 0 oklch(1 0 0 / 0.12)",
                 }}
               >
-                <ArrowUpRight className="h-4 w-4" />
+                <RiArrowRightUpLine className="h-4 w-4" />
                 Open my ERP
               </Link>
               <span
@@ -257,7 +256,7 @@ export default function WorkspacePage() {
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-medium flex items-center gap-1.5" style={{ color: "var(--foreground-muted)" }}>
                 {stat.label}
-                <ArrowUpRight
+                <RiArrowRightUpLine
                   className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all duration-200 -translate-x-0.5 group-hover:translate-x-0"
                   style={{ color: `var(${stat.accentVar})` }}
                 />
@@ -317,7 +316,7 @@ export default function WorkspacePage() {
                   style={{ color: "var(--foreground)" }}
                 >
                   {action.label}
-                  <ArrowUpRight
+                  <RiArrowRightUpLine
                     className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 transition-all duration-200 -translate-x-1 group-hover:translate-x-0"
                     style={{ color: "var(--primary)" }}
                   />
@@ -351,85 +350,87 @@ export default function WorkspacePage() {
             </span>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            <div
-              onClick={() => router.push("/quotation")}
-              className="group relative overflow-hidden rounded-xl p-6 transition-all duration-300 card-interactive cursor-pointer"
-              style={{ background: "var(--card)", border: "1px solid var(--border-subtle)" }}
-            >
-              <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: "var(--accent-blue)" }} />
-              <div className="flex items-start justify-between mb-4">
-                <div
-                  className="h-12 w-12 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
-                  style={{
-                    background: "color-mix(in oklch, var(--accent-blue), transparent 85%)",
-                    color: "var(--accent-blue)",
-                  }}
-                >
-                  <FileText className="h-6 w-6" />
+            <Link href="/quotation">
+              <div
+                className="group relative overflow-hidden rounded-xl p-6 transition-all duration-300 card-interactive cursor-pointer"
+                style={{ background: "var(--card)", border: "1px solid var(--border-subtle)" }}
+              >
+                <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: "var(--accent-blue)" }} />
+                <div className="flex items-start justify-between mb-4">
+                  <div
+                    className="h-12 w-12 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+                    style={{
+                      background: "color-mix(in oklch, var(--accent-blue), transparent 85%)",
+                      color: "var(--accent-blue)",
+                    }}
+                  >
+                    <FileText className="h-6 w-6" />
+                  </div>
+                  <ArrowUpRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-all duration-200" style={{ color: "var(--accent-blue)" }} />
                 </div>
-                <ArrowUpRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-all duration-200" style={{ color: "var(--accent-blue)" }} />
+                <h3 className="text-base font-bold mb-1" style={{ color: "var(--foreground)" }}>Quotations</h3>
+                <p className="text-xs leading-relaxed" style={{ color: "var(--foreground-dimmed)" }}>
+                  Create and manage professional quotations &amp; proforma invoices with PDF export.
+                </p>
+                <div className="mt-4 flex gap-2" onClick={(e) => e.stopPropagation()}>
+                  <Link
+                    href="/quotation/create"
+                    className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all pressable"
+                    style={{ background: "linear-gradient(135deg, var(--primary), var(--primary-hover))", color: "var(--primary-foreground)" }}
+                  >
+                    + New Quotation
+                  </Link>
+                  <Link
+                    href="/quotation"
+                    className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all hover-bg-subtle"
+                    style={{ color: "var(--foreground-muted)", border: "1px solid var(--border-subtle)" }}
+                  >
+                    View All
+                  </Link>
+                </div>
               </div>
-              <h3 className="text-base font-bold mb-1" style={{ color: "var(--foreground)" }}>Quotations</h3>
-              <p className="text-xs leading-relaxed" style={{ color: "var(--foreground-dimmed)" }}>
-                Create and manage professional quotations &amp; proforma invoices with PDF export.
-              </p>
-              <div className="mt-4 flex gap-2" onClick={(e) => e.stopPropagation()}>
-                <Link
-                  href="/quotation/create"
-                  className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all pressable"
-                  style={{ background: "linear-gradient(135deg, var(--primary), var(--primary-hover))", color: "var(--primary-foreground)" }}
-                >
-                  + New Quotation
-                </Link>
-                <Link
-                  href="/quotation"
-                  className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all hover-bg-subtle"
-                  style={{ color: "var(--foreground-muted)", border: "1px solid var(--border-subtle)" }}
-                >
-                  View All
-                </Link>
-              </div>
-            </div>
+            </Link>
 
-            <div
-              onClick={() => router.push("/estimated")}
-              className="group relative overflow-hidden rounded-xl p-6 transition-all duration-300 card-interactive cursor-pointer"
-              style={{ background: "var(--card)", border: "1px solid var(--border-subtle)" }}
-            >
-              <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: "var(--accent-amber)" }} />
-              <div className="flex items-start justify-between mb-4">
-                <div
-                  className="h-12 w-12 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
-                  style={{
-                    background: "color-mix(in oklch, var(--accent-amber), transparent 85%)",
-                    color: "var(--accent-amber)",
-                  }}
-                >
-                  <FileText className="h-6 w-6" />
+            <Link href="/estimated">
+              <div
+                className="group relative overflow-hidden rounded-xl p-6 transition-all duration-300 card-interactive cursor-pointer"
+                style={{ background: "var(--card)", border: "1px solid var(--border-subtle)" }}
+              >
+                <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: "var(--accent-amber)" }} />
+                <div className="flex items-start justify-between mb-4">
+                  <div
+                    className="h-12 w-12 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+                    style={{
+                      background: "color-mix(in oklch, var(--accent-amber), transparent 85%)",
+                      color: "var(--accent-amber)",
+                    }}
+                  >
+                    <FileText className="h-6 w-6" />
+                  </div>
+                  <ArrowUpRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-all duration-200" style={{ color: "var(--accent-amber)" }} />
                 </div>
-                <ArrowUpRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-all duration-200" style={{ color: "var(--accent-amber)" }} />
+                <h3 className="text-base font-bold mb-1" style={{ color: "var(--foreground)" }}>Estimates</h3>
+                <p className="text-xs leading-relaxed" style={{ color: "var(--foreground-dimmed)" }}>
+                  Generate detailed cost estimates and service bills with GST calculation support.
+                </p>
+                <div className="mt-4 flex gap-2" onClick={(e) => e.stopPropagation()}>
+                  <Link
+                    href="/estimated/create"
+                    className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all pressable"
+                    style={{ background: "linear-gradient(135deg, var(--accent-amber), color-mix(in oklch, var(--accent-amber), var(--primary) 30%))", color: "#fff" }}
+                  >
+                    + New Estimate
+                  </Link>
+                  <Link
+                    href="/estimated"
+                    className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all hover-bg-subtle"
+                    style={{ color: "var(--foreground-muted)", border: "1px solid var(--border-subtle)" }}
+                  >
+                    View All
+                  </Link>
+                </div>
               </div>
-              <h3 className="text-base font-bold mb-1" style={{ color: "var(--foreground)" }}>Estimates</h3>
-              <p className="text-xs leading-relaxed" style={{ color: "var(--foreground-dimmed)" }}>
-                Generate detailed cost estimates and service bills with GST calculation support.
-              </p>
-              <div className="mt-4 flex gap-2" onClick={(e) => e.stopPropagation()}>
-                <Link
-                  href="/estimated/create"
-                  className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all pressable"
-                  style={{ background: "linear-gradient(135deg, var(--accent-amber), color-mix(in oklch, var(--accent-amber), var(--primary) 30%))", color: "#fff" }}
-                >
-                  + New Estimate
-                </Link>
-                <Link
-                  href="/estimated"
-                  className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all hover-bg-subtle"
-                  style={{ color: "var(--foreground-muted)", border: "1px solid var(--border-subtle)" }}
-                >
-                  View All
-                </Link>
-              </div>
-            </div>
+            </Link>
           </div>
         </div>
       )}
@@ -451,7 +452,7 @@ export default function WorkspacePage() {
               style={{ color: "var(--primary)" }}
             >
               View all
-              <ArrowUpRight className="h-3 w-3" />
+              <RiArrowRightUpLine className="h-3 w-3" />
             </Link>
           </div>
           <div
@@ -499,7 +500,7 @@ export default function WorkspacePage() {
                 <div className="flex-1 min-w-0">
                   <span className="text-sm font-medium flex items-center gap-1.5" style={{ color: "var(--foreground)" }}>
                     {item.action}
-                    <ArrowUpRight
+                    <RiArrowRightUpLine
                       className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all duration-200 -translate-x-0.5 group-hover:translate-x-0"
                       style={{ color: "var(--primary)" }}
                     />
@@ -507,7 +508,7 @@ export default function WorkspacePage() {
                 </div>
 
                 <div className="flex items-center gap-1.5" style={{ color: "var(--foreground-dimmed)" }}>
-                  <Clock className="h-3 w-3" />
+                  <RiTimeLine className="h-3 w-3" />
                   <span className="text-xs whitespace-nowrap">{item.time}</span>
                 </div>
               </Link>
@@ -543,7 +544,7 @@ export default function WorkspacePage() {
                       {module.name}
                     </span>
                     <div className="flex items-center gap-1 mt-0.5">
-                      <Activity className="h-3 w-3" style={{ color: "var(--foreground-dimmed)" }} />
+                      <RiPulseLine className="h-3 w-3" style={{ color: "var(--foreground-dimmed)" }} />
                       <span className="text-[10px]" style={{ color: "var(--foreground-dimmed)" }}>
                         → {module.connections.join(", ")}
                       </span>
@@ -576,7 +577,7 @@ export default function WorkspacePage() {
                 className="font-semibold flex items-center gap-1 transition-colors hover:opacity-80"
                 style={{ color: "var(--primary)" }}
               >
-                View schema <ArrowRight className="h-3 w-3" />
+                View schema <RiArrowRightLine className="h-3 w-3" />
               </Link>
             </div>
           </div>

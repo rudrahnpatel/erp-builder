@@ -3,18 +3,8 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { 
-  FileText, 
-  Search, 
-  Plus, 
-  Eye, 
-  Copy, 
-  Edit, 
-  Share2, 
-  Trash2,
-  CheckCircle2,
-  XCircle
-} from "lucide-react";
+import { RiFileTextLine, RiSearchLine, RiAddLine, RiEyeLine, RiShareLine, RiDeleteBinLine, RiCheckDoubleLine } from "react-icons/ri";
+import { RiFileCopyLine, RiEdit2Line, RiCloseCircleLine } from "react-icons/ri";
 import { buildShareSlug } from "@/lib/shareSlug";
 
 interface Quotation {
@@ -107,7 +97,7 @@ export default function QuotationsPage({ createUrl }: { createUrl?: string }) {
       alert("Share link copied!\n\n" + shareUrl);
     } catch (err) {
       console.error("Failed to copy: ", err);
-      alert("Failed to copy link. Copy manually:\n" + shareUrl);
+      alert("Failed to copy link. RiFileCopyLine manually:\n" + shareUrl);
     }
   };
 
@@ -125,7 +115,7 @@ export default function QuotationsPage({ createUrl }: { createUrl?: string }) {
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-            <FileText className="w-6 h-6 text-blue-600" />
+            <RiFileTextLine className="w-6 h-6 text-blue-600" />
             Quotations
           </h1>
           <p className="text-gray-500 text-sm mt-1">
@@ -135,7 +125,7 @@ export default function QuotationsPage({ createUrl }: { createUrl?: string }) {
         
         <div className="flex items-center gap-4">
           <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <RiSearchLine className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               placeholder="Search quotations..."
@@ -148,7 +138,7 @@ export default function QuotationsPage({ createUrl }: { createUrl?: string }) {
             href={finalCreateUrl}
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm whitespace-nowrap"
           >
-            <Plus className="w-4 h-4" />
+            <RiAddLine className="w-4 h-4" />
             Create Quotation
           </Link>
         </div>
@@ -230,14 +220,14 @@ export default function QuotationsPage({ createUrl }: { createUrl?: string }) {
                             className="p-1 hover:text-green-600 transition-colors" 
                             title="Mark Active"
                           >
-                            <CheckCircle2 className="w-4 h-4" />
+                            <RiCheckDoubleLine className="w-4 h-4" />
                           </button>
                           <button 
                             onClick={() => handleUpdateStatus(q, "Pending")}
                             className="p-1 hover:text-gray-600 transition-colors" 
                             title="Mark Pending"
                           >
-                            <XCircle className="w-4 h-4" />
+                            <RiCloseCircleLine className="w-4 h-4" />
                           </button>
                           
                           <div className="w-px h-4 bg-gray-200 mx-1"></div>
@@ -247,35 +237,35 @@ export default function QuotationsPage({ createUrl }: { createUrl?: string }) {
                             className="p-1 hover:text-blue-600 transition-colors"
                             title="View Preview"
                           >
-                            <Eye className="w-4 h-4" />
+                            <RiEyeLine className="w-4 h-4" />
                           </Link>
                           <Link 
                             href={`${finalCreateUrl}?cloneId=${q.id}`}
                             className="p-1 hover:text-blue-600 transition-colors"
                             title="Clone"
                           >
-                            <Copy className="w-4 h-4" />
+                            <RiFileCopyLine className="w-4 h-4" />
                           </Link>
                           <Link 
                             href={`${finalCreateUrl}?id=${q.id}`}
                             className="p-1 hover:text-blue-600 transition-colors"
-                            title="Edit"
+                            title="RiEdit2Line"
                           >
-                            <Edit className="w-4 h-4" />
+                            <RiEdit2Line className="w-4 h-4" />
                           </Link>
                           <button 
                             onClick={() => handleShare(q)}
                             className="p-1 hover:text-blue-600 transition-colors"
                             title="Share"
                           >
-                            <Share2 className="w-4 h-4" />
+                            <RiShareLine className="w-4 h-4" />
                           </button>
                           <button 
                             onClick={() => handleDelete(q.id)}
                             className="p-1 hover:text-red-600 transition-colors"
                             title="Delete"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <RiDeleteBinLine className="w-4 h-4" />
                           </button>
                         </div>
                       </td>

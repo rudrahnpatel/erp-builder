@@ -1,12 +1,18 @@
 "use client";
 
 import { ReactNode, useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Topbar } from "@/components/layout/Topbar";
-import { CommandPalette } from "@/components/layout/CommandPalette";
 import { useWorkspace } from "@/hooks/use-workspace";
 import { useRouter } from "next/navigation";
 
+// Lazy-load — CommandPalette pulls in fuse.js, cmdk, and the full
+// pack/plugin registries. None of it is needed until the user presses Ctrl+K.
+const CommandPalette = dynamic(
+  () => import("@/components/layout/CommandPalette").then((m) => m.CommandPalette),
+  { ssr: false }
+);
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { workspace, isLoading } = useWorkspace();

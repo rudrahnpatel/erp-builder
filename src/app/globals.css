@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
+/* Instrument Serif is loaded via next/font/google in layout.tsx — no external @import needed */
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";

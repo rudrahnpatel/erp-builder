@@ -7,22 +7,8 @@ import { Button } from "@/components/ui/button";
 import { allPlugins } from "@/lib/plugins/registry";
 import { PluginDefinition } from "@/types/plugin";
 import { useWorkspace } from "@/hooks/use-workspace";
-import {
-  MessageCircle,
-  Fingerprint,
-  FileCheck,
-  Mail,
-  CalendarOff,
-  CreditCard,
-  Search,
-  Settings2,
-  Download,
-  Users,
-  ToggleLeft,
-  ToggleRight,
-  Link2,
-  AlertCircle,
-} from "lucide-react";
+import { DynamicIcon } from "@/components/ui/DynamicIcon";
+import { RiMessage3Line, RiFingerprintLine, RiFileCheckLine, RiCalendarCloseLine, RiBankCardLine, RiEqualizerLine, RiLinksLine, RiErrorWarningLine, RiSearchLine, RiDownloadLine, RiGroupLine, RiToggleLine, RiToggleFill, RiMailLine } from "react-icons/ri";
 import useSWR from "swr";
 
 // Map a plugin id → which built-in module supplies the table(s) it reconciles
@@ -35,12 +21,12 @@ const PACK_FOR_PLUGIN: Record<string, { packId: string; packName: string }> = {
 };
 
 const iconMap: Record<string, React.ReactNode> = {
-  "message-circle": <MessageCircle className="h-5 w-5" />,
-  fingerprint: <Fingerprint className="h-5 w-5" />,
-  "file-check": <FileCheck className="h-5 w-5" />,
-  mail: <Mail className="h-5 w-5" />,
-  "calendar-off": <CalendarOff className="h-5 w-5" />,
-  "credit-card": <CreditCard className="h-5 w-5" />,
+  "message-circle": <RiMessage3Line className="h-5 w-5" />,
+  fingerprint: <RiFingerprintLine className="h-5 w-5" />,
+  "file-check": <RiFileCheckLine className="h-5 w-5" />,
+  mail: <RiMailLine className="h-5 w-5" />,
+  "calendar-off": <RiCalendarCloseLine className="h-5 w-5" />,
+  "credit-card": <RiBankCardLine className="h-5 w-5" />,
 };
 
 // We will use Tailwind arbitrary values combining the CSS variables or map them specifically
@@ -118,7 +104,7 @@ export default function PluginsPage() {
       {/* Toolbar */}
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
         <div className="relative w-full max-w-md group">
-          <Search className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
+          <RiSearchLine className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
           <input
             type="search"
             placeholder="Search plugins by name or features..."
@@ -146,13 +132,21 @@ export default function PluginsPage() {
           // Since it was inline previously, we'll keep it inline purely for the dynamic accent color,
           // but wrap everything else in standard Tailwind.
           const accentColor = `var(--accent-${
-            plugin.icon === "message-circle" ? "emerald" :
-            plugin.icon === "fingerprint" ? "blue" :
-            plugin.icon === "file-check" ? "violet" :
-            plugin.icon === "mail" ? "amber" :
-            plugin.icon === "calendar-off" ? "rose" :
-            plugin.icon === "credit-card" ? "cyan" : "primary"
-          })`;
+            plugin.icon === "whatsapp"        ? "emerald" :
+            plugin.icon === "message-circle"  ? "emerald" :
+            plugin.icon === "message-square"  ? "blue"    :
+            plugin.icon === "fingerprint"     ? "blue"    :
+            plugin.icon === "file-check"      ? "violet"  :
+            plugin.icon === "file-text"       ? "amber"   :
+            plugin.icon === "mail"            ? "amber"   :
+            plugin.icon === "calendar-off"    ? "rose"    :
+            plugin.icon === "credit-card"     ? "cyan"    :
+            plugin.icon === "smartphone"      ? "cyan"    :
+            plugin.icon === "table"           ? "emerald" :
+            plugin.icon === "database"        ? "violet"  :
+            plugin.icon === "truck"           ? "amber"   :
+            "primary"
+          })`
 
           return (
             <div
@@ -174,7 +168,7 @@ export default function PluginsPage() {
                     color: accentColor,
                   }}
                 >
-                  {iconMap[plugin.icon] || <Settings2 className="h-5 w-5" />}
+                  <DynamicIcon name={plugin.icon} className="h-5 w-5" />
                 </div>
                 <div className="flex-1 min-w-0 pt-0.5 flex flex-col gap-1.5">
                   <h3 className="text-base font-semibold text-foreground tracking-tight truncate">
@@ -209,7 +203,7 @@ export default function PluginsPage() {
                   return (
                     <div className="flex flex-wrap items-center gap-1.5 mt-auto">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mr-1">
-                        <Link2 className="h-3 w-3 inline mr-1 -mt-0.5" />
+                        <RiLinksLine className="h-3 w-3 inline mr-1 -mt-0.5" />
                         Connected to
                       </span>
                       {tableNames.map((name) => {
@@ -253,7 +247,7 @@ export default function PluginsPage() {
                           }}
                           title={`Install the ${requiredPack.packName} module to enable this flow`}
                         >
-                          <AlertCircle className="h-3 w-3" />
+                          <RiErrorWarningLine className="h-3 w-3" />
                           Install {requiredPack.packName}
                         </Link>
                       )}
@@ -266,10 +260,10 @@ export default function PluginsPage() {
               <div className="flex items-center justify-between gap-4 pt-5 border-t border-border/40 mt-auto">
                 <div className="flex items-center gap-3 text-[11px] font-medium text-muted-foreground/80 lowercase">
                   <span className="flex items-center gap-1.5" title={`${plugin.installs.toLocaleString()} users`}>
-                    <Users className="h-3.5 w-3.5" /> {plugin.installs >= 1000 ? `${(plugin.installs/1000).toFixed(1)}k` : plugin.installs}
+                    <RiGroupLine className="h-3.5 w-3.5" /> {plugin.installs >= 1000 ? `${(plugin.installs/1000).toFixed(1)}k` : plugin.installs}
                   </span>
                   <span className="flex items-center gap-1.5" title={`${plugin.configFields.length} options`}>
-                    <Settings2 className="h-3.5 w-3.5" /> {plugin.configFields.length}
+                    <RiEqualizerLine className="h-3.5 w-3.5" /> {plugin.configFields.length}
                   </span>
                 </div>
 
@@ -282,7 +276,7 @@ export default function PluginsPage() {
                         style={{ color: isEnabled ? accentColor : "var(--muted-foreground)" }}
                         title={isEnabled ? "Disable Plugin" : "Enable Plugin"}
                       >
-                        {isEnabled ? <ToggleRight className="h-8 w-8" /> : <ToggleLeft className="h-8 w-8" />}
+                        {isEnabled ? <RiToggleFill className="h-8 w-8" /> : <RiToggleLine className="h-8 w-8" />}
                       </button>
                       <Button
                         variant="secondary"
@@ -298,7 +292,7 @@ export default function PluginsPage() {
                       className="h-8 rounded-lg font-medium shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5 px-4"
                       onClick={() => installPlugin(plugin.id)}
                     >
-                      <Download className="h-3.5 w-3.5 mr-1.5" /> Install
+                      <RiDownloadLine className="h-3.5 w-3.5 mr-1.5" /> Install
                     </Button>
                   )}
                 </div>

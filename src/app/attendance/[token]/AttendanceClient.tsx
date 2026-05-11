@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, MapPin, LogIn, LogOut, CheckCircle2 } from "lucide-react";
+import { RiLoader4Line, RiMapPinLine, RiLoginBoxLine, RiLogoutBoxRLine, RiCheckDoubleLine } from "react-icons/ri";
 
 export default function AttendanceClient({ 
   token, 
@@ -108,11 +108,11 @@ export default function AttendanceClient({
             </div>
           </div>
 
-          {/* Check-in time while working */}
+          {/* RiCheckLine-in time while working */}
           {status === "WORKING" && checkInTime && (
             <div className="flex items-center gap-4 bg-success/10 border border-success/20 rounded-2xl px-5 py-4 animate-in fade-in slide-in-from-top-2 duration-500">
               <div className="h-10 w-10 rounded-xl bg-success/20 flex items-center justify-center shrink-0">
-                <LogIn className="h-5 w-5 text-success" />
+                <RiLoginBoxLine className="h-5 w-5 text-success" />
               </div>
               <div>
                 <p className="text-[10px] text-success font-bold uppercase tracking-widest">Shift Started</p>
@@ -130,7 +130,7 @@ export default function AttendanceClient({
                 onClick={() => handleLocationAction("check-in")}
                 disabled={loading}
               >
-                {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : <LogIn className="h-6 w-6 group-hover:translate-x-1 transition-transform" />}
+                {loading ? <RiLoader4Line className="h-6 w-6 animate-spin" /> : <RiLoginBoxLine className="h-6 w-6 group-hover:translate-x-1 transition-transform" />}
                 {loading ? "Verifying..." : "Clock In Now"}
               </Button>
             )}
@@ -142,7 +142,7 @@ export default function AttendanceClient({
                 onClick={() => handleLocationAction("check-out")}
                 disabled={loading}
               >
-                {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : <LogOut className="h-6 w-6 group-hover:translate-x-1 transition-transform" />}
+                {loading ? <RiLoader4Line className="h-6 w-6 animate-spin" /> : <RiLogoutBoxRLine className="h-6 w-6 group-hover:translate-x-1 transition-transform" />}
                 {loading ? "Verifying..." : "Clock Out Now"}
               </Button>
             )}
@@ -150,7 +150,7 @@ export default function AttendanceClient({
             {status === "COMPLETED" && (
               <div className="flex flex-col items-center gap-4 py-6 bg-muted/20 rounded-3xl border border-dashed border-border animate-in zoom-in-95 duration-500">
                 <div className="h-16 w-16 rounded-full bg-info/10 flex items-center justify-center">
-                  <CheckCircle2 className="h-10 w-10 text-info" />
+                  <RiCheckDoubleLine className="h-10 w-10 text-info" />
                 </div>
                 <div className="text-center">
                   <p className="text-foreground font-bold text-xl">Shift Complete!</p>
@@ -175,7 +175,7 @@ export default function AttendanceClient({
         {/* Footer */}
         <div className="bg-muted/30 px-8 py-5 text-center border-t border-border/50">
           <div className="flex items-center justify-center gap-2 text-muted-foreground opacity-60">
-            <MapPin className="h-3 w-3" />
+            <RiMapPinLine className="h-3 w-3" />
             <p className="text-[10px] font-medium tracking-tight">Location verified via Secure GPS Tunnel</p>
           </div>
         </div>

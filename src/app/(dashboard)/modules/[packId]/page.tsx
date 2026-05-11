@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { getWorkspace } from "@/lib/get-workspace";
-import * as LucideIcons from "lucide-react";
+import { DynamicIcon } from "@/components/ui/DynamicIcon";
 import { Badge } from "@/components/ui/badge";
 
 export default async function ModuleLandingPage({ params }: { params: Promise<{ packId: string }> }) {
@@ -47,10 +47,7 @@ export default async function ModuleLandingPage({ params }: { params: Promise<{ 
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {pages.map((page) => {
-            // @ts-ignore dynamic icon
-            const Icon = (page.icon && (LucideIcons as any)[
-              page.icon.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join("")
-            ]) || LucideIcons.LayoutTemplate;
+            const Icon = (props: any) => <DynamicIcon name={page.icon} {...props} />;
 
             return (
               <Link 

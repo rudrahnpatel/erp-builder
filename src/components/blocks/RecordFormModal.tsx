@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, Save, Loader2 } from "lucide-react";
+import { RiCloseLine, RiSaveLine, RiLoader4Line } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 
 // Indian mobile numbers: 10 digits after the optional +91 / 91 / 0 country prefix.
@@ -183,7 +183,7 @@ export function RecordFormModal({
               className="text-xl font-bold tracking-tight"
               style={{ color: "var(--foreground)" }}
             >
-              {recordId ? "Edit Record" : "Add Record"}
+              {recordId ? "RiEdit2Line Record" : "Add Record"}
             </h2>
             <p className="text-xs mt-1" style={{ color: "var(--foreground-dimmed)" }}>
               Fill out the details below.
@@ -195,7 +195,7 @@ export function RecordFormModal({
             onClick={onClose}
             className="rounded-xl hover-bg-subtle focus-ring h-9 w-9"
           >
-            <X className="h-5 w-5" />
+            <RiCloseLine className="h-5 w-5" />
           </Button>
         </div>
 
@@ -387,9 +387,9 @@ export function RecordFormModal({
               }}
             >
               {loading ? (
-                <><Loader2 className="h-4 w-4 animate-spin" /> Saving...</>
+                <><RiLoader4Line className="h-4 w-4 animate-spin" /> Saving...</>
               ) : (
-                <><Save className="h-4 w-4" /> Save Record</>
+                <><RiSaveLine className="h-4 w-4" /> Save Record</>
               )}
             </Button>
           </div>

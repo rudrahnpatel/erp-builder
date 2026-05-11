@@ -5,7 +5,7 @@ export const whatsappPlugin: PluginDefinition = {
   name: "WhatsApp Notifications",
   description:
     "Send order confirmations, payment reminders, and stock alerts to customers automatically.",
-  icon: "message-circle",
+  icon: "whatsapp",
   category: "Communication",
   badge: "Pro",
   installs: 1200,

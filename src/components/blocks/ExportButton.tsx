@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Download, Loader2 } from "lucide-react";
+import { RiDownloadLine, RiLoader4Line } from "react-icons/ri";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import type { BlockConfig } from "@/types/block";
@@ -98,7 +98,7 @@ export function ExportButton({
           className="text-sm font-semibold"
           style={{ color: "var(--foreground)" }}
         >
-          Download {tableRef}
+          RiDownloadLine {tableRef}
         </p>
         <p
           className="text-xs mt-0.5 truncate"
@@ -109,9 +109,9 @@ export function ExportButton({
       </div>
       <Button onClick={handleExport} disabled={busy} className="gap-2 shrink-0">
         {busy ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <RiLoader4Line className="h-4 w-4 animate-spin" />
         ) : (
-          <Download className="h-4 w-4" />
+          <RiDownloadLine className="h-4 w-4" />
         )}
         {busy ? "Exporting…" : label}
       </Button>

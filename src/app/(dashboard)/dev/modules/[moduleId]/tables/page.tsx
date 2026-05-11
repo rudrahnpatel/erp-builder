@@ -4,21 +4,8 @@ import { use, useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { toast } from "sonner";
-import {
-  Database,
-  Plus,
-  Loader2,
-  Package,
-  Trash2,
-  PenLine,
-  Layers,
-  Table2,
-  Rows3,
-  Search,
-  ArrowUpRight,
-  Check,
-  X,
-} from "lucide-react";
+import { RiDatabase2Line, RiAddLine, RiLoader4Line, RiArchiveLine, RiDeleteBinLine, RiPencilLine, RiStackLine, RiTableLine, RiSearchLine, RiArrowRightUpLine, RiCloseLine } from "react-icons/ri";
+import { RiLayoutRowLine, RiCheckLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
@@ -57,7 +44,7 @@ export default function ModuleTablesPage({
   const [renameValue, setRenameValue] = useState("");
   const renameInputRef = useRef<HTMLInputElement>(null);
 
-  // Search
+  // RiSearchLine
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
@@ -190,11 +177,11 @@ export default function ModuleTablesPage({
         >
           {creatingTable ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" /> Creating…
+              <RiLoader4Line className="h-4 w-4 animate-spin" /> Creating…
             </>
           ) : (
             <>
-              <Plus className="h-4 w-4" /> New Table
+              <RiAddLine className="h-4 w-4" /> New RiTableLine
             </>
           )}
         </Button>
@@ -210,7 +197,7 @@ export default function ModuleTablesPage({
             boxShadow: "0 0 0 3px var(--primary-glow)",
           }}
         >
-          <Database
+          <RiDatabase2Line
             className="h-5 w-5 shrink-0"
             style={{ color: "var(--primary)" }}
           />
@@ -239,9 +226,9 @@ export default function ModuleTablesPage({
             }}
           >
             {creatingTable ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              <RiLoader4Line className="h-3.5 w-3.5 animate-spin" />
             ) : (
-              <Check className="h-3.5 w-3.5" />
+              <RiCheckLine className="h-3.5 w-3.5" />
             )}
           </button>
           <button
@@ -252,7 +239,7 @@ export default function ModuleTablesPage({
             className="h-7 w-7 rounded-lg flex items-center justify-center hover-bg-subtle"
             style={{ color: "var(--foreground-muted)" }}
           >
-            <X className="h-3.5 w-3.5" />
+            <RiCloseLine className="h-3.5 w-3.5" />
           </button>
         </div>
       )}
@@ -266,7 +253,7 @@ export default function ModuleTablesPage({
             border: "1px solid var(--border-subtle)",
           }}
         >
-          <Search
+          <RiSearchLine
             className="h-4 w-4"
             style={{ color: "var(--foreground-dimmed)" }}
           />
@@ -283,7 +270,7 @@ export default function ModuleTablesPage({
               className="h-6 w-6 rounded-md flex items-center justify-center hover-bg-subtle"
               style={{ color: "var(--foreground-dimmed)" }}
             >
-              <X className="h-3 w-3" />
+              <RiCloseLine className="h-3 w-3" />
             </button>
           )}
         </div>
@@ -332,7 +319,7 @@ export default function ModuleTablesPage({
                       color: "var(--accent-emerald)",
                     }}
                   >
-                    <Database className="h-5 w-5" />
+                    <RiDatabase2Line className="h-5 w-5" />
                   </div>
 
                   {/* Actions */}
@@ -349,15 +336,15 @@ export default function ModuleTablesPage({
                       }}
                       title="Rename Table"
                     >
-                      <PenLine className="h-4 w-4" />
+                      <RiPencilLine className="h-4 w-4" />
                     </button>
                     <button
                       className="p-1.5 rounded-lg hover-bg-subtle focus-ring"
                       style={{ color: "var(--foreground-muted)" }}
                       onClick={() => router.push(`/schema/${table.id}`)}
-                      title="Edit Schema"
+                      title="RiEdit2Line Schema"
                     >
-                      <ArrowUpRight className="h-4 w-4" />
+                      <RiArrowRightUpLine className="h-4 w-4" />
                     </button>
                     <button
                       className="p-1.5 rounded-lg transition-colors focus-ring"
@@ -372,7 +359,7 @@ export default function ModuleTablesPage({
                         e.currentTarget.style.background = "transparent";
                       }}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <RiDeleteBinLine className="h-4 w-4" />
                     </button>
                   </div>
                 </div>
@@ -414,14 +401,14 @@ export default function ModuleTablesPage({
                     className="inline-flex items-center gap-1.5 text-xs"
                     style={{ color: "var(--foreground-dimmed)" }}
                   >
-                    <Layers className="h-3 w-3" />
+                    <RiStackLine className="h-3 w-3" />
                     {table.fieldCount} fields
                   </span>
                   <span
                     className="inline-flex items-center gap-1.5 text-xs"
                     style={{ color: "var(--foreground-dimmed)" }}
                   >
-                    <Rows3 className="h-3 w-3" />
+                    <RiLayoutRowLine className="h-3 w-3" />
                     {table.recordCount} records
                   </span>
                 </div>
@@ -445,7 +432,7 @@ export default function ModuleTablesPage({
               color: "var(--foreground-muted)",
             }}
           >
-            <Search className="h-6 w-6" />
+            <RiSearchLine className="h-6 w-6" />
           </div>
           <h3
             className="text-lg font-semibold mb-2"
@@ -477,7 +464,7 @@ export default function ModuleTablesPage({
               color: "var(--foreground-muted)",
             }}
           >
-            <Table2 className="h-7 w-7" aria-hidden="true" />
+            <RiTableLine className="h-7 w-7" aria-hidden="true" />
           </div>
           <h3
             className="text-lg font-semibold mb-2"
@@ -504,7 +491,7 @@ export default function ModuleTablesPage({
                 "0 2px 8px color-mix(in oklch, var(--primary), transparent 65%)",
             }}
           >
-            <Plus className="h-4 w-4" /> Create First Table
+            <RiAddLine className="h-4 w-4" /> Create First RiTableLine
           </Button>
         </div>
       )}

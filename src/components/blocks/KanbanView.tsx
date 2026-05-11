@@ -2,7 +2,10 @@
 
 import { useState, useRef, useEffect } from "react";
 import useSWR from "swr";
-import { Kanban, Plus } from "lucide-react";
+import { RiKanbanView } from "react-icons/ri";
+
+import { Plus } from "lucide-react";
+
 import { RecordFormModal } from "./RecordFormModal";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -186,7 +189,7 @@ export function KanbanView({ config, tableId }: { config: any; tableId?: string 
           background: "var(--surface-sunken)",
         }}
       >
-        <Kanban className="h-8 w-8 mb-3 opacity-40" />
+        <RiKanbanView className="h-8 w-8 mb-3 opacity-40" />
         <p className="text-sm font-medium">No table configured or table not found.</p>
       </div>
     );
@@ -373,10 +376,10 @@ export function KanbanView({ config, tableId }: { config: any; tableId?: string 
               color: "var(--accent-violet)",
             }}
           >
-            <Kanban className="h-5 w-5" />
+            <RiKanbanView className="h-5 w-5" />
           </div>
           <span className="text-xl font-bold text-foreground tracking-tight">
-            {config.tableRef || "Kanban Board"}
+            {config.tableRef || "RiKanbanView Board"}
           </span>
           <span
             className="text-xs font-medium px-2 py-0.5 rounded-md"
@@ -414,6 +417,7 @@ export function KanbanView({ config, tableId }: { config: any; tableId?: string 
                 setIsFormOpen(true);
               }}
             />
+
           );
         })}
       </div>

@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { Database, LayoutTemplate, ArrowRight, Zap, ArrowUpRight } from "lucide-react";
+import { notFound, redirect } from "next/navigation";
+import { RiDatabase2Line, RiLayoutLine, RiArrowRightLine, RiFlashlightLine, RiArrowRightUpLine } from "react-icons/ri";
 import { db } from "@/lib/db";
 import { getWorkspaceBySlug } from "@/lib/get-workspace";
 
@@ -29,6 +29,14 @@ export default async function TenantHome({
     }),
   ]);
 
+  const nonSystemPages = pages.filter(p => p.packPageKey !== 'settings' && p.packPageKey !== 'user_management');
+  
+  if (nonSystemPages.length > 0) {
+    redirect(`/apps/${slug}/pages/${nonSystemPages[0].id}`);
+  } else if (tables.length > 0) {
+    redirect(`/apps/${slug}/${tables[0].id}`);
+  }
+
   return (
     <div className="relative min-h-[100dvh]">
       {/* Gradient mesh backdrop instead of heavy 3D Spline */}
@@ -48,7 +56,7 @@ export default async function TenantHome({
               border: "1px solid color-mix(in oklch, var(--primary), transparent 75%)",
             }}
           >
-            <Zap className="h-3 w-3" /> Live Runtime
+            <RiFlashlightLine className="h-3 w-3" /> Live Runtime
           </div>
           <h1
             className="text-3xl sm:text-4xl font-bold tracking-tight mb-2"
@@ -70,7 +78,7 @@ export default async function TenantHome({
                 color: "var(--primary)",
               }}
             >
-              <Database className="h-4.5 w-4.5" />
+              <RiDatabase2Line className="h-4.5 w-4.5" />
             </div>
             <h2
               className="text-sm font-semibold"
@@ -116,7 +124,7 @@ export default async function TenantHome({
                           color: "var(--primary)",
                         }}
                       >
-                        <Database className="h-4 w-4" />
+                        <RiDatabase2Line className="h-4 w-4" />
                       </div>
                       <h3
                         className="font-semibold text-[15px]"
@@ -125,7 +133,7 @@ export default async function TenantHome({
                         {table.name}
                       </h3>
                     </div>
-                    <ArrowUpRight
+                    <RiArrowRightUpLine
                       className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-all -translate-x-1 group-hover:translate-x-0"
                       style={{ color: "var(--primary)" }}
                     />
@@ -159,7 +167,7 @@ export default async function TenantHome({
                 color: "var(--accent-amber)",
               }}
             >
-              <LayoutTemplate className="h-4.5 w-4.5" />
+              <RiLayoutLine className="h-4.5 w-4.5" />
             </div>
             <h2
               className="text-sm font-semibold"
@@ -205,7 +213,7 @@ export default async function TenantHome({
                           color: "var(--accent-amber)",
                         }}
                       >
-                        <LayoutTemplate className="h-4 w-4" />
+                        <RiLayoutLine className="h-4 w-4" />
                       </div>
                       <h3
                         className="font-semibold text-[15px]"
@@ -214,7 +222,7 @@ export default async function TenantHome({
                         {page.title}
                       </h3>
                     </div>
-                    <ArrowUpRight
+                    <RiArrowRightUpLine
                       className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-all -translate-x-1 group-hover:translate-x-0"
                       style={{ color: "var(--accent-amber)" }}
                     />

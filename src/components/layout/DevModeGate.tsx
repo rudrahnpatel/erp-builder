@@ -3,22 +3,21 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useDevMode } from "@/hooks/use-dev-mode";
 
 /**
  * Gate component : wraps pages/tables routes and redirects to /settings
  * if the user hasn't activated developer mode.
  */
 export function DevModeGate({ children }: { children: React.ReactNode }) {
-  const { data: session, status } = useSession();
-  const isDevMode = session?.user?.role === "admin";
+  const { isDevMode } = useDevMode();
   const router = useRouter();
 
   useEffect(() => {
-    if (status === "loading") return;
     if (!isDevMode) {
-      router.replace("/settings");
+      router.replace("/admin");
     }
-  }, [isDevMode, status, router]);
+  }, [isDevMode, router]);
 
   // During initial hydration, show nothing (prevents flash of content)
   if (!isDevMode) {

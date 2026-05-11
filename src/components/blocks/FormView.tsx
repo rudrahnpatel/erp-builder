@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import useSWR from "swr";
-import { CheckCircle2, Loader2, Save, FileText } from "lucide-react";
+import { RiCheckDoubleLine, RiLoader4Line, RiSaveLine, RiFileTextLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
@@ -71,7 +71,7 @@ export function FormView({
   if (!tableId) {
     return (
       <div className="p-10 border-2 border-dashed border-border/40 rounded-xl flex flex-col items-center justify-center bg-secondary/20 text-muted-foreground">
-        <FileText className="h-8 w-8 mb-3 opacity-40" />
+        <RiFileTextLine className="h-8 w-8 mb-3 opacity-40" />
         <p className="text-sm font-medium">No table connected.</p>
         <p className="text-xs mt-1 opacity-70">
           Pick one in Configuration → Target Database Table.
@@ -130,7 +130,7 @@ export function FormView({
 
       {!fields ? (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" /> Loading fields…
+          <RiLoader4Line className="h-4 w-4 animate-spin" /> Loading fields…
         </div>
       ) : visibleFields.length === 0 ? (
         <div className="text-sm text-muted-foreground">
@@ -244,7 +244,7 @@ export function FormView({
       <div className="pt-4 flex justify-end gap-2 border-t border-border/40 items-center">
         {justSaved && (
           <span className="inline-flex items-center gap-1.5 text-xs text-emerald-600 mr-auto">
-            <CheckCircle2 className="h-3.5 w-3.5" /> Record saved
+            <RiCheckDoubleLine className="h-3.5 w-3.5" /> Record saved
           </span>
         )}
         <Button
@@ -263,11 +263,11 @@ export function FormView({
         >
           {submitting ? (
             <>
-              <Loader2 className="h-3.5 w-3.5 animate-spin" /> Saving…
+              <RiLoader4Line className="h-3.5 w-3.5 animate-spin" /> Saving…
             </>
           ) : (
             <>
-              <Save className="h-3.5 w-3.5" /> Submit Record
+              <RiSaveLine className="h-3.5 w-3.5" /> Submit Record
             </>
           )}
         </Button>

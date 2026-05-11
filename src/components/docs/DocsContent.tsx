@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Menu } from "lucide-react";
+import { RiMenuLine } from "react-icons/ri";
 import { DocsSidebar, ALL_SECTION_IDS } from "./DocsSidebar";
 import {
   SectionGettingStarted,
@@ -87,7 +87,7 @@ export function DocsContent() {
               style={{ background: "var(--surface-2)", color: "var(--foreground-muted)" }}
               aria-label="Open menu"
             >
-              <Menu className="h-4 w-4" />
+              <RiMenuLine className="h-4 w-4" />
             </button>
             <span className="text-sm font-medium" style={{ color: "var(--foreground-muted)" }}>
               Mosaic Docs

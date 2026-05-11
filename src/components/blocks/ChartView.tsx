@@ -1,7 +1,7 @@
 "use client";
 
 import useSWR from "swr";
-import { BarChart3 } from "lucide-react";
+import { RiBarChartLine } from "react-icons/ri";
 import {
   Bar,
   BarChart,
@@ -45,7 +45,7 @@ const PIE_COLORS = [
 function EmptyState({ message, hint }: { message: string; hint?: string }) {
   return (
     <div className="p-10 border-2 border-dashed border-border/40 rounded-xl flex flex-col items-center justify-center bg-secondary/20 text-muted-foreground">
-      <BarChart3 className="h-8 w-8 mb-3 opacity-40" />
+      <RiBarChartLine className="h-8 w-8 mb-3 opacity-40" />
       <p className="text-sm font-medium">{message}</p>
       {hint && <p className="text-xs mt-1 opacity-70">{hint}</p>}
     </div>
@@ -163,7 +163,7 @@ export function ChartView({
             color: "var(--primary)",
           }}
         >
-          <BarChart3 className="h-4 w-4" />
+          <RiBarChartLine className="h-4 w-4" />
         </div>
         <span className="text-sm font-semibold text-foreground">{title}</span>
         <span className="ml-auto text-[10px] font-medium uppercase tracking-wider text-muted-foreground">

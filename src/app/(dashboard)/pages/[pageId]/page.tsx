@@ -56,7 +56,7 @@ export default async function DynamicPageRenderer({ params }: { params: Promise<
             return <KanbanView key={i} config={block.config} tableId={tableId} />;
           }
 
-          return <div key={i} className="p-4 border border-dashed rounded-lg text-muted-foreground text-sm flex items-center justify-center bg-secondary/20">Unknown Block Type: {block.type}</div>;
+          return <div key={i} className="p-4 border border-dashed rounded-lg text-muted-foreground text-sm flex items-center justify-center bg-secondary/20">Unknown Block RiText: {block.type}</div>;
         })}
       </div>
     </div>

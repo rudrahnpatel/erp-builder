@@ -5,24 +5,8 @@ import useSWR from "swr";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-import {
-  Plus,
-  GripVertical,
-  Settings2,
-  Trash2,
-  Database,
-  Eye,
-  Save,
-  ChevronRight,
-  Lock,
-  Layers,
-  CircleDot,
-  CheckCircle2,
-  MessageSquare,
-  Mail,
-  Zap,
-  Sparkles,
-} from "lucide-react";
+import { RiAddLine, RiDraggable, RiDeleteBinLine, RiDatabase2Line, RiEyeLine, RiSaveLine, RiArrowRightSLine, RiLockLine, RiStackLine, RiCheckDoubleLine, RiMailLine, RiFlashlightLine, RiSparklingLine } from "react-icons/ri";
+import { RiEqualizerLine, RiFocus3Line, RiMessage2Line } from "react-icons/ri";
 
 const fieldTypes = [
   { value: "TEXT", label: "Text", color: "var(--accent-blue)" },
@@ -31,7 +15,7 @@ const fieldTypes = [
   { value: "SINGLE_SELECT", label: "Select", color: "var(--accent-violet)" },
   { value: "CURRENCY", label: "Currency", color: "var(--accent-rose)" },
   { value: "RELATION", label: "Relation", color: "#6366f1" },
-  { value: "PHONE", label: "Phone", color: "#06b6d4" },
+  { value: "PHONE", label: "RiPhoneLine", color: "#06b6d4" },
   { value: "EMAIL", label: "Email", color: "#8b5cf6" },
   { value: "CHECKBOX", label: "Checkbox", color: "var(--foreground-muted)" },
   { value: "TIME", label: "Time", color: "#f59e0b" },
@@ -143,11 +127,11 @@ export default function SchemaDesignerPage({ params }: { params: Promise<{ table
       >
         <div className="flex items-center gap-1.5 text-xs" style={{ color: "var(--foreground-muted)" }}>
           <span>Tables</span>
-          <ChevronRight className="h-3 w-3" />
+          <RiArrowRightSLine className="h-3 w-3" />
           <span className="font-medium" style={{ color: "var(--foreground)" }}>
             {table ? table.name : "Loading..."}
           </span>
-          <ChevronRight className="h-3 w-3" />
+          <RiArrowRightSLine className="h-3 w-3" />
           <span>Schema</span>
         </div>
         <div className="flex items-center gap-2">
@@ -172,12 +156,12 @@ export default function SchemaDesignerPage({ params }: { params: Promise<{ table
           >
             {hasUnsavedChanges ? (
               <>
-                <CircleDot className="h-3 w-3" />
+                <RiFocus3Line className="h-3 w-3" />
                 {draftDiff.total} unsaved change{draftDiff.total === 1 ? "" : "s"}
               </>
             ) : (
               <>
-                <CheckCircle2 className="h-3 w-3" />
+                <RiCheckDoubleLine className="h-3 w-3" />
                 Published
               </>
             )}
@@ -203,7 +187,7 @@ export default function SchemaDesignerPage({ params }: { params: Promise<{ table
               background: "var(--surface-2)",
             }}
           >
-            <Save className="h-3.5 w-3.5" /> Save Draft
+            <RiSaveLine className="h-3.5 w-3.5" /> Save Draft
           </Button>
           <Button
             size="sm"
@@ -255,9 +239,9 @@ export default function SchemaDesignerPage({ params }: { params: Promise<{ table
           <div className="px-4 py-3 space-y-0.5">
             {(
               [
-                { id: "schema", label: "Data Schema", icon: Database },
-                { id: "automations", label: "Automations", icon: Zap },
-                { id: "permissions", label: "Permissions", icon: Lock },
+                { id: "schema", label: "Data Schema", icon: RiDatabase2Line },
+                { id: "automations", label: "Automations", icon: RiFlashlightLine },
+                { id: "permissions", label: "Permissions", icon: RiLockLine },
               ] as const
             ).map((nav) => {
               const active = section === nav.id;
@@ -317,7 +301,7 @@ export default function SchemaDesignerPage({ params }: { params: Promise<{ table
                   }
                 }}
               >
-                <GripVertical className="h-4 w-4 shrink-0 cursor-grab" style={{ color: "var(--foreground-dimmed)" }} />
+                <RiDraggable className="h-4 w-4 shrink-0 cursor-grab" style={{ color: "var(--foreground-dimmed)" }} />
                 <div className="flex-1 min-w-0">
                   <input
                     value={field.name}
@@ -344,7 +328,7 @@ export default function SchemaDesignerPage({ params }: { params: Promise<{ table
                   }}
                   className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                 >
-                  <Trash2 className="h-3.5 w-3.5" style={{ color: "var(--danger)" }} />
+                  <RiDeleteBinLine className="h-3.5 w-3.5" style={{ color: "var(--danger)" }} />
                 </button>
               </div>
             ))}
@@ -367,7 +351,7 @@ export default function SchemaDesignerPage({ params }: { params: Promise<{ table
                 e.currentTarget.style.background = "transparent";
               }}
             >
-              <Plus className="h-4 w-4" /> Add New Field
+              <RiAddLine className="h-4 w-4" /> Add New Field
             </button>
           </div>}
         </div>
@@ -382,7 +366,7 @@ export default function SchemaDesignerPage({ params }: { params: Promise<{ table
           )}
           {section === "schema" && (<>
           <div className="flex items-center gap-2 mb-4">
-            <Eye className="h-4 w-4" style={{ color: "var(--foreground-dimmed)" }} />
+            <RiEyeLine className="h-4 w-4" style={{ color: "var(--foreground-dimmed)" }} />
             <h3
               className="text-sm font-semibold uppercase tracking-wider"
               style={{ color: "var(--foreground-dimmed)" }}
@@ -480,7 +464,7 @@ export default function SchemaDesignerPage({ params }: { params: Promise<{ table
             >
               <div className="flex items-center gap-3">
                 <span className="flex items-center gap-1.5">
-                  <Layers className="h-3 w-3" style={{ color: "var(--primary)" }} />
+                  <RiStackLine className="h-3 w-3" style={{ color: "var(--primary)" }} />
                   {fields.length} columns
                 </span>
                 <span className="flex items-center gap-1.5">
@@ -515,7 +499,7 @@ export default function SchemaDesignerPage({ params }: { params: Promise<{ table
                 boxShadow: "var(--shadow-lg)",
               }}
             >
-              <Plus className="h-5 w-5" />
+              <RiAddLine className="h-5 w-5" />
             </Button>
           </div>
           </>)}
@@ -537,7 +521,7 @@ function AutomationsPanel({ tableName }: { tableName?: string }) {
       description: `When a record in ${tableName || "this table"} drops below its reorder level, send a WhatsApp message to the owner.`,
       trigger: "Field changes",
       channel: "WhatsApp",
-      icon: MessageSquare,
+      icon: RiMessage2Line,
       accent: "var(--success)",
     },
     {
@@ -545,7 +529,7 @@ function AutomationsPanel({ tableName }: { tableName?: string }) {
       description: "Automatically text a welcome message in Hindi or English when a customer record is added.",
       trigger: "Record created",
       channel: "SMS",
-      icon: Mail,
+      icon: RiMailLine,
       accent: "var(--accent-blue)",
     },
     {
@@ -553,7 +537,7 @@ function AutomationsPanel({ tableName }: { tableName?: string }) {
       description: "Send a polite reminder 3 days after an invoice's due date passes.",
       trigger: "Scheduled (daily)",
       channel: "WhatsApp",
-      icon: MessageSquare,
+      icon: RiMessage2Line,
       accent: "var(--accent-amber)",
     },
   ];
@@ -590,7 +574,7 @@ function AutomationsPanel({ tableName }: { tableName?: string }) {
             border: "1px solid color-mix(in oklch, var(--accent-amber), transparent 70%)",
           }}
         >
-          <Sparkles className="h-3 w-3" />
+          <RiSparklingLine className="h-3 w-3" />
           Beta
         </span>
       </div>

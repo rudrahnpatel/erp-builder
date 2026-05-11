@@ -1,6 +1,6 @@
 "use client";
 
-import { Image as ImageIcon } from "lucide-react";
+import { RiImageLine } from "react-icons/ri";
 import type { BlockConfig } from "@/types/block";
 
 const WIDTH_CLASS: Record<NonNullable<BlockConfig["imageWidth"]>, string> = {
@@ -32,7 +32,7 @@ export function ImageBlock({ config }: { config: BlockConfig }) {
           background: "var(--surface-sunken)",
         }}
       >
-        <ImageIcon className="h-8 w-8 mb-3 opacity-40" />
+        <RiImageLine className="h-8 w-8 mb-3 opacity-40" />
         <p className="text-sm font-medium">No image URL set</p>
         <p className="text-xs opacity-70 mt-1">
           Paste a public image URL in this block's configuration.

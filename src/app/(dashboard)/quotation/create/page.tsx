@@ -347,7 +347,7 @@ function CreateQuotationContent({ listUrl }: { listUrl?: string }) {
       alert("Share link copied!\n\n" + shareUrl);
     } catch (err) {
       console.error("Failed to copy: ", err);
-      alert("Failed to copy link. Copy manually:\n" + shareUrl);
+      alert("Failed to copy link. RiFileCopyLine manually:\n" + shareUrl);
     }
   };
 

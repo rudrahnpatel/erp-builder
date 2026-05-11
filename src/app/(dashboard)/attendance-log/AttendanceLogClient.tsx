@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import useSWR from "swr";
-import { Download, MapPin, Loader2, X } from "lucide-react";
+import { RiDownloadLine, RiMapPinLine, RiLoader4Line, RiCloseLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -34,7 +34,7 @@ export default function AttendanceLogClient() {
 
   const exportCSV = () => {
     if (!data?.records) return;
-    const headers = ["Date", "Employee Name", "Status", "Check-in Time", "Check-out Time", "Duration (mins)", "Remark"];
+    const headers = ["Date", "Employee Name", "Status", "RiCheckLine-in Time", "RiCheckLine-out Time", "Duration (mins)", "Remark"];
     const rows = data.records.map((r: any) => [
       new Date(r.date).toLocaleDateString(),
       r.employeeName,
@@ -109,7 +109,7 @@ export default function AttendanceLogClient() {
         </div>
         <div>
           <Button onClick={exportCSV} className="h-10 px-6 font-semibold shadow-sm" variant="outline">
-            <Download className="h-4 w-4 mr-2" /> Export CSV
+            <RiDownloadLine className="h-4 w-4 mr-2" /> Export CSV
           </Button>
         </div>
       </div>
@@ -136,7 +136,7 @@ export default function AttendanceLogClient() {
               {isLoading ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-12 text-center" style={{ color: "var(--foreground-muted)" }}>
-                    <Loader2 className="h-6 w-6 animate-spin mx-auto mb-3" />
+                    <RiLoader4Line className="h-6 w-6 animate-spin mx-auto mb-3" />
                     Loading records...
                   </td>
                 </tr>
@@ -162,13 +162,13 @@ export default function AttendanceLogClient() {
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
                         {record.checkInLat && (
-                          <Button size="sm" variant="ghost" className="h-8 px-2.5 text-xs font-bold text-primary hover:bg-primary/10 rounded-md" onClick={() => setMapModal({ isOpen: true, lat: record.checkInLat, lng: record.checkInLng, type: "Check-in" })}>
-                            <MapPin className="h-3.5 w-3.5 mr-1" /> In
+                          <Button size="sm" variant="ghost" className="h-8 px-2.5 text-xs font-bold text-primary hover:bg-primary/10 rounded-md" onClick={() => setMapModal({ isOpen: true, lat: record.checkInLat, lng: record.checkInLng, type: "RiCheckLine-in" })}>
+                            <RiMapPinLine className="h-3.5 w-3.5 mr-1" /> In
                           </Button>
                         )}
                         {record.checkOutLat && (
-                          <Button size="sm" variant="ghost" className="h-8 px-2.5 text-xs font-bold text-orange-500 hover:bg-orange-500/10 rounded-md" onClick={() => setMapModal({ isOpen: true, lat: record.checkOutLat, lng: record.checkOutLng, type: "Check-out" })}>
-                            <MapPin className="h-3.5 w-3.5 mr-1" /> Out
+                          <Button size="sm" variant="ghost" className="h-8 px-2.5 text-xs font-bold text-orange-500 hover:bg-orange-500/10 rounded-md" onClick={() => setMapModal({ isOpen: true, lat: record.checkOutLat, lng: record.checkOutLng, type: "RiCheckLine-out" })}>
+                            <RiMapPinLine className="h-3.5 w-3.5 mr-1" /> Out
                           </Button>
                         )}
                         {!record.checkInLat && !record.checkOutLat && <span className="opacity-30 pl-2">:</span>}
@@ -192,7 +192,7 @@ export default function AttendanceLogClient() {
             <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: "var(--border)" }}>
               <h3 className="font-bold text-lg" style={{ color: "var(--foreground)" }}>{mapModal.type} Location</h3>
               <Button variant="ghost" size="icon" onClick={() => setMapModal(null)} className="rounded-full h-8 w-8 hover:bg-white/10">
-                <X className="h-4 w-4" />
+                <RiCloseLine className="h-4 w-4" />
               </Button>
             </div>
             <div className="p-0 h-[450px]" style={{ background: "var(--surface-sunken)" }}>

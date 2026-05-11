@@ -1,7 +1,7 @@
 "use client";
 
 import useSWR from "swr";
-import { TrendingUp, TrendingDown, Minus, Hash } from "lucide-react";
+import { RiStockLine, RiArrowDownLine, RiSubtractLine, RiHashtag } from "react-icons/ri";
 import type { BlockConfig } from "@/types/block";
 
 const ACCENT_VAR: Record<NonNullable<BlockConfig["metricAccent"]>, string> = {
@@ -39,10 +39,10 @@ export function MetricCard({
 
   const TrendIcon =
     trend && /\+|up|▲/i.test(trend)
-      ? TrendingUp
+      ? RiStockLine
       : trend && /-|down|▼/i.test(trend)
-      ? TrendingDown
-      : Minus;
+      ? RiArrowDownLine
+      : RiSubtractLine;
 
   return (
     <div className="relative h-full flex flex-col justify-center">
@@ -65,7 +65,7 @@ export function MetricCard({
             boxShadow: `0 0 12px color-mix(in oklch, var(${accentVar}), transparent 90%)`,
           }}
         >
-          <Hash className="h-4 w-4" />
+          <RiHashtag className="h-4 w-4" />
         </div>
       </div>
       <div

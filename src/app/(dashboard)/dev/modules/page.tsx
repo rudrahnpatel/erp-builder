@@ -3,19 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import useSWR from "swr";
 import { toast } from "sonner";
-import {
-  Package,
-  Plus,
-  Trash2,
-  Camera,
-  Globe,
-  GlobeLock,
-  Database,
-  FileText,
-  Loader2,
-  ArrowRight,
-  Sparkles,
-} from "lucide-react";
+import { RiArchiveLine, RiAddLine, RiDeleteBinLine, RiGlobalLine, RiDatabase2Line, RiFileTextLine, RiLoader4Line, RiArrowRightLine, RiSparklingLine } from "react-icons/ri";
+import { RiCameraLine, RiEarthLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DevModeGate } from "@/components/layout/DevModeGate";
@@ -166,7 +155,7 @@ export default function MyModulesPage() {
               boxShadow: "0 2px 8px color-mix(in oklch, var(--primary), transparent 60%)",
             }}
           >
-            <Plus className="h-4 w-4" /> New Module
+            <RiAddLine className="h-4 w-4" /> New Module
           </Button>
         </header>
 
@@ -197,7 +186,7 @@ export default function MyModulesPage() {
               className="h-14 w-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
               style={{ background: "var(--surface-2)", color: "var(--foreground-muted)" }}
             >
-              <Package className="h-6 w-6" />
+              <RiArchiveLine className="h-6 w-6" />
             </div>
             <h3
               className="text-base font-semibold mb-1"
@@ -209,7 +198,7 @@ export default function MyModulesPage() {
               className="text-sm mb-5 max-w-sm mx-auto"
               style={{ color: "var(--foreground-muted)" }}
             >
-              Create your first module, then use the Page Builder and Table
+              Create your first module, then use the Page Builder and RiTableLine
               Designer to add content. When you're ready, snapshot &amp; publish
               to the marketplace.
             </p>
@@ -217,7 +206,7 @@ export default function MyModulesPage() {
               onClick={() => setCreateOpen(true)}
               className="gap-2"
             >
-              <Plus className="h-4 w-4" /> Create First Module
+              <RiAddLine className="h-4 w-4" /> Create First Module
             </Button>
           </div>
         ) : (
@@ -245,7 +234,7 @@ export default function MyModulesPage() {
                         : "none",
                     }}
                   >
-                    <Package className="h-5 w-5" />
+                    <RiArchiveLine className="h-5 w-5" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
@@ -268,9 +257,9 @@ export default function MyModulesPage() {
                   </div>
                   {/* Published badge */}
                   {mod.published ? (
-                    <Globe className="h-4 w-4 shrink-0" style={{ color: "var(--accent-emerald)" }} />
+                    <RiGlobalLine className="h-4 w-4 shrink-0" style={{ color: "var(--accent-emerald)" }} />
                   ) : (
-                    <GlobeLock className="h-4 w-4 shrink-0" style={{ color: "var(--foreground-dimmed)" }} />
+                    <RiEarthLine className="h-4 w-4 shrink-0" style={{ color: "var(--foreground-dimmed)" }} />
                   )}
                 </div>
 
@@ -286,11 +275,11 @@ export default function MyModulesPage() {
                 {/* Stats */}
                 <div className="flex items-center gap-4 text-[11px]" style={{ color: "var(--foreground-dimmed)" }}>
                   <span className="flex items-center gap-1.5">
-                    <Database className="h-3 w-3" style={{ color: "var(--accent-blue)" }} />
+                    <RiDatabase2Line className="h-3 w-3" style={{ color: "var(--accent-blue)" }} />
                     {mod.tableCount} tables
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <FileText className="h-3 w-3" style={{ color: "var(--accent-violet)" }} />
+                    <RiFileTextLine className="h-3 w-3" style={{ color: "var(--accent-violet)" }} />
                     {mod.pageCount} pages
                   </span>
                   <span className="flex items-center gap-1.5">
@@ -311,7 +300,7 @@ export default function MyModulesPage() {
                       className="flex-1 gap-1.5 text-xs"
                       onClick={() => router.push(`/dev/modules/${mod.id}/pages`)}
                     >
-                      <FileText className="h-3 w-3" /> Pages ({mod.pageCount})
+                      <RiFileTextLine className="h-3 w-3" /> Pages ({mod.pageCount})
                     </Button>
                     <Button
                       size="sm"
@@ -319,7 +308,7 @@ export default function MyModulesPage() {
                       className="flex-1 gap-1.5 text-xs"
                       onClick={() => router.push(`/dev/modules/${mod.id}/tables`)}
                     >
-                      <Database className="h-3 w-3" /> Tables ({mod.tableCount})
+                      <RiDatabase2Line className="h-3 w-3" /> Tables ({mod.tableCount})
                     </Button>
                   </div>
                   <div className="flex items-center gap-2">
@@ -331,9 +320,9 @@ export default function MyModulesPage() {
                       variant="outline"
                     >
                       {snapshotting === mod.id ? (
-                        <Loader2 className="h-3 w-3 animate-spin" />
+                        <RiLoader4Line className="h-3 w-3 animate-spin" />
                       ) : (
-                        <Camera className="h-3 w-3" />
+                        <RiCameraLine className="h-3 w-3" />
                       )}
                       Snapshot
                     </Button>
@@ -349,9 +338,9 @@ export default function MyModulesPage() {
                       }}
                     >
                       {snapshotting === mod.id ? (
-                        <Loader2 className="h-3 w-3 animate-spin" />
+                        <RiLoader4Line className="h-3 w-3 animate-spin" />
                       ) : (
-                        <Sparkles className="h-3 w-3" />
+                        <RiSparklingLine className="h-3 w-3" />
                       )}
                       {mod.published ? "Re-publish" : "Publish"}
                     </Button>
@@ -361,7 +350,7 @@ export default function MyModulesPage() {
                       className="px-2"
                       onClick={() => handleDelete(mod)}
                     >
-                      <Trash2 className="h-3.5 w-3.5" style={{ color: "var(--danger)" }} />
+                      <RiDeleteBinLine className="h-3.5 w-3.5" style={{ color: "var(--danger)" }} />
                     </Button>
                   </div>
                 </div>
@@ -417,7 +406,7 @@ export default function MyModulesPage() {
           <DialogHeader>
             <DialogTitle>Create new module</DialogTitle>
             <DialogDescription>
-              Define a module name and description. You'll then use the Page Builder and Table
+              Define a module name and description. You'll then use the Page Builder and RiTableLine
               Designer to populate it with content.
             </DialogDescription>
           </DialogHeader>
@@ -465,7 +454,7 @@ export default function MyModulesPage() {
               disabled={creating || !newName.trim()}
               className="gap-2"
             >
-              {creating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
+              {creating ? <RiLoader4Line className="h-3.5 w-3.5 animate-spin" /> : <RiAddLine className="h-3.5 w-3.5" />}
               Create Module
             </Button>
           </DialogFooter>

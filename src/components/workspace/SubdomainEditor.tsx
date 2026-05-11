@@ -1,14 +1,7 @@
 "use client";
 
-import {
-  AlertCircle,
-  Check,
-  CheckCircle2,
-  Globe,
-  Loader2,
-  Pencil,
-  X,
-} from "lucide-react";
+import { RiCheckDoubleLine, RiGlobalLine, RiLoader4Line, RiCloseLine } from "react-icons/ri";
+import { RiErrorWarningLine, RiCheckLine, RiPencilLine } from "react-icons/ri";
 import { useCallback, useRef, useState } from "react";
 import { normalizeSlug, slugProblem } from "@/lib/slug";
 
@@ -110,7 +103,7 @@ export function SubdomainEditor({
   if (!editing) {
     return (
       <div className="flex items-center gap-2 group">
-        <Globe className="h-4 w-4 shrink-0" style={{ color: "var(--foreground-dimmed)" }} />
+        <RiGlobalLine className="h-4 w-4 shrink-0" style={{ color: "var(--foreground-dimmed)" }} />
         <span className="text-sm mono" style={{ color: "var(--foreground-muted)" }}>
           {currentSlug}.erpbuilder.app
         </span>
@@ -120,10 +113,10 @@ export function SubdomainEditor({
             setEditing(true);
           }}
           className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-md hover-bg-subtle focus-ring"
-          aria-label="Edit subdomain"
+          aria-label="RiEdit2Line subdomain"
           style={{ color: "var(--foreground-dimmed)" }}
         >
-          <Pencil className="h-3.5 w-3.5" />
+          <RiPencilLine className="h-3.5 w-3.5" />
         </button>
       </div>
     );
@@ -180,7 +173,7 @@ export function SubdomainEditor({
           style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
           aria-label="Save subdomain"
         >
-          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+          {saving ? <RiLoader4Line className="h-4 w-4 animate-spin" /> : <RiCheckLine className="h-4 w-4" />}
         </button>
         <button
           onClick={handleCancel}
@@ -188,7 +181,7 @@ export function SubdomainEditor({
           style={{ color: "var(--foreground-muted)" }}
           aria-label="Cancel"
         >
-          <X className="h-4 w-4" />
+          <RiCloseLine className="h-4 w-4" />
         </button>
       </div>
 
@@ -197,9 +190,9 @@ export function SubdomainEditor({
           className="text-xs flex items-center gap-1.5"
           style={{ color: stateColor[slugState] }}
         >
-          {slugState === "checking" && <Loader2 className="h-3 w-3 animate-spin" />}
-          {(slugState === "taken" || slugState === "invalid") && <AlertCircle className="h-3 w-3" />}
-          {slugState === "available" && <CheckCircle2 className="h-3 w-3" />}
+          {slugState === "checking" && <RiLoader4Line className="h-3 w-3 animate-spin" />}
+          {(slugState === "taken" || slugState === "invalid") && <RiErrorWarningLine className="h-3 w-3" />}
+          {slugState === "available" && <RiCheckDoubleLine className="h-3 w-3" />}
           {slugMsg}
         </p>
       )}

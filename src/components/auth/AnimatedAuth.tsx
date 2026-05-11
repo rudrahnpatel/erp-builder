@@ -4,8 +4,26 @@ import { useEffect, useState } from "react";
 import { signIn, getProviders } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, User, Lock, Mail, Briefcase, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
+
+import { RiLoader4Line, RiUserLine, RiLockLine, RiMailLine, RiBriefcaseLine } from "react-icons/ri";
+
 import { toast } from "sonner";
+
+const textVariants = {
+  enter: (isLogin: boolean) => ({
+    x: isLogin ? 30 : -30,
+    opacity: 0,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+  },
+  exit: (isLogin: boolean) => ({
+    x: isLogin ? -30 : 30,
+    opacity: 0,
+  }),
+};
 
 const WaveBackground = () => (
   <svg
@@ -13,10 +31,10 @@ const WaveBackground = () => (
     viewBox="0 0 100 100"
     preserveAspectRatio="none"
   >
-    <path d="M0,0 L100,0 L100,100 L0,100 Z" fill="#0077ff" />
-    <path d="M0,40 C30,60 70,20 100,40 L100,100 L0,100 Z" fill="#0099ff" opacity="0.8" />
-    <path d="M0,60 C40,40 60,80 100,60 L100,100 L0,100 Z" fill="#00bfff" opacity="0.8" />
-    <path d="M0,80 C30,100 70,60 100,80 L100,100 L0,100 Z" fill="#00e5ff" opacity="0.6" />
+    <path d="M0,0 L100,0 L100,100 L0,100 Z" fill="#dbeafe" />
+    <path d="M0,40 C30,60 70,20 100,40 L100,100 L0,100 Z" fill="#bfdbfe" opacity="0.8" />
+    <path d="M0,60 C40,40 60,80 100,60 L100,100 L0,100 Z" fill="#93c5fd" opacity="0.85" />
+    <path d="M0,80 C30,100 70,60 100,80 L100,100 L0,100 Z" fill="#60a5fa" opacity="0.8" />
   </svg>
 );
 
@@ -117,62 +135,63 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
   return (
     <div className="w-full max-w-[1000px] h-[600px] flex rounded-[2rem] overflow-hidden shadow-2xl relative bg-white">
 
-      {/*  LEFT PANEL: Graphic & Inactive Tabs (50%)  */}
-      <div className="w-[50%] h-full relative bg-[#0077ff]">
+      {/*  LEFT PANEL: Graphic & Centered Content (50%)  */}
+      <div className="w-[50%] h-full relative bg-[#eff6ff]">
         <WaveBackground />
 
-        {/* Welcome Message (Centered in the 50% panel) */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none pr-16 pl-8">
-
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={isLogin ? "login-msg" : "reg-msg"}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-              className="text-center"
-            >
-              <h1 className="text-[54px] text-white font-display italic leading-[1.1] mb-6 drop-shadow-lg">
-                {isLogin ? "Welcome Back!" : "Hello, Builder!"}
-              </h1>
-              <p className="text-white/90 text-[16px] leading-relaxed max-w-[280px] drop-shadow-md font-medium mx-auto">
-                {isLogin
-                  ? "Sign in to access your dashboard and continue building."
-                  : "Create an account to start your journey with us."}
-              </p>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        {/* Clickable transparent tabs area on the right edge */}
-        <div className="absolute right-0 w-32 h-full top-0">
-          <div
-            className="absolute top-[200px] w-full h-[60px] flex items-center justify-start cursor-pointer pl-6 z-10"
-            onClick={() => setMode(true)}
-          >
-            <span className="font-bold tracking-wide text-white hover:text-gray-200 transition-colors text-sm uppercase">LOGIN</span>
+        {/* Content Container */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-8">
+          
+          {/* Welcome Message */}
+          <div className="h-[140px] flex items-center justify-center mb-8 relative w-full">
+            <AnimatePresence mode="wait" custom={isLogin}>
+              <motion.div
+                key={isLogin ? "login-msg" : "reg-msg"}
+                custom={isLogin}
+                variants={textVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.4, ease: "easeInOut" }}
+                className="text-center absolute w-full"
+              >
+                <h1 className="text-[54px] text-blue-950 font-display font-black italic leading-[1.1] mb-6">
+                  {isLogin ? "Welcome Back!" : "Hello, Builder!"}
+                </h1>
+                <p className="text-blue-900/90 text-[16px] leading-relaxed max-w-[280px] font-bold mx-auto">
+                  {isLogin
+                    ? "Sign in to access your dashboard and continue building."
+                    : "Create an account to start your journey with us."}
+                </p>
+              </motion.div>
+            </AnimatePresence>
           </div>
-          <div
-            className="absolute top-[280px] w-full h-[60px] flex items-center justify-start cursor-pointer pl-6 z-10"
-            onClick={() => setMode(false)}
-          >
-            <span className="font-bold tracking-wide text-white/80 hover:text-white transition-colors text-sm uppercase">SIGN UP</span>
+
+          {/* Centered Horizontal Toggle */}
+          <div className="relative flex items-center bg-white/40 backdrop-blur-md border border-white/50 rounded-full p-1.5 shadow-lg">
+             {/* Animated Pill Background */}
+             <motion.div
+               className="absolute top-1.5 bottom-1.5 left-1.5 w-[120px] bg-blue-600 rounded-full shadow-md z-0"
+               initial={false}
+               animate={{ x: isLogin ? 0 : 120 }}
+               transition={{ type: "spring", stiffness: 300, damping: 25 }}
+             />
+             
+             <button
+               onClick={() => setMode(true)}
+               className={`relative z-10 w-[120px] py-2.5 text-sm font-extrabold tracking-wide uppercase transition-colors ${isLogin ? "text-white" : "text-blue-950/70 hover:text-blue-950"}`}
+             >
+               LOGIN
+             </button>
+             <button
+               onClick={() => setMode(false)}
+               className={`relative z-10 w-[120px] py-2.5 text-sm font-extrabold tracking-wide uppercase transition-colors ${!isLogin ? "text-white" : "text-blue-950/70 hover:text-blue-950"}`}
+             >
+               SIGN UP
+             </button>
           </div>
         </div>
       </div>
-
-      {/*  THE LIQUID SLIDING TOGGLE TAB  */}
-      <motion.div
-        initial={false}
-        animate={{ top: isLogin ? 200 : 280 }}
-        transition={{ type: "spring", stiffness: 150, damping: 10, bounce: 0.4 }}
-        className="absolute left-[50%] -translate-x-[99%] w-[120px] h-[60px] bg-white/20 backdrop-blur-md border border-white/30 border-r-0 rounded-l-full z-30 flex items-center justify-start pl-6 shadow-[-10px_0_20px_rgba(0,0,0,0.1)]"
-      >
-        <span className="font-extrabold tracking-wide text-white drop-shadow-md text-[13px] uppercase">
-          {isLogin ? "LOGIN" : "SIGN UP"}
-        </span>
-      </motion.div>
 
       {/*  RIGHT PANEL: Forms (50%)  */}
       <div className="w-[50%] h-full relative z-20 bg-white/95 backdrop-blur-3xl border border-white/60 rounded-[2rem] shadow-lg flex flex-col items-center justify-center">
@@ -188,18 +207,18 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
                 transition={{ duration: 0.2 }}
                 className="w-full flex flex-col items-center"
               >
-                <div className="h-20 w-20 rounded-full bg-gradient-to-br from-[#1e40af] to-[#3b82f6] p-1 shadow-lg mb-4 flex items-center justify-center">
+                <div className="h-20 w-20 rounded-full bg-gradient-to-br from-blue-600 to-blue-400 p-1 shadow-lg mb-4 flex items-center justify-center">
                   <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
-                    <User className="h-8 w-8 text-[#2563eb]" />
+                    <RiUserLine className="h-8 w-8 text-[#2563eb]" />
                   </div>
                 </div>
 
                 {/* Applied the elegant font-display here */}
-                <h2 className="text-3xl font-bold mb-6 text-[#1e40af]">Login</h2>
+                <h2 className="text-3xl font-bold mb-6 text-blue-800">Login</h2>
 
                 <form onSubmit={handleLoginSubmit} className="w-full max-w-[300px]">
                   <div className="relative w-full border-b border-gray-300 pb-2 mb-6 flex items-center gap-4">
-                    <User className="h-[18px] w-[18px] text-gray-400" />
+                    <RiUserLine className="h-[18px] w-[18px] text-gray-400" />
                     <input
                       type="email"
                       placeholder="Email"
@@ -211,7 +230,7 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
                     />
                   </div>
                   <div className="relative w-full border-b border-gray-300 pb-2 mb-6 flex items-center gap-4">
-                    <Lock className="h-[18px] w-[18px] text-gray-400" />
+                    <RiLockLine className="h-[18px] w-[18px] text-gray-400" />
                     <input
                       type={showPassword ? "text" : "password"}
                       placeholder="Password"
@@ -236,9 +255,9 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
                     </a>
                     <button
                       type="submit"
-                      className="rounded-full px-8 py-2.5 shadow-lg bg-gradient-to-r from-[#1e40af] to-[#3b82f6] hover:opacity-90 transition-opacity text-white text-sm font-medium" disabled={loading || !isLogin}>
-                      {loading && isLogin ? <Loader2 className="mr-2 h-3 w-3 animate-spin" /> : null}
+                      className="flex items-center justify-center rounded-full px-8 py-2.5 shadow-lg bg-gradient-to-r from-[#1e40af] to-[#3b82f6] hover:opacity-90 transition-opacity text-white text-sm font-medium" disabled={loading || !isLogin}>
                       Login
+                      {loading && isLogin ? <RiLoader4Line className="ml-2 h-4 w-4 animate-spin" /> : null}
                     </button>
                   </div>
 
@@ -255,7 +274,7 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
                             signIn("google", { callbackUrl: "/workspace" });
                           }}
                         >
-                          {googleLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <GoogleMark />}
+                          {googleLoading ? <RiLoader4Line className="h-4 w-4 animate-spin" /> : <GoogleMark />}
                           Google
                         </button>
                         <button
@@ -279,18 +298,18 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
                 transition={{ duration: 0.2 }}
                 className="w-full flex flex-col items-center"
               >
-                <div className="h-16 w-16 rounded-full bg-gradient-to-br from-[#06b6d4] to-[#2563eb] p-1 shadow-lg mb-3 flex items-center justify-center">
+                <div className="h-16 w-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-400 p-1 shadow-lg mb-3 flex items-center justify-center">
                   <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
-                    <User className="h-6 w-6 text-[#06b6d4]" />
+                    <RiUserLine className="h-6 w-6 text-[#06b6d4]" />
                   </div>
                 </div>
 
                 {/* Applied the elegant font-display here */}
-                <h2 className="text-3xl font-bold mb-6 text-[#2563eb]">Sign Up</h2>
+                <h2 className="text-3xl font-bold mb-6 text-blue-700">Sign Up</h2>
 
                 <form onSubmit={handleRegisterSubmit} className="w-full max-w-[300px]">
                   <div className="relative w-full border-b border-gray-300 pb-2 mb-5 flex items-center gap-4">
-                    <User className="h-[18px] w-[18px] text-gray-400" />
+                    <RiUserLine className="h-[18px] w-[18px] text-gray-400" />
                     <input
                       placeholder="Full Name"
                       value={name}
@@ -301,7 +320,7 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
                     />
                   </div>
                   <div className="relative w-full border-b border-gray-300 pb-2 mb-5 flex items-center gap-4">
-                    <Mail className="h-[18px] w-[18px] text-gray-400" />
+                    <RiMailLine className="h-[18px] w-[18px] text-gray-400" />
                     <input
                       type="email"
                       placeholder="Email"
@@ -313,7 +332,7 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
                     />
                   </div>
                   <div className="relative w-full border-b border-gray-300 pb-2 mb-5 flex items-center gap-4">
-                    <Briefcase className="h-[18px] w-[18px] text-gray-400" />
+                    <RiBriefcaseLine className="h-[18px] w-[18px] text-gray-400" />
                     <input
                       placeholder="Workspace Name"
                       value={workspaceName}
@@ -324,7 +343,7 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
                     />
                   </div>
                   <div className="relative w-full border-b border-gray-300 pb-2 mb-5 flex items-center gap-4">
-                    <Lock className="h-[18px] w-[18px] text-gray-400" />
+                    <RiLockLine className="h-[18px] w-[18px] text-gray-400" />
                     <input
                       type={showPassword ? "text" : "password"}
                       placeholder="Password"
@@ -346,9 +365,9 @@ export function AnimatedAuth({ initialMode }: { initialMode: "login" | "register
                   <div className="flex justify-end w-full mt-8">
                     <button
                       type="submit"
-                      className="rounded-full px-8 py-2.5 shadow-lg bg-gradient-to-r from-[#06b6d4] to-[#2563eb] hover:opacity-90 transition-opacity text-white text-sm font-medium" disabled={loading || isLogin}>
-                      {loading && !isLogin ? <Loader2 className="mr-2 h-3 w-3 animate-spin" /> : null}
+                      className="flex items-center justify-center rounded-full px-8 py-2.5 shadow-lg bg-gradient-to-r from-[#06b6d4] to-[#2563eb] hover:opacity-90 transition-opacity text-white text-sm font-medium" disabled={loading || isLogin}>
                       Sign Up
+                      {loading && !isLogin ? <RiLoader4Line className="ml-2 h-4 w-4 animate-spin" /> : null}
                     </button>
                   </div>
                 </form>

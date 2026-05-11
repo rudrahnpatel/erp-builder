@@ -48,12 +48,13 @@ const fetcher = (url: string) => fetch(url).then((res) => {
 export function useWorkspace() {
   const { data, error, isLoading, mutate } = useSWR<WorkspaceData>("/api/workspace", fetcher, {
     revalidateOnFocus: true,
-    dedupingInterval: 10000,       // 10s : reduce duplicate calls
+    dedupingInterval: 30000,       // 30s — prevent duplicate calls on fast navigation
     revalidateIfStale: true,
-    focusThrottleInterval: 30000,  // Don't re-fetch on every alt-tab
-    keepPreviousData: true,        // Show stale data while revalidating
+    focusThrottleInterval: 60000,  // 1 min — don't hammer DB on every alt-tab
+    keepPreviousData: true,        // Show stale data while revalidating (no flash)
     errorRetryCount: 3,
     errorRetryInterval: 2000,
+    revalidateOnReconnect: true,   // Refresh when network comes back online
   });
 
   return {

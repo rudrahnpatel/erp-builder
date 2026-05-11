@@ -87,8 +87,8 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
         className="h-[60px] flex items-center px-3 border-b shrink-0"
         style={{ borderColor: "var(--sidebar-border)" }}
       >
-        <div className="relative shrink-0 flex items-center">
-          <img src="/logo/logo.png" alt="Logo" className="h-12 w-auto" />
+        <div className="relative shrink-0 flex items-center justify-center h-10 w-10">
+          <img src="/logo/logo.png" alt="Logo" className="h-10 w-10 object-contain" />
         </div>
         <div className="ml-2.5 min-w-0 flex-1 animate-fade-in-up">
           {isLoading && !workspace ? (
@@ -181,7 +181,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                     {/* Active indicator bar */}
                     {isActive && (
                       <span
-                        className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[18px] rounded-full animate-nav-indicator"
+                        className="absolute -left-2 top-1/2 -translate-y-1/2 w-[3px] h-[18px] rounded-full animate-nav-indicator"
                         style={{ background: "var(--primary)" }}
                       />
                     )}

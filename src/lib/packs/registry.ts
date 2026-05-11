@@ -294,7 +294,7 @@ export const inventoryPack: PackDefinition = {
       fields: [
         { name: "Supplier Name", type: "TEXT", required: true },
         { name: "Contact Person", type: "TEXT" },
-        { name: "Phone", type: "PHONE" },
+        { name: "RiPhoneLine", type: "PHONE" },
         { name: "Email", type: "EMAIL" },
         { name: "GST Number (GSTIN)", type: "TEXT" }, // 15-char GSTIN - required for ITC claims
         { name: "PAN Number", type: "TEXT" },          // For TDS deduction
@@ -325,7 +325,7 @@ export const inventoryPack: PackDefinition = {
         {
           "Supplier Name": "Krishna Traders",
           "Contact Person": "Mohan Krishna",
-          Phone: "+91 98765 43210",
+          RiPhoneLine: "+91 98765 43210",
           Email: "mohan@krishnatraders.in",
           "GST Number (GSTIN)": "27AAAAA0000A1Z5",
           "PAN Number": "AAAAA0000A",
@@ -338,7 +338,7 @@ export const inventoryPack: PackDefinition = {
         {
           "Supplier Name": "Patel Exports",
           "Contact Person": "Rajesh Patel",
-          Phone: "+91 98765 12345",
+          RiPhoneLine: "+91 98765 12345",
           Email: "rajesh@patelexports.in",
           "GST Number (GSTIN)": "24BBBBB0000B2Y6",
           "PAN Number": "BBBBB0000B",
@@ -351,7 +351,7 @@ export const inventoryPack: PackDefinition = {
         {
           "Supplier Name": "Sharma & Sons",
           "Contact Person": "Vikram Sharma",
-          Phone: "+91 99887 76655",
+          RiPhoneLine: "+91 99887 76655",
           Email: "vikram@sharmasons.in",
           "GST Number (GSTIN)": "08CCCCC0000C3X7",
           "PAN Number": "CCCCC0000C",
@@ -389,7 +389,7 @@ export const inventoryPack: PackDefinition = {
           },
         },
         { name: "Manager Name", type: "TEXT" },
-        { name: "Phone", type: "PHONE" },
+        { name: "RiPhoneLine", type: "PHONE" },
         { name: "Storage Capacity", type: "NUMBER" }, // In workspace-relevant units
         { name: "Is Active", type: "CHECKBOX", config: { defaultValue: true } },
       ],
@@ -401,7 +401,7 @@ export const inventoryPack: PackDefinition = {
           City: "New Delhi",
           State: "Delhi",
           "Manager Name": "Deepika Nair",
-          Phone: "+91 98765 99001",
+          RiPhoneLine: "+91 98765 99001",
           "Storage Capacity": 5000,
           "Is Active": true,
         },
@@ -412,7 +412,7 @@ export const inventoryPack: PackDefinition = {
           City: "Gurgaon",
           State: "Haryana",
           "Manager Name": "Rahul Verma",
-          Phone: "+91 98765 99002",
+          RiPhoneLine: "+91 98765 99002",
           "Storage Capacity": 2000,
           "Is Active": true,
         },
@@ -423,7 +423,7 @@ export const inventoryPack: PackDefinition = {
           City: "Noida",
           State: "Uttar Pradesh",
           "Manager Name": "Amit Patel",
-          Phone: "+91 98765 99003",
+          RiPhoneLine: "+91 98765 99003",
           "Storage Capacity": 1500,
           "Is Active": true,
         },
@@ -768,7 +768,7 @@ export const inventoryPack: PackDefinition = {
             visibleFields: [
               "Supplier Name",
               "Contact Person",
-              "Phone",
+              "RiPhoneLine",
               "Email",
               "City",
               "Payment Terms",
@@ -851,7 +851,7 @@ export const crmPack: PackDefinition = {
         { name: "Name", type: "TEXT", required: true },
         { name: "Company", type: "TEXT" },
         { name: "Email", type: "EMAIL" },
-        { name: "Phone", type: "PHONE" },
+        { name: "RiPhoneLine", type: "PHONE" },
         {
           name: "Stage",
           type: "SINGLE_SELECT",
@@ -864,7 +864,7 @@ export const crmPack: PackDefinition = {
           Name: "Priya Sharma",
           Company: "Sharma Industries",
           Email: "priya@sharma.in",
-          Phone: "+91 98765 11111",
+          RiPhoneLine: "+91 98765 11111",
           Stage: "Customer",
           "Deal Value": 250000,
         },
@@ -872,7 +872,7 @@ export const crmPack: PackDefinition = {
           Name: "Amit Patel",
           Company: "Patel Trading Co",
           Email: "amit@pateltrading.in",
-          Phone: "+91 98765 22222",
+          RiPhoneLine: "+91 98765 22222",
           Stage: "Prospect",
           "Deal Value": 180000,
         },
@@ -953,7 +953,7 @@ export const hrPack: PackDefinition = {
         { name: "Designation", type: "TEXT" },
         { name: "Date of Joining", type: "DATE" },
         { name: "Email", type: "EMAIL" },
-        { name: "Phone", type: "PHONE" },
+        { name: "RiPhoneLine", type: "PHONE" },
         { name: "Salary (CTC)", type: "CURRENCY", config: { currency: "INR" } },
       ],
       seedData: [
@@ -970,8 +970,8 @@ export const hrPack: PackDefinition = {
       fields: [
         { name: "Employee", type: "RELATION", config: { linkedTable: "Employees" } },
         { name: "Date", type: "DATE", required: true },
-        { name: "Check-in Time", type: "TIME" },
-        { name: "Check-out Time", type: "TIME" },
+        { name: "RiCheckLine-in Time", type: "TIME" },
+        { name: "RiCheckLine-out Time", type: "TIME" },
         { name: "Status", type: "SINGLE_SELECT", config: { options: ["Present", "Absent", "Half-day", "On Leave"] } },
         { name: "Late Arrival", type: "CHECKBOX" },
         { name: "Overtime Hours", type: "NUMBER" },

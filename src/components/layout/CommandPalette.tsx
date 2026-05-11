@@ -4,22 +4,8 @@ import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Command } from "cmdk";
 import Fuse from "fuse.js";
-import {
-  LayoutDashboard,
-  Blocks,
-  FileText,
-  Database,
-  Puzzle,
-  Settings,
-  Search,
-  Network,
-  CalendarDays,
-  User,
-  ShieldAlert,
-  Globe,
-  Package,
-  Trash2,
-} from "lucide-react";
+import { RiDashboardLine, RiLayoutGridLine, RiFileTextLine, RiDatabase2Line, RiPlugLine, RiSettings4Line, RiSearchLine, RiNodeTree, RiUserLine, RiGlobalLine, RiArchiveLine, RiDeleteBinLine } from "react-icons/ri";
+import { RiCalendarEventLine, RiShieldKeyholeLine } from "react-icons/ri";
 import { useLanguage } from "@/lib/i18n";
 import { useWorkspace } from "@/hooks/use-workspace";
 import useSWR from "swr";
@@ -29,14 +15,14 @@ import { getAllPacks } from "@/lib/packs/index";
 
 // Base static navigation items (Pre-suggestions shown when query is empty)
 const baseNavigationData = [
-  { id: "dashboard", title: "Dashboard", href: "/workspace", icon: LayoutDashboard, keywords: ["home", "main", "start", "overview", "index", "dash"], category: "Navigation" },
-  { id: "marketplace", title: "Marketplace", href: "/modules", icon: Blocks, keywords: ["apps", "modules", "install", "store", "plugins", "directory", "market"], category: "Navigation" },
-  { id: "pages", title: "Manage Pages", href: "/pages", icon: FileText, keywords: ["ui", "views", "screens", "frontend", "design", "layout", "web", "page"], category: "Navigation" },
-  { id: "tables", title: "Manage Tables", href: "/tables", icon: Database, keywords: ["data", "schema", "database", "models", "backend", "records", "rows", "sql", "table"], category: "Navigation" },
-  { id: "schema", title: "Schema Designer", href: "/schema", icon: Network, keywords: ["relations", "diagram", "architecture", "data model", "visualize"], category: "Navigation" },
-  { id: "attendance", title: "Attendance Log", href: "/attendance-log", icon: CalendarDays, keywords: ["employees", "time", "clock", "punch", "tracker", "shift"], category: "Navigation" },
-  { id: "plugins", title: "Plugins", href: "/plugins", icon: Puzzle, keywords: ["extensions", "addons", "integrations", "tools", "connectors", "plugin"], category: "Navigation" },
-  { id: "settings", title: "Settings", href: "/settings", icon: Settings, keywords: ["preferences", "configuration", "account", "profile", "options", "setting"], category: "Navigation" },
+  { id: "dashboard", title: "Dashboard", href: "/workspace", icon: RiDashboardLine, keywords: ["home", "main", "start", "overview", "index", "dash"], category: "Navigation" },
+  { id: "marketplace", title: "Marketplace", href: "/modules", icon: RiLayoutGridLine, keywords: ["apps", "modules", "install", "store", "plugins", "directory", "market"], category: "Navigation" },
+  { id: "pages", title: "Manage Pages", href: "/pages", icon: RiFileTextLine, keywords: ["ui", "views", "screens", "frontend", "design", "layout", "web", "page"], category: "Navigation" },
+  { id: "tables", title: "Manage Tables", href: "/tables", icon: RiDatabase2Line, keywords: ["data", "schema", "database", "models", "backend", "records", "rows", "sql", "table"], category: "Navigation" },
+  { id: "schema", title: "Schema Designer", href: "/schema", icon: RiNodeTree, keywords: ["relations", "diagram", "architecture", "data model", "visualize"], category: "Navigation" },
+  { id: "attendance", title: "Attendance Log", href: "/attendance-log", icon: RiCalendarEventLine, keywords: ["employees", "time", "clock", "punch", "tracker", "shift"], category: "Navigation" },
+  { id: "plugins", title: "Plugins", href: "/plugins", icon: RiPlugLine, keywords: ["extensions", "addons", "integrations", "tools", "connectors", "plugin"], category: "Navigation" },
+  { id: "settings", title: "RiSettings4Line", href: "/settings", icon: RiSettings4Line, keywords: ["preferences", "configuration", "account", "profile", "options", "setting"], category: "Navigation" },
 ];
 
 export function CommandPalette() {
@@ -65,12 +51,12 @@ export function CommandPalette() {
     // 1. Navigation items
     const data = [...baseNavigationData];
 
-    // 2. Settings Sections
+    // 2. RiSettings4Line Sections
     data.push(
-      { id: "settings-account", title: "Account Settings", href: "/settings", icon: User, keywords: ["name", "email", "profile", "user"], category: "Settings" },
-      { id: "settings-workspace", title: "Workspace Domain", href: "/settings", icon: Globe, keywords: ["subdomain", "url", "link", "address", "slug"], category: "Settings" },
-      { id: "settings-admin", title: "Admin Credentials", href: "/settings", icon: ShieldAlert, keywords: ["password", "login", "auth", "security", "tenant"], category: "Settings" },
-      { id: "settings-delete", title: "Delete Account", href: "/settings", icon: Trash2, keywords: ["remove", "wipe", "danger", "trash", "erase"], category: "Settings" }
+      { id: "settings-account", title: "Account RiSettings4Line", href: "/settings", icon: RiUserLine, keywords: ["name", "email", "profile", "user"], category: "RiSettings4Line" },
+      { id: "settings-workspace", title: "Workspace Domain", href: "/settings", icon: RiGlobalLine, keywords: ["subdomain", "url", "link", "address", "slug"], category: "RiSettings4Line" },
+      { id: "settings-admin", title: "Admin Credentials", href: "/settings", icon: RiShieldKeyholeLine, keywords: ["password", "login", "auth", "security", "tenant"], category: "RiSettings4Line" },
+      { id: "settings-delete", title: "Delete Account", href: "/settings", icon: RiDeleteBinLine, keywords: ["remove", "wipe", "danger", "trash", "erase"], category: "RiSettings4Line" }
     );
 
     // 3. All Plugins available in the platform
@@ -79,7 +65,7 @@ export function CommandPalette() {
         id: `plugin-${plugin.id}`,
         title: plugin.name,
         href: `/plugins`,
-        icon: Puzzle,
+        icon: RiPlugLine,
         keywords: [plugin.id, plugin.category.toLowerCase(), ...(plugin.description?.toLowerCase().split(" ") || [])],
         category: "Plugins"
       });
@@ -91,7 +77,7 @@ export function CommandPalette() {
         id: `pack-${pack.id}`,
         title: pack.name,
         href: `/modules/${pack.id}`,
-        icon: Package,
+        icon: RiArchiveLine,
         keywords: [pack.id, pack.category.toLowerCase(), ...(pack.description?.toLowerCase().split(" ") || [])],
         category: "Marketplace Modules"
       });
@@ -158,12 +144,12 @@ export function CommandPalette() {
     
     const backendItems = searchResults.map((res: any) => ({
       ...res,
-      icon: res.icon === "FileText" ? FileText :
-            res.icon === "Database" ? Database :
-            res.icon === "Package" ? Package :
-            res.icon === "Search" ? Search :
-            res.icon === "FilePlus" ? FileText : 
-            Search
+      icon: res.icon === "RiFileTextLine" ? RiFileTextLine :
+            res.icon === "RiDatabase2Line" ? RiDatabase2Line :
+            res.icon === "RiArchiveLine" ? RiArchiveLine :
+            res.icon === "Search" ? RiSearchLine :
+            res.icon === "FilePlus" ? RiFileTextLine : 
+            RiSearchLine
     }));
 
     const seenIds = new Set(data.map(r => r.id));
@@ -266,7 +252,7 @@ export function CommandPalette() {
                 transition: "height 700ms cubic-bezier(0.22, 1, 0.36, 1), border-bottom 400ms ease",
               }}
             >
-              <Search
+              <RiSearchLine
                 className="shrink-0 transition-all duration-700"
                 style={{
                   width: open ? "16px" : "15px",

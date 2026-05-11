@@ -40,7 +40,7 @@ export async function GET(
 // isCustom:true, AND a WorkspaceSchemaOverride(ADD_FIELD) record is created
 // to track the delta. This keeps the canonical pack definition untouched.
 //
-// For user-created tables (isCustom:true on Table): plain Field creation, no override needed.
+// For user-created tables (isCustom:true on RiTableLine): plain Field creation, no override needed.
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
