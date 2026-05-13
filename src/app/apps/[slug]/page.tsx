@@ -31,12 +31,6 @@ export default async function TenantHome({
 
   const nonSystemPages = pages.filter(p => p.packPageKey !== 'settings' && p.packPageKey !== 'user_management');
   
-  if (nonSystemPages.length > 0) {
-    redirect(`/apps/${slug}/pages/${nonSystemPages[0].id}`);
-  } else if (tables.length > 0) {
-    redirect(`/apps/${slug}/${tables[0].id}`);
-  }
-
   return (
     <div className="relative min-h-[100dvh]">
       {/* Gradient mesh backdrop instead of heavy 3D Spline */}
@@ -68,6 +62,24 @@ export default async function TenantHome({
             Your business operations cockpit. Access databases, execute workflows, and view custom dashboards.
           </p>
         </header>
+
+        {/* Basic Stats Section */}
+        <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          <div className="p-5 rounded-xl border" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
+            <p className="text-[11px] font-bold uppercase tracking-wider mb-2" style={{ color: "var(--foreground-dimmed)" }}>Total Databases</p>
+            <p className="text-3xl font-bold" style={{ color: "var(--foreground)" }}>{tables.length}</p>
+          </div>
+          <div className="p-5 rounded-xl border" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
+            <p className="text-[11px] font-bold uppercase tracking-wider mb-2" style={{ color: "var(--foreground-dimmed)" }}>Total Records</p>
+            <p className="text-3xl font-bold" style={{ color: "var(--primary)" }}>
+              {tables.reduce((acc, t) => acc + t._count.records, 0)}
+            </p>
+          </div>
+          <div className="p-5 rounded-xl border" style={{ background: "var(--surface-2)", borderColor: "var(--border-subtle)" }}>
+            <p className="text-[11px] font-bold uppercase tracking-wider mb-2" style={{ color: "var(--foreground-dimmed)" }}>Custom Pages</p>
+            <p className="text-3xl font-bold" style={{ color: "var(--accent-amber)" }}>{pages.length}</p>
+          </div>
+        </section>
 
         <section className="space-y-5">
           <div className="flex items-center gap-3 border-b pb-3" style={{ borderColor: "var(--border-subtle)" }}>

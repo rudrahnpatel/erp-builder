@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getWorkspace } from "@/lib/get-workspace";
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/workspace : workspace summary for dashboard
 export async function GET() {
   try {
@@ -49,6 +51,7 @@ export async function GET() {
       name: workspace.name,
       slug: workspace.slug,
       settings: workspace.settings,
+      createdAt: workspace.createdAt,
       stats: {
         tables: tables.length,
         totalRecords: tables.reduce((sum, t) => sum + t._count.records, 0),
@@ -85,10 +88,11 @@ export async function GET() {
     };
 
     const res = NextResponse.json(body);
-    // Allow browsers to serve stale data instantly and revalidate in background
+    // Remove aggressive browser caching to prevent onboarding redirect loops.
+    // SWR already handles client-side caching and deduplication.
     res.headers.set(
       "Cache-Control",
-      "private, s-maxage=10, stale-while-revalidate=60"
+      "no-store, max-age=0"
     );
     return res;
   } catch (error) {

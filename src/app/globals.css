@@ -417,3 +417,11 @@
   transition: all 0.4s ease !important;
   transition-delay: 0s !important;
 }
+
+/* Hide Next.js dev toolbar */
+nextjs-portal,
+#nextjs-portal,
+[data-nextjs-toast],
+[data-nextjs-dialog-overlay] {
+  display: none !important;
+}

@@ -479,7 +479,7 @@ export default function TablesPage() {
                   "0 2px 8px color-mix(in oklch, var(--primary), transparent 65%)",
               }}
             >
-              <RiAddLine className="h-4 w-4" /> Create RiTableLine
+              <RiAddLine className="h-4 w-4" /> Create Table
             </Button>
             <Button
               variant="outline"

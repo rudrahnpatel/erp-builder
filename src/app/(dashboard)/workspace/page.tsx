@@ -203,7 +203,9 @@ export default function WorkspacePage() {
             className="text-3xl sm:text-4xl font-bold tracking-tight"
             style={{ color: "var(--foreground)" }}
           >
-            Welcome back
+            {workspace.createdAt && (new Date().getTime() - new Date(workspace.createdAt).getTime() < 1000 * 60 * 60 * 24)
+              ? "Your ERP is ready"
+              : "Welcome"}
           </h1>
           <p
             className="mt-2 text-sm sm:text-base max-w-lg"
@@ -231,7 +233,7 @@ export default function WorkspacePage() {
                 className="text-xs mono"
                 style={{ color: "var(--foreground-dimmed)" }}
               >
-                {workspace.slug}.erpbuilder.app
+                {workspace.slug.toLowerCase()}.erpbuilder.app
               </span>
             </div>
           )}

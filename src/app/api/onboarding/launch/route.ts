@@ -42,7 +42,14 @@ export async function POST(req: Request) {
     const updated = await db.$transaction(async (tx) => {
       const next = await tx.workspace.update({
         where: { id: workspace.id },
-        data: { name: appName, slug },
+        data: { 
+          name: appName, 
+          slug,
+          settings: {
+            ...(workspace.settings && typeof workspace.settings === 'object' ? workspace.settings : {}),
+            companyProfile: { name: companyName }
+          }
+        },
       });
       await ensureBuiltinPages(tx, workspace.id);
 

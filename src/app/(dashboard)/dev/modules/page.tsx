@@ -198,7 +198,7 @@ export default function MyModulesPage() {
               className="text-sm mb-5 max-w-sm mx-auto"
               style={{ color: "var(--foreground-muted)" }}
             >
-              Create your first module, then use the Page Builder and RiTableLine
+              Create your first module, then use the Page Builder and Table Designer
               Designer to add content. When you're ready, snapshot &amp; publish
               to the marketplace.
             </p>
@@ -406,7 +406,7 @@ export default function MyModulesPage() {
           <DialogHeader>
             <DialogTitle>Create new module</DialogTitle>
             <DialogDescription>
-              Define a module name and description. You'll then use the Page Builder and RiTableLine
+              Define a module name and description. You'll then use the Page Builder and Table Designer
               Designer to populate it with content.
             </DialogDescription>
           </DialogHeader>

@@ -997,7 +997,7 @@ export const hrPack: PackDefinition = {
     },
     {
       key: "attendance_dashboard",
-      title: "Attendance Dashboard",
+      title: "Attendance",
       icon: "calendar",
       blocks: [
         {

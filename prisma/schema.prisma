@@ -238,6 +238,7 @@ model Quotation {
   totalAmount Int?
   status      String   @default("pending") // pass, failed, pending, Active, Converted, Lost
   data        Json
+  workspaceId String?
   createdAt   DateTime @default(now())
 }
 
@@ -251,6 +252,7 @@ model Estimate {
   paidAmount  Int      @default(0)
   status      String   @default("pending")
   data        Json
+  workspaceId String?
   createdAt   DateTime @default(now())
 }
 

@@ -181,7 +181,7 @@ export default function ModuleTablesPage({
             </>
           ) : (
             <>
-              <RiAddLine className="h-4 w-4" /> New RiTableLine
+              <RiAddLine className="h-4 w-4" /> New Table
             </>
           )}
         </Button>
@@ -491,7 +491,7 @@ export default function ModuleTablesPage({
                 "0 2px 8px color-mix(in oklch, var(--primary), transparent 65%)",
             }}
           >
-            <RiAddLine className="h-4 w-4" /> Create First RiTableLine
+            <RiAddLine className="h-4 w-4" /> Create First Table
           </Button>
         </div>
       )}

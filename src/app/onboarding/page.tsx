@@ -135,6 +135,15 @@ export default function OnboardingPage() {
         throw new Error(data.error || "Failed to launch. Please try again.");
       }
 
+      // Automatically install preset pack if selected
+      if (buildMode === "preset" && selectedPreset) {
+        await fetch("/api/packs/install", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ packId: selectedPreset })
+        }).catch(err => console.error("Pack install failed", err));
+      }
+
       await mutate("/api/workspace");
       router.push("/workspace");
     } catch (e: any) {

@@ -228,7 +228,7 @@ export default function SettingsPage() {
             className="text-xs mb-4"
             style={{ color: "var(--foreground-dimmed)" }}
           >
-            Update the admin ID and password used to log in to the tenant ERP app at <span className="font-mono">{liveSlug ?? workspace.slug}.erpbuilder.app</span>.
+            Update the admin ID and password used to log in to the tenant ERP app at <span className="font-mono">{(liveSlug ?? workspace.slug).toLowerCase()}.erpbuilder.app</span>.
           </p>
           <form
             onSubmit={async (e) => {

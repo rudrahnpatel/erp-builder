@@ -97,7 +97,7 @@ export default function PluginsPage() {
           className="max-w-2xl text-sm sm:text-base leading-relaxed mt-1"
           style={{ color: "var(--foreground-muted)" }}
         >
-          Drop-in integrations for your modules. Install the specific capabilities you need:from WhatsApp invoice delivery to Razorpay collections:in a single click.
+          Drop-in integrations for your modules. Install the specific capabilities you need — from WhatsApp invoice delivery to Razorpay collections — in a single click.
         </p>
       </header>
 

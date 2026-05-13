@@ -38,6 +38,7 @@ export type WorkspaceData = {
     pluginId: string;
     enabled: boolean;
   }>;
+  createdAt?: string;
 };
 
 const fetcher = async (url: string) => {

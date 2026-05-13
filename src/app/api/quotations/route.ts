@@ -1,12 +1,17 @@
 import { db } from '@/lib/db';
 import { NextResponse } from 'next/server';
+import { getWorkspace } from '@/lib/get-workspace';
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const limit = searchParams.get('limit');
 
+    const workspace = await getWorkspace();
+    if (!workspace) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const allQuotations = await db.quotation.findMany({
+      where: { workspaceId: workspace.id },
       orderBy: { createdAt: 'desc' },
       ...(limit ? { take: parseInt(limit) } : {})
     });
@@ -23,8 +28,12 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { quotationNo, clientName, totalAmount, data, date } = body;
 
+    const workspace = await getWorkspace();
+    if (!workspace) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const newQuotation = await db.quotation.create({
       data: {
+        workspaceId: workspace.id,
         quotationNo,
         clientName,
         totalAmount,

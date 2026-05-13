@@ -1,12 +1,20 @@
 import { db } from '@/lib/db';
 import { NextResponse } from 'next/server';
+import { getWorkspace } from '@/lib/get-workspace';
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
+    const workspace = await getWorkspace();
+    if (!workspace) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const result = await db.quotation.findUnique({
       where: { id }
     });
+    
+    if (result && result.workspaceId !== workspace.id) {
+        return NextResponse.json({ error: 'Quotation not found' }, { status: 404 });
+    }
     
     if (!result) {
         return NextResponse.json({ error: 'Quotation not found' }, { status: 404 });
@@ -20,8 +28,16 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 }
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+    const { id } = await params;
   try {
+    const workspace = await getWorkspace();
+    if (!workspace) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    const existing = await db.quotation.findUnique({ where: { id } });
+    if (!existing || existing.workspaceId !== workspace.id) {
+        return NextResponse.json({ error: 'Quotation not found' }, { status: 404 });
+    }
+
     console.log(`[API] Updating quotation ID: ${id}`);
     
     const body = await request.json();
@@ -61,6 +77,14 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
+    const workspace = await getWorkspace();
+    if (!workspace) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    const existing = await db.quotation.findUnique({ where: { id } });
+    if (!existing || existing.workspaceId !== workspace.id) {
+        return NextResponse.json({ error: 'Quotation not found' }, { status: 404 });
+    }
+
     await db.quotation.delete({
       where: { id }
     });

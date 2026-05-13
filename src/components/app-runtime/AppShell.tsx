@@ -288,10 +288,10 @@ export function AppShell({
                   {workspace.name}
                 </span>
                 <span
-                  className="text-[10px] tracking-[0.05em] font-medium opacity-50 uppercase"
+                  className="text-[10px] tracking-[0.05em] font-medium opacity-50"
                   style={{ color: "var(--foreground-dimmed)" }}
                 >
-                  {workspace.slug}
+                  {workspace.slug.toLowerCase()}
                 </span>
               </div>
             )}

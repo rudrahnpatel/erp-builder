@@ -13,6 +13,7 @@ import { ImageBlock } from "@/components/blocks/ImageBlock";
 import { GstCalculator } from "@/components/blocks/GstCalculator";
 import { AttendanceLogBlock } from "@/components/blocks/AttendanceLogBlock";
 import { SettingsPage } from "@/components/app-runtime/SettingsPage";
+import { TenantDashboard } from "@/components/workspace/TenantDashboard";
 import QuotationsPage from "@/app/(dashboard)/quotation/page";
 import CreateQuotation from "@/app/(dashboard)/quotation/create/page";
 import EstimatedListPage from "@/app/(dashboard)/estimated/page";
@@ -83,6 +84,11 @@ export default function TenantCustomPage({
         workspaceSlug={page.workspace?.slug || slug}
       />
     );
+  }
+
+  // Intercept "dashboard" pages and render our custom beautiful UI
+  if (page?.packPageKey === "dashboard") {
+    return <TenantDashboard />;
   }
 
   // Inject hardcoded Quotation and Estimate pages from the module system

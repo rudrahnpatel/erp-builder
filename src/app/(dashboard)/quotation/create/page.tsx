@@ -183,7 +183,7 @@ function CreateQuotationContent({ listUrl }: { listUrl?: string }) {
             }
           }
 
-          const prefix = companyProfile.name ? companyProfile.name.substring(0, 3).toUpperCase() : "QTN";
+          const prefix = (companyProfile.name || workspace?.name) ? (companyProfile.name || workspace?.name).substring(0, 3).toUpperCase() : "QTN";
           const newNo = `${prefix}/${new Date().toLocaleString("en-US", { month: "short" }).toUpperCase()}/${new Date().getFullYear()}/${nextNum}`;
 
           setData((prev) => ({
@@ -191,7 +191,7 @@ function CreateQuotationContent({ listUrl }: { listUrl?: string }) {
             quotationNo: newNo,
             sender: {
               ...prev.sender,
-              name: companyProfile.name || prev.sender.name,
+              name: companyProfile.name || workspace?.name || prev.sender.name,
               address: companyProfile.address || prev.sender.address,
               phone: companyProfile.phone || prev.sender.phone,
               email: companyProfile.email || prev.sender.email,
@@ -204,14 +204,14 @@ function CreateQuotationContent({ listUrl }: { listUrl?: string }) {
         })
         .catch((err) => {
           console.error("Error generating new number:", err);
-          const prefix = companyProfile.name ? companyProfile.name.substring(0, 3).toUpperCase() : "QTN";
+          const prefix = (companyProfile.name || workspace?.name) ? (companyProfile.name || workspace?.name).substring(0, 3).toUpperCase() : "QTN";
           const newNo = `${prefix}/${new Date().toLocaleString("en-US", { month: "short" }).toUpperCase()}/${new Date().getFullYear()}/1`;
           setData((prev) => ({
             ...prev,
             quotationNo: newNo,
             sender: {
               ...prev.sender,
-              name: companyProfile.name || prev.sender.name,
+              name: companyProfile.name || workspace?.name || prev.sender.name,
               address: companyProfile.address || prev.sender.address,
               phone: companyProfile.phone || prev.sender.phone,
               email: companyProfile.email || prev.sender.email,

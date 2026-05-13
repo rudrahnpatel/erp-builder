@@ -11,7 +11,7 @@ export const packRegistry: Record<string, PackDefinition> = {
   [financePack.id]: financePack,
   // CRM and HR remain hidden behind "coming soon" until they get the same
   // schema-update treatment as Inventory.
-  // [crmPack.id]: crmPack,
+  [crmPack.id]: crmPack,
   [hrPack.id]: hrPack,
   [quotationPack.id]: quotationPack,
   [supportPack.id]: supportPack,

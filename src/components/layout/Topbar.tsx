@@ -90,7 +90,7 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
                         className="text-[10px] tracking-[0.05em] mono block truncate"
                         style={{ color: "var(--foreground-dimmed)" }}
                       >
-                        {workspace.slug}.erpbuilder.app
+                        {workspace.slug.toLowerCase()}.erpbuilder.app
                       </span>
                       <ExternalLink 
                         className="h-2.5 w-2.5 opacity-40 group-hover/link:opacity-100 transition-opacity" 

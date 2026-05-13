@@ -105,7 +105,7 @@ export function SubdomainEditor({
       <div className="flex items-center gap-2 group">
         <RiGlobalLine className="h-4 w-4 shrink-0" style={{ color: "var(--foreground-dimmed)" }} />
         <span className="text-sm mono" style={{ color: "var(--foreground-muted)" }}>
-          {currentSlug}.erpbuilder.app
+          {currentSlug.toLowerCase()}.erpbuilder.app
         </span>
         <button
           onClick={() => {
