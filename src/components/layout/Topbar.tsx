@@ -125,7 +125,7 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
         {/* Language toggle : flips between English and Hindi. Persisted in
             localStorage; reflected immediately across components via
             window event. */}
-        <button
+        {/* <button
           type="button"
           onClick={() => setLang(lang === "en" ? "hi" : "en")}
           className="hidden inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium hover-bg-subtle focus-ring"
@@ -135,7 +135,7 @@ export function Topbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
         >
           <Languages className="h-3.5 w-3.5" />
           <span className="mono">{lang === "en" ? "EN" : "हि"}</span>
-        </button>
+        </button> */}
 
         {/* Theme toggle */}
         <div>

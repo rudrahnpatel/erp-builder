@@ -40,10 +40,15 @@ export type WorkspaceData = {
   }>;
 };
 
-const fetcher = (url: string) => fetch(url).then((res) => {
-  if (!res.ok) throw new Error("Failed to fetch workspace");
+const fetcher = async (url: string) => {
+  const res = await fetch(url);
+  if (!res.ok) {
+    const error: any = new Error("Failed to fetch workspace");
+    error.status = res.status;
+    throw error;
+  }
   return res.json();
-});
+};
 
 export function useWorkspace() {
   const { data, error, isLoading, mutate } = useSWR<WorkspaceData>("/api/workspace", fetcher, {

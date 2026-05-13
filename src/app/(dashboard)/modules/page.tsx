@@ -69,7 +69,7 @@ export default function ModulesPage() {
   const { workspace, refetch } = useWorkspace();
   
   const { data: packsData, isLoading } = useSWR("/api/packs", fetcher);
-  const allPacks: any[] = packsData || [];
+  const allPacks: any[] = Array.isArray(packsData) ? packsData : [];
 
   // Show installed packs visually if workspace is loaded, else empty fallback
   const installedPacks = workspace?.installedPacks || [];

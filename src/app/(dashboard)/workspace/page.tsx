@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 import {
   RiArchiveLine,
@@ -102,12 +103,20 @@ export default function WorkspacePage() {
 
 
   const { workspace, isLoading, isError } = useWorkspace();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isError && isError.status === 401) {
+      router.replace("/onboarding");
+    }
+  }, [isError, router]);
 
   if (isLoading) {
     return <WorkspaceSkeleton />;
   }
 
   if (isError || !workspace) {
+    if (isError && isError.status === 401) return null; // Avoid flashing the offline UI during redirect
     return (
       <div className="p-8 mt-12 max-w-md mx-auto text-center space-y-4 animate-in fade-in slide-in-from-bottom-4">
         <div className="h-12 w-12 rounded-xl mx-auto flex items-center justify-center bg-red-50 text-red-600 border border-red-100">
