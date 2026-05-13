@@ -197,7 +197,10 @@ export function AppShell({
   const flatPages: typeof nonSystemPages = [];
 
   nonSystemPages.forEach(p => {
-    if (p.packSource) {
+    // Dashboard is always top-level, never grouped
+    if (p.packPageKey === 'dashboard') {
+      flatPages.push(p);
+    } else if (p.packSource && p.packSource !== 'builtin') {
       if (!groupedPages[p.packSource]) groupedPages[p.packSource] = [];
       groupedPages[p.packSource].push(p);
     } else {
@@ -214,7 +217,16 @@ export function AppShell({
       .join(' ');
   };
 
-  const NavItemRender = ({ item, active }: { item: any, active: boolean }) => (
+  const SOURCE_COLORS: Record<string, string> = {
+    hr: "var(--accent-rose)",
+    crm: "var(--accent-emerald)",
+    finance: "var(--accent-amber)",
+    inventory: "var(--accent-violet)",
+    support: "var(--accent-cyan)",
+    manufacturing: "var(--accent-blue)",
+  };
+
+  const NavItemRender = ({ item, active, source }: { item: any, active: boolean, source?: string }) => (
     <Link
       href={item.href}
       onClick={() => setSidebarOpen(false)}
@@ -230,7 +242,17 @@ export function AppShell({
           style={{ background: "var(--primary)" }}
         />
       )}
-      <item.icon className="h-[16px] w-[16px] shrink-0" />
+      
+      <div 
+        className="shrink-0 flex items-center justify-center transition-all duration-300"
+        style={{ 
+          color: isCollapsed && source && SOURCE_COLORS[source] ? SOURCE_COLORS[source] : "inherit",
+          transform: isCollapsed ? "scale(1.1)" : "scale(1)"
+        }}
+      >
+        <item.icon className="h-[16px] w-[16px]" />
+      </div>
+
       <span className={`truncate transition-all duration-300 ${isCollapsed ? "opacity-0 w-0 hidden" : "opacity-100"}`}>
         {item.label}
       </span>
@@ -323,7 +345,7 @@ export function AppShell({
           {isCollapsed && (
             <button
               onClick={() => setIsCollapsed(false)}
-              className="hidden lg:flex h-6 w-6 rounded-full items-center justify-center bg-[var(--primary)] text-white shadow-lg absolute -right-3 top-1/2 -translate-y-1/2 z-10 hover:scale-110 transition-transform"
+              className="hidden lg:flex h-6 w-6 rounded-full items-center justify-center bg-[var(--primary)] text-white shadow-lg absolute -right-3 top-[30px] -translate-y-1/2 z-[100] hover:scale-110 transition-transform"
               aria-label="Expand sidebar"
             >
               <ChevronRight className="h-3 w-3" />
@@ -333,11 +355,23 @@ export function AppShell({
 
         {/* Nav */}
         <nav className="flex-1 overflow-y-auto py-3 px-3 space-y-1.5 custom-scrollbar">
-          {/* Home */}
-          <NavItemRender 
-            item={{ href: base, label: "Home", icon: Home }} 
-            active={isActive(base, true)} 
-          />
+          {/* Explicitly render Dashboard if it exists in flatPages */}
+          {(() => {
+            const dashboardPage = flatPages.find(p => p.packPageKey === 'dashboard');
+            if (!dashboardPage) return null;
+            const href = `${base}/pages/${dashboardPage.id}`;
+            return (
+              <NavItemRender
+                key={dashboardPage.id}
+                item={{
+                  href,
+                  label: dashboardPage.title,
+                  icon: LayoutDashboard,
+                }}
+                active={isActive(href, false)}
+              />
+            );
+          })()}
 
           {/* Grouped Pages */}
           {Object.entries(groupedPages).map(([packSource, pages]) => {
@@ -355,6 +389,7 @@ export function AppShell({
                   return (
                     <NavItemRender
                       key={p.id}
+                      source={packSource}
                       item={{
                         href,
                         label: p.title,
@@ -368,10 +403,10 @@ export function AppShell({
             );
           })}
 
-          {/* Flat Pages */}
-          {flatPages.length > 0 && (
+          {/* Flat Pages (excluding dashboard which was rendered above) */}
+          {flatPages.filter(p => p.packPageKey !== 'dashboard').length > 0 && (
             <div className="pt-2 mt-2 border-t" style={{ borderColor: "var(--sidebar-border)" }}>
-              {flatPages.map((p) => {
+              {flatPages.filter(p => p.packPageKey !== 'dashboard').map((p) => {
                 const href = `${base}/pages/${p.id}`;
                 return (
                   <NavItemRender

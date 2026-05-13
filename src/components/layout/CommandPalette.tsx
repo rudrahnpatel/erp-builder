@@ -218,7 +218,7 @@ export function CommandPalette() {
             ? "translate(-50%, 50%)"
             : "translateX(-50%)",
           /* Width morphs from pill to full palette */
-          width: open ? "min(580px, calc(100vw: 2rem))" : "auto",
+          width: open ? "min(720px, calc(100vw - 2rem))" : "auto",
           /* Smooth everything */
           transition: "all 700ms cubic-bezier(0.22, 1, 0.36, 1)",
         }}

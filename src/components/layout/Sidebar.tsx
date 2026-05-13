@@ -156,7 +156,7 @@ export function Sidebar({
         {isCollapsed && onToggleCollapse && (
           <button
             onClick={onToggleCollapse}
-            className="hidden lg:flex h-6 w-6 rounded-full items-center justify-center bg-[var(--primary)] text-white shadow-lg absolute -right-3 top-1/2 -translate-y-1/2 z-10 hover:scale-110 transition-transform"
+            className="hidden lg:flex h-6 w-6 rounded-full items-center justify-center bg-[var(--primary)] text-white shadow-lg absolute -right-3 top-[30px] -translate-y-1/2 z-[100] hover:scale-110 transition-transform"
             aria-label="Expand sidebar"
           >
             <ChevronRight className="h-3 w-3" />
@@ -165,7 +165,7 @@ export function Sidebar({
       </div>
 
       {/*  Navigation  */}
-      <div className="flex-1 overflow-y-auto py-3">
+      <div className="flex-1 overflow-y-auto py-3 custom-scrollbar">
         {navSections.map((section, si) => (
           <div key={si} className={si > 0 ? "mt-4" : ""}>
             {/* Section label */}
