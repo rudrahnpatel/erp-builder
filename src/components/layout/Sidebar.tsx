@@ -85,7 +85,7 @@ export function Sidebar({
 
   return (
     <div
-      className={`h-full flex flex-col border-r transition-all duration-300 ${isCollapsed ? "w-[68px]" : "w-[248px]"}`}
+      className={`h-full flex flex-col border-r transition-all duration-300 shrink-0 ${isCollapsed ? "w-[68px]" : "w-[248px]"}`}
       style={{
         background: "var(--sidebar)",
         borderColor: "var(--sidebar-border)",
@@ -93,7 +93,7 @@ export function Sidebar({
     >
       {/*  Logo / Workspace Identity  */}
       <div
-        className="h-[60px] flex items-center px-3 border-b shrink-0 relative"
+        className={`h-[60px] flex items-center border-b shrink-0 relative transition-all duration-300 ${isCollapsed ? "px-0 justify-center" : "px-3"}`}
         style={{ borderColor: "var(--sidebar-border)" }}
       >
         <div className={`flex items-center min-w-0 flex-1 ${isCollapsed ? "justify-center" : ""}`}>
@@ -209,11 +209,11 @@ export function Sidebar({
                     href={"queryHref" in item ? (item as any).queryHref : item.href}
                     onClick={() => onClose?.()}
                     title={isCollapsed ? item.label : undefined}
-                    className={`relative flex items-center gap-2.5 px-3 py-2.5 text-[13px] rounded-lg group focus-ring ${
+                    className={`relative flex items-center gap-2.5 py-2.5 text-[13px] rounded-lg group focus-ring transition-all duration-300 ${
                       isActive
                         ? "sidebar-nav-item active"
                         : "sidebar-nav-item"
-                    } ${isCollapsed ? "justify-center px-0" : ""}`}
+                    } ${isCollapsed ? "justify-center px-0 mx-2" : "px-3"}`}
                     style={
                       isActive
                         ? undefined
@@ -259,7 +259,7 @@ export function Sidebar({
               rel="noopener"
               onClick={() => onClose?.()}
               title={isCollapsed ? t("common.openMyErp") : undefined}
-              className={`w-full flex items-center gap-2 text-[13px] font-semibold rounded-xl px-3 py-2.5 transition-all duration-200 pressable ${isCollapsed ? "justify-center px-0" : ""}`}
+              className={`w-full flex items-center gap-2 text-[13px] font-semibold rounded-xl py-2.5 transition-all duration-200 pressable ${isCollapsed ? "justify-center px-0" : "px-3"}`}
               style={{
                 background:
                   "linear-gradient(135deg, var(--primary), var(--primary-hover))",
@@ -288,7 +288,7 @@ export function Sidebar({
           href="/docs"
           onClick={() => onClose?.()}
           title={isCollapsed ? t("common.helpDocs") : undefined}
-          className={`flex w-full items-center gap-2.5 px-3 py-2 text-[13px] rounded-lg hover-bg-subtle focus-ring ${isCollapsed ? "justify-center px-0" : ""}`}
+          className={`flex w-full items-center gap-2.5 py-2 text-[13px] rounded-lg hover-bg-subtle focus-ring transition-all duration-200 ${isCollapsed ? "justify-center px-0" : "px-3"}`}
           style={{ color: "var(--foreground-muted)" }}
         >
           <HelpCircle className="h-4 w-4" />
@@ -300,7 +300,7 @@ export function Sidebar({
             signOut({ callbackUrl: "/login" });
           }}
           title={isCollapsed ? t("common.logout") : undefined}
-          className={`flex w-full items-center gap-2.5 px-3 py-2 text-[13px] rounded-lg transition-colors duration-150 focus-ring ${isCollapsed ? "justify-center px-0" : ""}`}
+          className={`flex w-full items-center gap-2.5 py-2 text-[13px] rounded-lg transition-all duration-200 focus-ring ${isCollapsed ? "justify-center px-0" : "px-3"}`}
           style={{ color: "var(--danger)" }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = "var(--danger-subtle)";

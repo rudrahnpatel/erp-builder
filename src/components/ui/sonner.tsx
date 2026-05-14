@@ -2,8 +2,7 @@
 
 import { useTheme } from "next-themes"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
-import { RiInformationLine, RiAlertLine, RiCloseCircleLine, RiLoader4Line } from "react-icons/ri";
-import { FaCheck } from "react-icons/fa6";
+import { RiInformationLine, RiAlertLine, RiCloseCircleLine, RiLoader4Line, RiCheckLine } from "react-icons/ri";
 
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme()
@@ -14,7 +13,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       className="toaster group"
       icons={{
         success: (
-          <FaCheck className="size-4" />
+          <RiCheckLine className="size-4" />
         ),
         info: (
           <RiInformationLine className="size-4" />

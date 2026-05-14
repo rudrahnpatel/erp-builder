@@ -62,7 +62,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         />
       )}
       <div
-        className={`fixed inset-y-0 left-0 z-50 transform transition-all duration-300 ease-[var(--ease-out-expo)] lg:static lg:translate-x-0 lg:z-0 lg:shadow-none ${
+        className={`fixed inset-y-0 left-0 z-50 transform transition-all duration-300 ease-[var(--ease-out-expo)] lg:static lg:translate-x-0 lg:z-20 lg:shadow-none shrink-0 ${
           isCollapsed ? "w-[68px]" : "w-[248px]"
         } ${
           sidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"
